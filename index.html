@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sekolah Minggu Buddhis Web</title>
+<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#EAF2FB; --sky-deep:#2C4770; --sky-mid:#4E6E96; --paper:#FFFFFF;
+    --ink:#1F2A3C; --ink-soft:#5B6B82; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#EF767A; --leaf:#6FAE8A; --line:#DCE6F2; --radius:14px; --input-bg:#fbfdff; --hover-bg:#f7fafd;
+  }
+  body.theme-dark{
+    --sky:#101722; --sky-deep:#0B111A; --sky-mid:#8CA3C2; --paper:#1B2432;
+    --ink:#E8EDF5; --ink-soft:#9CACC4; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#F1878B; --leaf:#7FC29A; --line:#2C384A; --input-bg:#232F40; --hover-bg:#212B3A;
+  }
+  body.theme-pink{
+    --sky:#FFF0F5; --sky-deep:#B23A6B; --sky-mid:#C9769B; --paper:#FFFFFF;
+    --ink:#3A2233; --ink-soft:#8C6478; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#EF767A; --leaf:#6FAE8A; --line:#F3D6E3; --input-bg:#FFF8FB; --hover-bg:#FFF0F6;
+  }
+  .theme-picker{position:relative;display:inline-block;}
+  .theme-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;display:none;z-index:60;min-width:150px;}
+  .theme-menu.show{display:block;}
+  .theme-menu button{display:flex;align-items:center;gap:8px;width:100%;background:transparent;color:var(--ink);border-radius:8px;padding:8px 10px;font-weight:500;text-align:left;}
+  .theme-menu button:hover{background:var(--hover-bg);}
+  .theme-swatch{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.1);}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--sky);color:var(--ink);transition:background .2s,color .2s;}
+  h1,h2,h3,.display{font-family:'Baloo 2',sans-serif;}
+  a{color:inherit;}
+  .topbar{background:var(--sky-deep);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-badge{width:38px;height:38px;border-radius:10px;background:var(--sun);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:800;color:var(--sky-deep);font-size:18px;transform:rotate(-6deg);}
+  .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px;}
+  .brand span{display:block;font-size:11px;font-weight:400;opacity:.75;font-family:'Inter';}
+  .drive-status{display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);display:inline-block;}
+  .dot.on{background:var(--leaf);}
+  button{font-family:'Inter';font-weight:600;font-size:13px;border:none;border-radius:10px;padding:9px 16px;cursor:pointer;transition:transform .12s ease;}
+  button:active{transform:scale(.97);}
+  .btn-sun{background:var(--sun);color:#3A2A00;}
+  .btn-sun:hover{background:var(--sun-deep);}
+  .btn-ghost{background:rgba(255,255,255,.14);color:#fff;}
+  .btn-ghost:hover{background:rgba(255,255,255,.24);}
+  .btn-outline{background:var(--paper);color:var(--sky-deep);border:1.5px solid var(--line);}
+  .btn-outline:hover{border-color:var(--sky-mid);}
+  .btn-danger{background:var(--paper);color:var(--coral);border:1.5px solid #f6cccd;}
+  .btn-danger:hover{background:#fff5f5;}
+  .btn-small{padding:6px 10px;font-size:12px;border-radius:8px;}
+  .app-shell{max-width:1220px;margin:0 auto;padding:18px 24px 60px;display:flex;gap:18px;align-items:flex-start;}
+  .sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;position:sticky;top:18px;}
+  .tab{font-family:'Baloo 2';font-weight:600;font-size:14px;padding:10px 14px;border-radius:10px;background:transparent;color:var(--sky-mid);cursor:pointer;white-space:nowrap;border:1px solid transparent;text-align:left;}
+  .tab.active{background:var(--paper);color:var(--sky-deep);border-color:var(--line);box-shadow:0 2px 8px rgba(44,71,112,.06);}
+  main{flex:1;min-width:0;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:0 4px 18px rgba(44,71,112,.05);}
+  .card h2{margin:0 0 4px;font-size:22px;color:var(--sky-deep);}
+  .subtitle{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  input,select,textarea{font-family:'Inter';font-size:13.5px;padding:9px 11px;border-radius:9px;border:1.5px solid var(--line);background:var(--input-bg);color:var(--ink);}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sky-mid);}
+  label{font-size:12.5px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:4px;}
+  .field{margin-bottom:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  @media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:var(--ink-soft);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;padding:9px 8px;border-bottom:2px solid var(--line);}
+  td{padding:9px 8px;border-bottom:1px solid var(--line);}
+  tr:hover td{background:var(--hover-bg);}
+  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;}
+  .badge.aktif{background:#e3f3ea;color:#2f7a52;} .badge.lulus{background:#eaf0fb;color:var(--sky-deep);}
+  .badge.pindah{background:#fdf1e0;color:var(--sun-deep);} .badge.nonaktif{background:#f5eaea;color:var(--coral);}
+  .badge.admin{background:#e6eefb;color:var(--sky-deep);} .badge.guru{background:#e3f3ea;color:#2f7a52;}
+  .rate{display:inline-block;min-width:30px;text-align:center;padding:2px 4px;border-radius:6px;font-weight:700;font-size:11.5px;}
+  .rate.Hadir{background:#e3f3ea;color:#2f7a52;} .rate.Izin{background:#e6eefb;color:var(--sky-deep);}
+  .rate.Sakit{background:#fdf1e0;color:var(--sun-deep);} .rate.Alpa{background:#f5eaea;color:var(--coral);}
+  .empty{padding:40px 20px;text-align:center;color:var(--ink-soft);}
+  .empty .display{font-size:17px;color:var(--sky-deep);margin-bottom:6px;}
+  .modal-bg{position:fixed;inset:0;background:rgba(31,42,60,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal{background:var(--paper);border-radius:16px;padding:26px;max-width:520px;width:100%;max-height:85vh;overflow:auto;}
+  .modal h3{margin:0 0 14px;color:var(--sky-deep);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .setup-box{background:#fff8e8;border:1.5px dashed var(--sun-deep);border-radius:12px;padding:18px 20px;margin-bottom:18px;font-size:13.5px;line-height:1.6;}
+  .setup-box code{background:#00000010;padding:2px 6px;border-radius:5px;font-size:12.5px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  @media(max-width:800px){.stat-grid{grid-template-columns:1fr 1fr;}}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+  .stat .num{font-family:'Baloo 2';font-size:26px;color:var(--sky-deep);font-weight:700;}
+  .stat .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  .gate{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .gate-card{background:var(--paper);border-radius:18px;padding:36px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(44,71,112,.12);}
+  .gate-card h2{text-align:center;margin-bottom:4px;}
+  .gate-card .subtitle{text-align:center;}
+  .checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px;}
+  .checkbox-grid label{display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink);font-size:13px;}
+  .print-only{display:none;}
+  @media print{
+    .topbar,.sidebar,.toolbar,button{display:none !important;}
+    body{background:#fff;} .app-shell{padding:0;max-width:100%;display:block;}
+    .card{box-shadow:none;border:none;border-radius:0;} .print-only{display:block;}
+  }
+
+  /* ---- Tampilan mobile ---- */
+  @media(max-width:900px){
+    .app-shell{flex-direction:column;padding:12px 10px 40px;gap:10px;}
+    .sidebar{width:100%;flex-direction:row;overflow-x:auto;position:static;padding-bottom:4px;}
+    .sidebar .tab{flex-shrink:0;}
+  }
+  @media(max-width:700px){
+    .topbar{flex-direction:column;align-items:stretch;padding:12px 14px;gap:10px;}
+    .brand{justify-content:center;}
+    .drive-status{width:100%;justify-content:center;}
+    .drive-status button{flex:1 1 auto;}
+    .tab{font-size:13px;padding:9px 12px;}
+    .card{padding:14px;border-radius:10px;}
+    .card h2{font-size:19px;}
+    .toolbar{flex-direction:column;align-items:stretch;}
+    .toolbar > div:first-child{text-align:center;}
+    .toolbar .row{flex-direction:column;align-items:stretch;width:100%;}
+    .toolbar .row > *{width:100%;}
+    .row{flex-direction:column;align-items:stretch;}
+    .row > button, .row > select, .row > .field{width:100%;}
+    table{font-size:12px;}
+    th,td{padding:8px 6px;}
+    .stat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .stat .num{font-size:21px;}
+    .gate-card{padding:24px 20px;}
+    .modal{padding:18px;border-radius:14px;}
+    .modal-actions{flex-wrap:wrap;}
+    .modal-actions button{flex:1 1 auto;}
+    .checkbox-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-badge">SM</div>
+    <div><h1>Sekolah Minggu Buddhis Web</h1></div>
+  </div>
+  <div class="drive-status">
+    <span id="statusText"><span class="dot" id="statusDot"></span> Menghubungkan ke server...</span>
+    <button class="btn-ghost" id="saveBtn" style="display:none" onclick="saveToDrive(true)">Simpan sekarang</button>
+    <button class="btn-ghost" id="refreshBtn" style="display:none" onclick="manualRefresh()">↻ Muat ulang</button>
+    <div class="theme-picker">
+      <button class="btn-ghost" onclick="toggleThemeMenu()">🎨 Tema</button>
+      <div class="theme-menu" id="themeMenu">
+        <button onclick="setTheme('normal')"><span class="theme-swatch" style="background:#EAF2FB"></span> Normal</button>
+        <button onclick="setTheme('dark')"><span class="theme-swatch" style="background:#101722"></span> Gelap</button>
+        <button onclick="setTheme('pink')"><span class="theme-swatch" style="background:#FFC0DA"></span> Pink</button>
+      </div>
+    </div>
+    <span id="userBadge"></span>
+    <button class="btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Keluar</button>
+  </div>
+</div>
+
+<div class="app-shell">
+  <nav class="sidebar" id="tabsNav"></nav>
+  <main><div class="card" id="content"></div></main>
+</div>
+<div id="toast" class="toast"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* ======================= KONFIGURASI ======================= */
+// 1) Ikuti PANDUAN-SETUP.md untuk membuat Google Apps Script Web App.
+// 2) Tempel URL Web App dan kunci rahasia Anda di bawah ini.
+const APPS_SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
+const SECRET_KEY = "hQ4yJoC5jxA0yTj2GXD3E6M3YIywtcGg";
+const DATA_FILENAME = "data-sekolah-minggu.json"; // harus sama dengan FILE_NAME di Apps Script
+
+/* ======================= STATE ======================= */
+let backendInitError = null;
+let currentUser = null; // {id, username, nama, role, kelasAksesIds}
+let currentSiswa = null; // siswa yang login lewat portal siswa
+let appStage = 'need-drive'; // need-drive | need-admin-setup | need-login | siswa-portal | ready
+let loginMode = 'pilih'; // pilih | guru | siswa | daftar | daftar-selesai
+
+let db = {
+  meta:{noIndukCounter:0},
+  users:[], daerah:[], tingkatKelas:[], tahunAjaran:[], kelas:[],
+  siswa:[], jadwalPertemuan:[], absensi:[], aspekPenilaian:[], nilai:[],
+  pendaftaran:[], paramita:[], kas:[]
+};
+const DANA_PARAMITA = 20000;
+
+const uid = ()=> 'x'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+
+/* ======================= TEMA ======================= */
+function applyTheme(name){
+  document.body.classList.remove('theme-dark','theme-pink');
+  if(name==='dark') document.body.classList.add('theme-dark');
+  if(name==='pink') document.body.classList.add('theme-pink');
+}
+function setTheme(name){
+  applyTheme(name);
+  try{ localStorage.setItem('smb_theme', name); }catch(e){}
+  toggleThemeMenu(false);
+}
+function toggleThemeMenu(force){
+  const m = document.getElementById('themeMenu');
+  if(typeof force==='boolean'){ m.classList.toggle('show', force); return; }
+  m.classList.toggle('show');
+}
+document.addEventListener('click', (e)=>{
+  const picker = document.querySelector('.theme-picker');
+  if(picker && !picker.contains(e.target)) toggleThemeMenu(false);
+});
+(function initTheme(){
+  let saved = 'normal';
+  try{ saved = localStorage.getItem('smb_theme') || 'normal'; }catch(e){}
+  applyTheme(saved);
+})();
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function seedDefaults(){
+  db.tingkatKelas = [
+    {id:uid(),nama:"SD Kelas 1",jenjang:"SD",urutan:1},{id:uid(),nama:"SD Kelas 2",jenjang:"SD",urutan:2},
+    {id:uid(),nama:"SD Kelas 3",jenjang:"SD",urutan:3},{id:uid(),nama:"SD Kelas 4",jenjang:"SD",urutan:4},
+    {id:uid(),nama:"SD Kelas 5",jenjang:"SD",urutan:5},{id:uid(),nama:"SD Kelas 6",jenjang:"SD",urutan:6},
+    {id:uid(),nama:"SMP Kelas 7",jenjang:"SMP",urutan:7},{id:uid(),nama:"SMP Kelas 8",jenjang:"SMP",urutan:8},
+    {id:uid(),nama:"SMP Kelas 9",jenjang:"SMP",urutan:9},
+    {id:uid(),nama:"SMA/SMK Kelas 10",jenjang:"SMA/SMK",urutan:10},{id:uid(),nama:"SMA/SMK Kelas 11",jenjang:"SMA/SMK",urutan:11},
+    {id:uid(),nama:"SMA/SMK Kelas 12",jenjang:"SMA/SMK",urutan:12},
+  ];
+  db.aspekPenilaian = [
+    {id:uid(),nama:"Akhlak Beriman & Bertakwa",deskripsi:"Sikap ibadah, dana, dan kasih kepada sesama"},
+    {id:uid(),nama:"Mandiri",deskripsi:"Inisiatif dan tanggung jawab pribadi"},
+    {id:uid(),nama:"Bernalar Kritis",deskripsi:"Memahami & merefleksikan Dhamma/materi"},
+    {id:uid(),nama:"Kreatif",deskripsi:"Ekspresi dalam karya, lagu, dan kegiatan"},
+    {id:uid(),nama:"Bergotong Royong",deskripsi:"Kerja sama dan kepedulian dalam kelompok"},
+  ];
+  let ta = {id:uid(), nama: defaultTAName(), aktif:true};
+  db.tahunAjaran = [ta];
+  db.daerah = [{id:uid(), nama:"Batam Centre"}, {id:uid(), nama:"Sei. Piayu"}];
+}
+function defaultTAName(){
+  const y=new Date().getFullYear(), m=new Date().getMonth();
+  return m>=6 ? `${y}/${y+1}` : `${y-1}/${y}`;
+}
+
+const PERIODE = [
+  {key:'MID_GANJIL', label:'Mid Semester Ganjil'},
+  {key:'AKHIR_GANJIL', label:'Nilai Semester Ganjil'},
+  {key:'MID_GENAP', label:'Mid Semester Genap'},
+  {key:'AKHIR_GENAP', label:'Nilai Akhir Semester Genap'},
+];
+const STATUS_ABSEN = ['Hadir','Izin','Sakit','Alpa'];
+
+/* ======================= AKSES / ROLE ======================= */
+function isAdmin(){ return currentUser && currentUser.role==='admin'; }
+function accessibleKelasIds(){
+  if(isAdmin()) return null; // null = semua
+  const ta = activeTahunAjaran();
+  const own = db.kelas.filter(k=> ta && k.tahunAjaranId===ta.id && (k.guruId===currentUser.id || (k.guruAsistenIds||[]).includes(currentUser.id))).map(k=>k.id);
+  const granted = currentUser.kelasAksesIds||[];
+  return Array.from(new Set([...own, ...granted]));
+}
+function canAccessKelas(kelasId){ const ids = accessibleKelasIds(); return ids===null || ids.includes(kelasId); }
+
+/* ======================= TABS ======================= */
+function allTabs(){
+  const t = [
+    {key:"dashboard", label:"Beranda"},
+    {key:"tahunajaran", label:"Tahun Ajaran"},
+    {key:"kelas", label:"Kelas & Guru"},
+    {key:"siswa", label:"Data Siswa"},
+    {key:"absensi", label:"Absensi"},
+    {key:"penilaian", label:"Penilaian"},
+    {key:"kenaikan", label:"Kenaikan Kelas"},
+    {key:"laporan", label:"Laporan"},
+  ];
+  if(isAdmin()){
+    t.push({key:"pendaftaran", label:"Pendaftaran"+(pendingCount()? ` (${pendingCount()})`:'')});
+    t.push({key:"kas", label:"Kas SMB"});
+    t.push({key:"pengguna", label:"Pengguna"});
+  }
+  t.push({key:"profil", label:"Profil Saya"});
+  if(!isAdmin()) return t.filter(x=>!['tahunajaran','kenaikan'].includes(x.key));
+  return t;
+}
+function pendingCount(){ return db.pendaftaran.filter(p=>p.status==='pending').length; }
+let activeTab = "dashboard";
+function renderTabs(){
+  const nav = document.getElementById('tabsNav');
+  if(appStage!=='ready'){ nav.innerHTML=''; return; }
+  nav.innerHTML = allTabs().map(t=>`<div class="tab ${t.key===activeTab?'active':''}" onclick="switchTab('${t.key}')">${t.label}</div>`).join('');
+}
+function switchTab(key){ activeTab=key; renderTabs(); renderContent(); }
+
+function renderContent(){
+  const c = document.getElementById('content');
+  if(appStage==='need-drive'){ c.innerHTML = screenNeedDrive(); return; }
+  if(appStage==='need-admin-setup'){ c.innerHTML = screenSetupAdmin(); return; }
+  if(appStage==='need-login'){ c.innerHTML = screenLogin(); return; }
+  if(appStage==='siswa-portal'){ c.innerHTML = screenSiswaPortal(); return; }
+  const renderers = {
+    dashboard: renderDashboard, tahunajaran: renderTahunAjaran, kelas: renderKelas,
+    siswa: renderSiswa, absensi: renderAbsensi, penilaian: renderPenilaian,
+    kenaikan: renderKenaikan, laporan: renderLaporan, pengguna: renderPengguna,
+    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil
+  };
+  if(!allTabs().some(t=>t.key===activeTab)) activeTab='dashboard';
+  c.innerHTML = renderers[activeTab]();
+}
+
+/* ======================= HELPERS ======================= */
+function activeTahunAjaran(){ return db.tahunAjaran.find(t=>t.aktif) || db.tahunAjaran[0]; }
+function tingkatOf(kelas){ return db.tingkatKelas.find(t=>t.id===kelas.tingkatKelasId); }
+function daerahOf(kelas){ return db.daerah.find(d=>d.id===kelas.daerahId); }
+function kelasLabel(k){ const t=tingkatOf(k), d=daerahOf(k); return `${t?t.nama:'?'}${k.namaRombel?' - '+k.namaRombel:''} (${d?d.nama:'?'})`; }
+function kelasOfTahun(taId){ return db.kelas.filter(k=>k.tahunAjaranId===taId).sort((a,b)=>{
+  const ta=tingkatOf(a), tb=tingkatOf(b); return (ta?ta.urutan:0)-(tb?tb.urutan:0);
+});}
+function guruNama(id){ const g=db.users.find(x=>x.id===id); return g? g.nama : '—'; }
+function siswaAktifDiKelas(kelasId){ return db.siswa.filter(s=>s.kelasId===kelasId && s.status==='aktif'); }
+function fmtDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2600); }
+function openModal(html){ document.getElementById('modalRoot').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function nextNoInduk(){ db.meta.noIndukCounter = (db.meta.noIndukCounter||0)+1; return String(db.meta.noIndukCounter).padStart(4,'0'); }
+
+/* ---- Input tanggal format dd/mm/yyyy (disimpan internal sebagai yyyy-mm-dd) ---- */
+function isoToDdmmyyyy(iso){ if(!iso) return ''; const p=iso.split('-'); if(p.length!==3) return ''; return `${p[2]}/${p[1]}/${p[0]}`; }
+function ddmmyyyyToIso(str){
+  const m = (str||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(!m) return '';
+  const d=+m[1], mo=+m[2], y=+m[3];
+  if(mo<1||mo>12||d<1||d>31) return '';
+  return `${m[3]}-${m[2]}-${m[1]}`;
+}
+function maskDateInput(el){
+  let v = el.value.replace(/\D/g,'').slice(0,8);
+  if(v.length>=5) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+  else if(v.length>=3) v = v.slice(0,2)+'/'+v.slice(2);
+  el.value = v;
+}
+function dateFieldDDMMYYYY(id, isoValue){
+  return `<input id="${id}" type="text" inputmode="numeric" placeholder="dd/mm/yyyy" maxlength="10" oninput="maskDateInput(this)" value="${isoValue? isoToDdmmyyyy(isoValue):''}">`;
+}
+
+/* ======================= LOGIN / SETUP ADMIN ======================= */
+function screenNeedDrive(){
+  if(backendInitError){
+    return `<div class="gate"><div class="gate-card">
+      <h2>Gagal terhubung ke server</h2>
+      <p class="subtitle">Tidak bisa memuat data. Cek koneksi internet Anda.</p>
+      <p style="font-size:12.5px;color:var(--coral);background:#fdeceb;border:1px solid #f6cccd;border-radius:8px;padding:9px 12px;margin-bottom:14px;word-break:break-word">${esc(backendInitError)}</p>
+      <button class="btn-sun" style="width:100%" onclick="connectDrive()">Coba lagi</button>
+    </div></div>`;
+  }
+  return `<div class="gate"><div class="gate-card" style="text-align:center">
+    <h2>Menghubungkan…</h2>
+    <p class="subtitle">Memuat data, mohon tunggu sebentar.</p>
+  </div></div>`;
+}
+function screenSetupAdmin(){
+  return `<div class="gate"><div class="gate-card">
+    <h2>Buat Akun Admin</h2>
+    <p class="subtitle">Belum ada pengguna terdaftar. Buat akun Admin pertama untuk mengelola akun guru lainnya.</p>
+    <div class="field"><label>Nama lengkap</label><input id="suNama"></div>
+    <div class="field"><label>ID / Username</label><input id="suUser" placeholder="admin"></div>
+    <div class="field"><label>Password</label><input id="suPass" type="password"></div>
+    <button class="btn-sun" style="width:100%" onclick="submitSetupAdmin()">Buat Akun Admin</button>
+  </div></div>`;
+}
+async function submitSetupAdmin(){
+  const nama=document.getElementById('suNama').value.trim();
+  const username=document.getElementById('suUser').value.trim();
+  const pass=document.getElementById('suPass').value;
+  if(!nama||!username||!pass) return toast('Semua kolom wajib diisi');
+  const hash = await sha256(pass);
+  const u = {id:uid(), username, passwordHash:hash, nama, role:'admin', kelasAksesIds:[]};
+  db.users.push(u);
+  currentUser = u; appStage='ready';
+  await saveToDrive(false, true);
+  renderTabs(); renderContent();
+  toast('Akun Admin dibuat. Selamat datang, '+nama);
+}
+
+function setLoginMode(mode){ loginMode = mode; renderContent(); }
+
+function screenLogin(){
+  const wide = loginMode==='daftar';
+  if(loginMode==='pilih'){
+    return `<div class="gate"><div class="gate-card" style="text-align:center">
+      <h2>Sekolah Minggu Buddhis Web</h2>
+      <p class="subtitle">Silakan pilih cara masuk</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+        <button class="btn-sun" onclick="setLoginMode('guru')">Masuk sebagai Guru / Admin SMB</button>
+        <button class="btn-outline" onclick="setLoginMode('siswa')">Masuk sebagai Siswa SMB</button>
+        <button class="btn-outline" onclick="setLoginMode('daftar')">Daftar sebagai Siswa SMB Baru</button>
+      </div>
+    </div></div>`;
+  }
+  if(loginMode==='guru'){
+    return `<div class="gate"><div class="gate-card">
+      <h2>Masuk Guru / Admin</h2>
+      <p class="subtitle">Masukkan ID dan password yang diberikan Admin</p>
+      <div class="field"><label>ID / Username</label><input id="liUser" onkeydown="if(event.key==='Enter')submitLogin()"></div>
+      <div class="field"><label>Password</label><input id="liPass" type="password" onkeydown="if(event.key==='Enter')submitLogin()"></div>
+      <button class="btn-sun" style="width:100%" onclick="submitLogin()">Masuk</button>
+      <button class="btn-outline" style="width:100%;margin-top:8px" onclick="setLoginMode('pilih')">← Kembali</button>
+    </div></div>`;
+  }
+  if(loginMode==='siswa'){
+    return `<div class="gate"><div class="gate-card">
+      <h2>Masuk Siswa</h2>
+      <p class="subtitle">Masukkan Nomor Induk dan tanggal lahir siswa</p>
+      <div class="field"><label>Nomor Induk</label><input id="siNoInduk" placeholder="misal: 0007"></div>
+      <div class="field"><label>Tanggal Lahir</label>${dateFieldDDMMYYYY('siTgl','')}</div>
+      <button class="btn-sun" style="width:100%" onclick="submitLoginSiswa()">Masuk</button>
+      <button class="btn-outline" style="width:100%;margin-top:8px" onclick="setLoginMode('pilih')">← Kembali</button>
+    </div></div>`;
+  }
+  if(loginMode==='daftar-selesai'){
+    return `<div class="gate"><div class="gate-card" style="text-align:center">
+      <h2>✅ Pendaftaran Terkirim</h2>
+      <p class="subtitle">Terima kasih! Data Anda akan diperiksa oleh Admin. Setelah disetujui, Nomor Induk akan diberikan dan Anda bisa login sebagai Siswa.</p>
+      <button class="btn-sun" style="width:100%" onclick="setLoginMode('pilih')">Kembali ke halaman masuk</button>
+    </div></div>`;
+  }
+  // loginMode === 'daftar'
+  return `<div class="gate"><div class="gate-card" style="max-width:560px;text-align:left">
+    <h2>Pendaftaran Siswa Baru</h2>
+    <p class="subtitle">Isi data berikut dengan lengkap dan benar (kolom bertanda * wajib diisi)</p>
+    <div id="dfError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
+    <div class="field"><label>Nama Lengkap *</label><input id="dfNama"></div>
+    <div class="grid2">
+      <div class="field"><label>Tempat Lahir *</label><input id="dfTempat"></div>
+      <div class="field"><label>Tanggal Lahir *</label>${dateFieldDDMMYYYY('dfTgl','')}</div>
+    </div>
+    <div class="field"><label>No Telepon Siswa *</label><input id="dfTeleponSiswa"></div>
+    <div class="grid2">
+      <div class="field"><label>Kelas / Tingkat yang dituju *</label><select id="dfTingkat">
+        ${db.tingkatKelas.map(t=>`<option value="${t.id}">${esc(t.nama)}</option>`).join('')}
+      </select></div>
+      <div class="field"><label>Daerah Belajar *</label><select id="dfDaerah">
+        ${db.daerah.map(d=>`<option value="${d.id}">${esc(d.nama)}</option>`).join('') || '<option value="">(belum ada daerah)</option>'}
+      </select></div>
+    </div>
+    <div class="field"><label>Alamat Tinggal *</label><textarea id="dfAlamat" rows="2" style="width:100%"></textarea></div>
+    <div class="field"><label>Asal Sekolah *</label><input id="dfAsalSekolah"></div>
+    <div class="grid2">
+      <div class="field"><label>Nama Ayah</label><input id="dfAyah"></div>
+      <div class="field"><label>Telepon Ayah</label><input id="dfTeleponAyah"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Nama Ibu</label><input id="dfIbu"></div>
+      <div class="field"><label>Telepon Ibu</label><input id="dfTeleponIbu"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Nama Wali Siswa</label><input id="dfWali"></div>
+      <div class="field"><label>Telepon Wali Siswa</label><input id="dfTeleponWali"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Status Memohon Ketuhanan *</label><select id="dfKetuhanan">
+        <option value="Belum">Belum</option><option value="Sudah">Sudah</option>
+      </select></div>
+      <div class="field"><label>Nama Vihara Tempat Bersembahyang *</label><input id="dfVihara"></div>
+    </div>
+    <button class="btn-sun" style="width:100%" onclick="submitPendaftaran()">Submit Pendaftaran</button>
+    <button class="btn-outline" style="width:100%;margin-top:8px" onclick="setLoginMode('pilih')">← Kembali</button>
+  </div></div>`;
+}
+async function submitLogin(){
+  const username=document.getElementById('liUser').value.trim();
+  const pass=document.getElementById('liPass').value;
+  const hash = await sha256(pass);
+  const u = db.users.find(x=>x.username===username && x.passwordHash===hash);
+  if(!u) return toast('ID atau password salah');
+  currentUser = u; appStage='ready'; activeTab='dashboard'; loginMode='pilih';
+  renderTabs(); renderContent(); updateUserBadge();
+  toast('Selamat datang, '+u.nama);
+}
+function submitLoginSiswa(){
+  const noInduk = document.getElementById('siNoInduk').value.trim();
+  const tgl = ddmmyyyyToIso(document.getElementById('siTgl').value.trim());
+  const s = db.siswa.find(x=>x.noInduk===noInduk && x.tglLahir===tgl && x.status==='aktif');
+  if(!s) return toast('Nomor Induk atau tanggal lahir tidak cocok');
+  currentSiswa = s; appStage='siswa-portal'; loginMode='pilih';
+  renderTabs(); renderContent(); updateUserBadge();
+}
+function dfShowError(msg, fieldId){
+  const box = document.getElementById('dfError');
+  box.textContent = '⚠ '+msg; box.style.display='block'; box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  document.querySelectorAll('.gate-card input, .gate-card select, .gate-card textarea').forEach(el=>el.style.borderColor='');
+  if(fieldId){ const f=document.getElementById(fieldId); if(f) f.style.borderColor='var(--coral)'; }
+}
+async function submitPendaftaran(){
+  const nama = document.getElementById('dfNama').value.trim();
+  const tempatLahir = document.getElementById('dfTempat').value.trim();
+  const tglLahir = ddmmyyyyToIso(document.getElementById('dfTgl').value.trim());
+  const teleponSiswa = document.getElementById('dfTeleponSiswa').value.trim();
+  const daerahId = document.getElementById('dfDaerah').value;
+  const alamatTinggal = document.getElementById('dfAlamat').value.trim();
+  const asalSekolah = document.getElementById('dfAsalSekolah').value.trim();
+  const namaVihara = document.getElementById('dfVihara').value.trim();
+  if(!nama) return dfShowError('Nama Lengkap wajib diisi', 'dfNama');
+  if(!tempatLahir) return dfShowError('Tempat Lahir wajib diisi', 'dfTempat');
+  if(!tglLahir) return dfShowError('Tanggal Lahir wajib diisi format dd/mm/yyyy', 'dfTgl');
+  if(!teleponSiswa) return dfShowError('No Telepon Siswa wajib diisi', 'dfTeleponSiswa');
+  if(!daerahId) return dfShowError('Daerah belum tersedia, hubungi Admin', 'dfDaerah');
+  if(!alamatTinggal) return dfShowError('Alamat Tinggal wajib diisi', 'dfAlamat');
+  if(!asalSekolah) return dfShowError('Asal Sekolah wajib diisi', 'dfAsalSekolah');
+  if(!namaVihara) return dfShowError('Nama Vihara wajib diisi', 'dfVihara');
+  const entry = {
+    id:uid(), status:'pending', tanggalDaftar: new Date().toISOString().slice(0,10),
+    namaLengkap: nama, tempatLahir, tglLahir, teleponSiswa,
+    tingkatKelasId: document.getElementById('dfTingkat').value,
+    daerahId,
+    alamatTinggal, asalSekolah,
+    namaAyah: document.getElementById('dfAyah').value.trim(),
+    teleponAyah: document.getElementById('dfTeleponAyah').value.trim(),
+    namaIbu: document.getElementById('dfIbu').value.trim(),
+    teleponIbu: document.getElementById('dfTeleponIbu').value.trim(),
+    namaWali: document.getElementById('dfWali').value.trim(),
+    teleponWali: document.getElementById('dfTeleponWali').value.trim(),
+    statusKetuhanan: document.getElementById('dfKetuhanan').value,
+    namaVihara,
+  };
+  db.pendaftaran.push(entry);
+  try{ await saveToDrive(true); }catch(e){}
+  loginMode = 'daftar-selesai';
+  renderContent();
+}
+function logout(){ currentUser=null; currentSiswa=null; appStage='need-login'; loginMode='pilih'; renderTabs(); renderContent(); updateUserBadge(); }
+function updateUserBadge(){
+  const b = document.getElementById('userBadge'), lo=document.getElementById('logoutBtn');
+  if(currentUser){ b.innerHTML = `<span class="badge ${currentUser.role}">${esc(currentUser.nama)}</span>`; lo.style.display='inline-block'; }
+  else if(currentSiswa){ b.innerHTML = `<span class="badge aktif">${esc(currentSiswa.namaLengkap)} (Siswa)</span>`; lo.style.display='inline-block'; }
+  else { b.innerHTML=''; lo.style.display='none'; }
+}
+
+/* ======================= PORTAL SISWA ======================= */
+function screenSiswaPortal(){
+  const s = currentSiswa;
+  const k = db.kelas.find(x=>x.id===s.kelasId);
+  const ta = k? db.tahunAjaran.find(t=>t.id===k.tahunAjaranId) : null;
+  const absen = db.absensi.filter(a=>a.siswaId===s.id);
+  const countBy = st => absen.filter(a=>a.status===st).length;
+  const total = absen.filter(a=>a.status).length;
+  return `<h2>Halo, ${esc(s.namaLengkap)} 👋</h2>
+    <p class="subtitle">No Induk ${esc(s.noInduk)} · ${k?esc(kelasLabel(k)):'—'} · Tahun Ajaran ${ta?esc(ta.nama):'—'}</p>
+    <h3>Kehadiran</h3>
+    <table><thead><tr><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Total tercatat</th></tr></thead>
+    <tbody><tr><td>${countBy('Hadir')}</td><td>${countBy('Izin')}</td><td>${countBy('Sakit')}</td><td>${countBy('Alpa')}</td><td>${total}</td></tr></tbody></table>
+    <h3 style="margin-top:20px">Nilai</h3>
+    <div style="overflow-x:auto"><table><thead><tr><th>Aspek</th>${PERIODE.map(p=>`<th>${p.label}</th>`).join('')}</tr></thead><tbody>
+      ${db.aspekPenilaian.map(a=>`<tr><td>${esc(a.nama)}</td>${PERIODE.map(p=>{
+        const rec = db.nilai.find(n=>n.siswaId===s.id && n.periode===p.key && n.aspekId===a.id);
+        return `<td>${rec&&rec.nilai!==''?rec.nilai:'—'}</td>`;
+      }).join('')}</tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+/* ======================= PENGGUNA (admin) ======================= */
+function renderPengguna(){
+  const ta = activeTahunAjaran();
+  const kelasList = ta? kelasOfTahun(ta.id):[];
+  const rows = db.users.map(u=>`
+    <tr>
+      <td><strong>${esc(u.nama)}</strong><div style="font-size:12px;color:var(--ink-soft)">@${esc(u.username)}</div></td>
+      <td><span class="badge ${u.role}">${u.role}</span></td>
+      <td>${esc(u.noHp||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(u.email||'')}</div></td>
+      <td>${esc(u.pendidikanTerakhir||'—')}</td>
+      <td>${u.role==='guru' ? (u.kelasAksesIds||[]).map(id=>{const k=db.kelas.find(x=>x.id===id); return k? esc(kelasLabel(k)):'';}).filter(Boolean).join(', ') || '—' : 'Semua'}</td>
+      <td><div class="row">
+        <button class="btn-outline btn-small" onclick="formPengguna('${u.id}')">Ubah</button>
+        ${u.id!==currentUser.id? `<button class="btn-danger btn-small" onclick="hapusPengguna('${u.id}')">Hapus</button>`:''}
+      </div></td>
+    </tr>`).join('');
+  return `
+    <div class="toolbar"><div><h2>Pengguna</h2><p class="subtitle" style="margin:0">Kelola akun Admin & Guru, biodata, dan hak akses kelasnya</p></div>
+    <button class="btn-sun" onclick="formPengguna()">+ Tambah pengguna</button></div>
+    <div class="setup-box">🔒 Password disimpan dalam bentuk terenkripsi satu-arah — Admin <strong>tidak bisa melihat</strong> password asli seorang guru, termasuk yang baru mereka ganti sendiri lewat "Profil Saya". Tapi Admin tetap bisa <strong>mengatur ulang (reset)</strong> password siapa pun lewat tombol "Ubah" di bawah, tanpa perlu tahu password lamanya.</div>
+    ${db.users.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Peran</th><th>Kontak</th><th>Pendidikan</th><th>Akses kelas</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty">Belum ada pengguna lain.</div>`}
+  `;
+}
+function formPengguna(id){
+  const u = id? db.users.find(x=>x.id===id):null;
+  const ta = activeTahunAjaran();
+  const kelasList = ta? kelasOfTahun(ta.id):[];
+  openModal(`<h3>${u?'Ubah Pengguna':'Tambah Pengguna'}</h3>
+    <div id="fPError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
+    <div class="field"><label>Nama Guru / Nama Lengkap</label><input id="fPNama" value="${u?esc(u.nama):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Tempat Lahir</label><input id="fPTempat" value="${u?esc(u.tempatLahir||''):''}"></div>
+      <div class="field"><label>Tanggal Lahir</label>${dateFieldDDMMYYYY('fPTgl', u?u.tglLahir||'':'')}</div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>No HP</label><input id="fPHp" value="${u?esc(u.noHp||''):''}"></div>
+      <div class="field"><label>Alamat Email</label><input id="fPEmail" type="email" value="${u?esc(u.email||''):''}"></div>
+    </div>
+    <div class="field"><label>Alamat Tempat Tinggal</label><textarea id="fPAlamat" rows="2" style="width:100%">${u?esc(u.alamatTinggal||''):''}</textarea></div>
+    <div class="field"><label>Pendidikan Terakhir</label><input id="fPPendidikan" placeholder="misal: S1 Pendidikan Agama" value="${u?esc(u.pendidikanTerakhir||''):''}"></div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+    <div class="grid2">
+      <div class="field"><label>ID / Username (untuk login)</label><input id="fPUser" autocomplete="off" value="${u?esc(u.username):''}"></div>
+      <div class="field"><label>Password ${u?'(kosongkan jika tidak diubah)':''}</label><input id="fPPass" type="password" autocomplete="new-password"></div>
+    </div>
+    <div class="field"><label>Peran</label><select id="fPRole" onchange="document.getElementById('fPAksesWrap').style.display=this.value==='guru'?'block':'none'">
+      <option value="guru" ${u&&u.role==='guru'?'selected':''}>Guru</option>
+      <option value="admin" ${u&&u.role==='admin'?'selected':''}>Admin</option>
+    </select></div>
+    <div id="fPAksesWrap" style="display:${u&&u.role==='admin'?'none':'block'}">
+      <label>Hak akses kelas (tahun ajaran ${ta?esc(ta.nama):'-'})</label>
+      <div class="checkbox-grid">
+        ${kelasList.map(k=>`<label><input type="checkbox" value="${k.id}" ${u&&(u.kelasAksesIds||[]).includes(k.id)?'checked':''}> ${esc(kelasLabel(k))}</label>`).join('') || '<em>Belum ada kelas dibuat</em>'}
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" id="fPSubmitBtn" onclick="simpanPengguna('${id||''}')">Simpan</button></div>`);
+  if(!u){
+    // pengaman tambahan: paksa kosongkan jika browser tetap autofill kredensial lama
+    setTimeout(()=>{
+      const fu=document.getElementById('fPUser'), fp=document.getElementById('fPPass');
+      if(fu) fu.value=''; if(fp) fp.value='';
+    }, 60);
+  }
+}
+function fPShowError(msg, fieldId){
+  const box = document.getElementById('fPError');
+  box.textContent = '⚠ '+msg; box.style.display = 'block';
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  document.querySelectorAll('#modalRoot input, #modalRoot textarea').forEach(el=>el.style.borderColor='');
+  if(fieldId){ const f=document.getElementById(fieldId); if(f) f.style.borderColor='var(--coral)'; }
+}
+async function simpanPengguna(id){
+  const nama=document.getElementById('fPNama').value.trim();
+  const username=document.getElementById('fPUser').value.trim();
+  const pass=document.getElementById('fPPass').value;
+  const role=document.getElementById('fPRole').value;
+  const akses = Array.from(document.querySelectorAll('#fPAksesWrap input:checked')).map(x=>x.value);
+  const profil = {
+    tempatLahir: document.getElementById('fPTempat').value.trim(),
+    tglLahir: ddmmyyyyToIso(document.getElementById('fPTgl').value.trim()),
+    noHp: document.getElementById('fPHp').value.trim(),
+    email: document.getElementById('fPEmail').value.trim(),
+    alamatTinggal: document.getElementById('fPAlamat').value.trim(),
+    pendidikanTerakhir: document.getElementById('fPPendidikan').value.trim(),
+  };
+  if(!nama) return fPShowError('Nama Guru / Nama Lengkap wajib diisi', 'fPNama');
+  if(!username) return fPShowError('ID / Username wajib diisi', 'fPUser');
+  if(!id && !pass) return fPShowError('Password wajib diisi untuk pengguna baru', 'fPPass');
+  if(db.users.some(u=>u.username===username && u.id!==id)) return fPShowError('ID/Username "'+username+'" sudah dipakai pengguna lain, pilih ID yang berbeda', 'fPUser');
+  const btn = document.getElementById('fPSubmitBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Menyimpan...'; }
+  try{
+    if(id){
+      const u = db.users.find(x=>x.id===id);
+      Object.assign(u, {nama, username, role, kelasAksesIds:akses}, profil);
+      if(pass) u.passwordHash = await sha256(pass);
+    } else {
+      const u = {id:uid(), username, passwordHash: await sha256(pass), nama, role, kelasAksesIds:akses, ...profil};
+      db.users.push(u);
+    }
+    closeModal(); renderContent();
+    await saveToDrive(true);
+  }catch(e){
+    console.error(e);
+    if(btn){ btn.disabled=false; btn.textContent='Simpan'; }
+    driveError('Gagal menyimpan pengguna', e);
+  }
+}
+function hapusPengguna(id){ if(!confirm('Hapus pengguna ini?')) return; db.users=db.users.filter(u=>u.id!==id); renderContent(); saveToDrive(true); }
+
+/* ======================= PROFIL SAYA ======================= */
+function renderProfil(){
+  const u = currentUser;
+  return `
+    <h2>Profil Saya</h2>
+    <p class="subtitle">Kelola data pribadi dan password akun Anda sendiri</p>
+    <div id="pfError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
+    <div class="field"><label>Nama Lengkap</label><input id="pfNama" value="${esc(u.nama)}"></div>
+    <div class="grid2">
+      <div class="field"><label>Tempat Lahir</label><input id="pfTempat" value="${esc(u.tempatLahir||'')}"></div>
+      <div class="field"><label>Tanggal Lahir</label>${dateFieldDDMMYYYY('pfTgl', u.tglLahir||'')}</div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>No HP</label><input id="pfHp" value="${esc(u.noHp||'')}"></div>
+      <div class="field"><label>Alamat Email</label><input id="pfEmail" type="email" value="${esc(u.email||'')}"></div>
+    </div>
+    <div class="field"><label>Alamat Tempat Tinggal</label><textarea id="pfAlamat" rows="2" style="width:100%">${esc(u.alamatTinggal||'')}</textarea></div>
+    <div class="field"><label>Pendidikan Terakhir</label><input id="pfPendidikan" value="${esc(u.pendidikanTerakhir||'')}"></div>
+    <button class="btn-sun" onclick="simpanProfil()">Simpan Perubahan</button>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:26px 0">
+    <h3>Ubah Password</h3>
+    <div id="pfPassError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
+    <div class="grid3">
+      <div class="field"><label>Password Lama</label><input id="pfPassLama" type="password"></div>
+      <div class="field"><label>Password Baru</label><input id="pfPassBaru" type="password"></div>
+      <div class="field"><label>Ulangi Password Baru</label><input id="pfPassUlang" type="password"></div>
+    </div>
+    <button class="btn-sun" onclick="submitUbahPassword()">Ubah Password</button>
+  `;
+}
+function pfShowError(msg){ const b=document.getElementById('pfError'); b.textContent='⚠ '+msg; b.style.display='block'; }
+async function simpanProfil(){
+  const nama = document.getElementById('pfNama').value.trim();
+  if(!nama) return pfShowError('Nama wajib diisi');
+  const u = currentUser;
+  u.nama = nama;
+  u.tempatLahir = document.getElementById('pfTempat').value.trim();
+  u.tglLahir = ddmmyyyyToIso(document.getElementById('pfTgl').value.trim());
+  u.noHp = document.getElementById('pfHp').value.trim();
+  u.email = document.getElementById('pfEmail').value.trim();
+  u.alamatTinggal = document.getElementById('pfAlamat').value.trim();
+  u.pendidikanTerakhir = document.getElementById('pfPendidikan').value.trim();
+  updateUserBadge();
+  await saveToDrive(true);
+  toast('Profil disimpan');
+}
+function pfPassError(msg){ const b=document.getElementById('pfPassError'); b.textContent='⚠ '+msg; b.style.display='block'; }
+async function submitUbahPassword(){
+  const lama = document.getElementById('pfPassLama').value;
+  const baru = document.getElementById('pfPassBaru').value;
+  const ulang = document.getElementById('pfPassUlang').value;
+  if(!lama||!baru||!ulang) return pfPassError('Semua kolom password wajib diisi');
+  const hashLama = await sha256(lama);
+  if(hashLama !== currentUser.passwordHash) return pfPassError('Password lama salah');
+  if(baru !== ulang) return pfPassError('Password baru dan ulangi password tidak sama');
+  if(baru.length < 4) return pfPassError('Password baru minimal 4 karakter');
+  currentUser.passwordHash = await sha256(baru);
+  await saveToDrive(true);
+  document.getElementById('pfPassLama').value=''; document.getElementById('pfPassBaru').value=''; document.getElementById('pfPassUlang').value='';
+  toast('Password berhasil diubah');
+}
+
+/* ======================= PENDAFTARAN (admin) ======================= */
+function renderPendaftaran(){
+  const pending = db.pendaftaran.filter(p=>p.status==='pending').sort((a,b)=>a.tanggalDaftar.localeCompare(b.tanggalDaftar));
+  const riwayat = db.pendaftaran.filter(p=>p.status!=='pending').sort((a,b)=>b.tanggalDaftar.localeCompare(a.tanggalDaftar)).slice(0,30);
+  const rowsPending = pending.map(p=>{
+    const t = db.tingkatKelas.find(x=>x.id===p.tingkatKelasId);
+    const d = db.daerah.find(x=>x.id===p.daerahId);
+    return `<tr>
+      <td>${fmtDate(p.tanggalDaftar)}</td>
+      <td><strong>${esc(p.namaLengkap)}</strong><div style="font-size:12px;color:var(--ink-soft)">${esc(p.namaAyah||p.namaWali||'')}</div></td>
+      <td>${t?esc(t.nama):'—'}</td>
+      <td>${d?esc(d.nama):'—'}</td>
+      <td><div class="row">
+        <button class="btn-outline btn-small" onclick="lihatPendaftaran('${p.id}')">Lihat</button>
+        <button class="btn-sun btn-small" onclick="formApprove('${p.id}')">Setujui</button>
+        <button class="btn-danger btn-small" onclick="tolakPendaftaran('${p.id}')">Tolak</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  const rowsRiwayat = riwayat.map(p=>`
+    <tr><td>${fmtDate(p.tanggalDaftar)}</td><td>${esc(p.namaLengkap)}</td>
+      <td><span class="badge ${p.status==='approved'?'aktif':'nonaktif'}">${p.status==='approved'?'Disetujui':'Ditolak'}</span></td></tr>`).join('');
+  return `
+    <h2>Pendaftaran Siswa Baru</h2>
+    <p class="subtitle">Tinjau pendaftaran dari halaman publik sebelum masuk ke Data Siswa</p>
+    <h3>Menunggu Persetujuan (${pending.length})</h3>
+    ${pending.length? `<div style="overflow-x:auto"><table><thead><tr><th>Tgl daftar</th><th>Nama</th><th>Tingkat dituju</th><th>Daerah</th><th></th></tr></thead><tbody>${rowsPending}</tbody></table></div>`
+    : `<div class="empty">Tidak ada pendaftaran baru.</div>`}
+    <h3 style="margin-top:26px">Riwayat</h3>
+    ${riwayat.length? `<div style="overflow-x:auto"><table><thead><tr><th>Tanggal</th><th>Nama</th><th>Status</th></tr></thead><tbody>${rowsRiwayat}</tbody></table></div>`
+    : `<div class="empty">Belum ada riwayat.</div>`}
+  `;
+}
+function lihatPendaftaran(id){
+  const p = db.pendaftaran.find(x=>x.id===id);
+  const t = db.tingkatKelas.find(x=>x.id===p.tingkatKelasId);
+  const d = db.daerah.find(x=>x.id===p.daerahId);
+  openModal(`<h3>Detail Pendaftaran</h3>
+    <table>
+      <tr><td style="color:var(--ink-soft)">Nama</td><td><strong>${esc(p.namaLengkap)}</strong></td></tr>
+      <tr><td style="color:var(--ink-soft)">TTL</td><td>${esc(p.tempatLahir)}, ${fmtDate(p.tglLahir)}</td></tr>
+      <tr><td style="color:var(--ink-soft)">Tingkat / Daerah</td><td>${t?esc(t.nama):'—'} / ${d?esc(d.nama):'—'}</td></tr>
+      <tr><td style="color:var(--ink-soft)">Alamat</td><td>${esc(p.alamatTinggal||'—')}</td></tr>
+      <tr><td style="color:var(--ink-soft)">Asal Sekolah</td><td>${esc(p.asalSekolah||'—')}</td></tr>
+      <tr><td style="color:var(--ink-soft)">Ayah</td><td>${esc(p.namaAyah||'—')} (${esc(p.teleponAyah||'—')})</td></tr>
+      <tr><td style="color:var(--ink-soft)">Ibu</td><td>${esc(p.namaIbu||'—')} (${esc(p.teleponIbu||'—')})</td></tr>
+      <tr><td style="color:var(--ink-soft)">Wali</td><td>${esc(p.namaWali||'—')} (${esc(p.teleponWali||'—')})</td></tr>
+      <tr><td style="color:var(--ink-soft)">Ketuhanan</td><td>${esc(p.statusKetuhanan)}</td></tr>
+      <tr><td style="color:var(--ink-soft)">Vihara</td><td>${esc(p.namaVihara||'—')}</td></tr>
+    </table>
+    <div class="modal-actions"><button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
+}
+function formApprove(id){
+  const p = db.pendaftaran.find(x=>x.id===id);
+  const ta = activeTahunAjaran();
+  if(!ta){ toast('Buat tahun ajaran aktif terlebih dahulu'); return; }
+  const kelasList = kelasOfTahun(ta.id);
+  const cocok = kelasList.filter(k=>k.tingkatKelasId===p.tingkatKelasId && k.daerahId===p.daerahId);
+  openModal(`<h3>Setujui Pendaftaran — ${esc(p.namaLengkap)}</h3>
+    <p class="subtitle" style="margin-top:-6px">Pilih kelas tujuan di tahun ajaran ${esc(ta.nama)}. Nomor Induk akan dibuat otomatis.</p>
+    <div class="field"><label>Kelas</label><select id="apKelas">
+      <option value="">— pilih kelas —</option>
+      ${kelasList.map(k=>`<option value="${k.id}" ${cocok.some(c=>c.id===k.id)?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+    </select></div>
+    ${!kelasList.length? `<p style="font-size:12.5px;color:var(--coral)">Belum ada kelas di tahun ajaran ini. Buat dulu di tab Tahun Ajaran.</p>`:''}
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="prosesApprove('${id}')">Setujui & Buat Akun</button></div>`);
+}
+function prosesApprove(id){
+  const kelasId = document.getElementById('apKelas').value;
+  if(!kelasId) return toast('Pilih kelas tujuan terlebih dahulu');
+  const p = db.pendaftaran.find(x=>x.id===id);
+  const siswaBaru = {
+    id:uid(), noInduk: nextNoInduk(), status:'aktif',
+    namaLengkap: p.namaLengkap, tempatLahir: p.tempatLahir, tglLahir: p.tglLahir, teleponSiswa: p.teleponSiswa,
+    kelasId, alamatTinggal: p.alamatTinggal, asalSekolah: p.asalSekolah,
+    namaAyah: p.namaAyah, teleponAyah: p.teleponAyah, namaIbu: p.namaIbu, teleponIbu: p.teleponIbu,
+    namaWali: p.namaWali, teleponWali: p.teleponWali, statusKetuhanan: p.statusKetuhanan, namaVihara: p.namaVihara,
+  };
+  db.siswa.push(siswaBaru);
+  p.status = 'approved'; p.approvedSiswaId = siswaBaru.id;
+  closeModal(); renderTabs(); renderContent(); saveToDrive(true);
+  toast(`Disetujui — No Induk ${siswaBaru.noInduk} dibuat untuk ${siswaBaru.namaLengkap}`);
+}
+function tolakPendaftaran(id){
+  if(!confirm('Tolak pendaftaran ini?')) return;
+  const p = db.pendaftaran.find(x=>x.id===id);
+  p.status = 'rejected';
+  renderTabs(); renderContent(); saveToDrive(true);
+}
+
+/* ======================= KAS SMB (admin) ======================= */
+function renderKas(){
+  const entries = [...db.kas].sort((a,b)=>b.tanggal.localeCompare(a.tanggal));
+  const totalMasuk = db.kas.filter(k=>k.tipe==='masuk').reduce((a,b)=>a+Number(b.jumlah||0),0);
+  const totalKeluar = db.kas.filter(k=>k.tipe==='keluar').reduce((a,b)=>a+Number(b.jumlah||0),0);
+  const saldo = totalMasuk - totalKeluar;
+  const rows = entries.map(k=>`
+    <tr><td>${fmtDate(k.tanggal)}</td>
+      <td>${esc(k.keterangan)}${k.autoGenerated? ' <span class="badge aktif" style="font-size:10px">Paramita</span>':''}</td>
+      <td>${k.tipe==='masuk'?'Masuk':'Keluar'}</td>
+      <td style="text-align:right">${k.tipe==='masuk'?'+':'-'}Rp${Number(k.jumlah||0).toLocaleString('id-ID')}</td>
+      <td><div class="row">
+        <button class="btn-outline btn-small" onclick="formKas('${k.id}')">Ubah</button>
+        <button class="btn-danger btn-small" onclick="hapusKas('${k.id}')">Hapus</button>
+      </div></td>
+    </tr>`).join('');
+  return `
+    <div class="toolbar"><h2>Kas SMB</h2><button class="btn-sun" onclick="formKas()">+ Catatan baru</button></div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="num">Rp${totalMasuk.toLocaleString('id-ID')}</div><div class="lbl">Total masuk</div></div>
+      <div class="stat"><div class="num">Rp${totalKeluar.toLocaleString('id-ID')}</div><div class="lbl">Total keluar</div></div>
+      <div class="stat"><div class="num">Rp${saldo.toLocaleString('id-ID')}</div><div class="lbl">Saldo</div></div>
+    </div>
+    <p class="subtitle">Centang "Paramita" pada siswa di tab Data Siswa otomatis menambah catatan masuk Rp${DANA_PARAMITA.toLocaleString('id-ID')} di sini. Catatan lain (mis. pengeluaran kegiatan) bisa ditambah manual.</p>
+    ${entries.length? `<div style="overflow-x:auto"><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Tipe</th><th>Jumlah</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty">Belum ada catatan kas.</div>`}
+  `;
+}
+function formKas(id){
+  const k = id? db.kas.find(x=>x.id===id):null;
+  openModal(`<h3>${k?'Ubah Catatan Kas':'Catatan Kas Baru'}</h3>
+    <div class="grid2">
+      <div class="field"><label>Tanggal</label><input id="fKasTgl" type="date" value="${k?k.tanggal:new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>Tipe</label><select id="fKasTipe">
+        <option value="masuk" ${k&&k.tipe==='masuk'?'selected':''}>Masuk</option>
+        <option value="keluar" ${k&&k.tipe==='keluar'?'selected':''}>Keluar</option>
+      </select></div>
+    </div>
+    <div class="field"><label>Keterangan</label><input id="fKasKet" value="${k?esc(k.keterangan):''}"></div>
+    <div class="field"><label>Jumlah (Rp)</label><input id="fKasJumlah" type="number" min="0" value="${k?k.jumlah:''}"></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanKas('${id||''}')">Simpan</button></div>`);
+}
+function simpanKas(id){
+  const tanggal = document.getElementById('fKasTgl').value;
+  const tipe = document.getElementById('fKasTipe').value;
+  const keterangan = document.getElementById('fKasKet').value.trim();
+  const jumlah = Number(document.getElementById('fKasJumlah').value);
+  if(!tanggal||!keterangan||!jumlah) return toast('Semua kolom wajib diisi');
+  if(id){
+    const k = db.kas.find(x=>x.id===id);
+    Object.assign(k, {tanggal, tipe, keterangan, jumlah});
+  } else {
+    db.kas.push({id:uid(), tanggal, tipe, keterangan, jumlah, autoGenerated:false});
+  }
+  closeModal(); renderContent(); saveToDrive(true);
+}
+function hapusKas(id){ if(!confirm('Hapus catatan kas ini?')) return; db.kas=db.kas.filter(k=>k.id!==id); renderContent(); saveToDrive(true); }
+
+/* ======================= DASHBOARD ======================= */
+function renderDashboard(){
+  const ta = activeTahunAjaran();
+  const totalSiswaAktif = db.siswa.filter(s=>s.status==='aktif').length;
+  const totalKelas = ta? kelasOfTahun(ta.id).length : 0;
+  const totalGuru = db.users.filter(u=>u.role==='guru').length;
+  const totalLulus = db.siswa.filter(s=>s.status==='lulus').length;
+  return `
+    <h2>Selamat datang, ${esc(currentUser.nama)} 👋</h2>
+    <p class="subtitle">Tahun ajaran aktif: <strong>${ta? esc(ta.nama):'belum ada'}</strong> · Peran: <span class="badge ${currentUser.role}">${currentUser.role}</span></p>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">${totalSiswaAktif}</div><div class="lbl">Siswa aktif</div></div>
+      <div class="stat"><div class="num">${totalKelas}</div><div class="lbl">Kelas berjalan</div></div>
+      <div class="stat"><div class="num">${totalGuru}</div><div class="lbl">Guru terdaftar</div></div>
+      <div class="stat"><div class="num">${totalLulus}</div><div class="lbl">Total lulus</div></div>
+    </div>
+    <div class="setup-box">📁 Semua data disimpan di satu file <code>${DATA_FILENAME}</code> di Google Drive (lewat server penghubung/Apps Script) — tidak perlu login Google di perangkat ini. Gunakan tombol <em>Simpan sekarang</em> di kanan atas untuk menyimpan manual, atau data otomatis tersimpan setiap ada perubahan.</div>
+  `;
+}
+
+/* ======================= TAHUN AJARAN + DAERAH + KELAS BARU ======================= */
+function renderTahunAjaran(){
+  const rowsTA = db.tahunAjaran.map(t=>`
+    <tr><td><strong>${esc(t.nama)}</strong></td>
+      <td>${t.aktif? '<span class="badge aktif">Aktif</span>' : '<span class="badge nonaktif">Nonaktif</span>'}</td>
+      <td>${kelasOfTahun(t.id).length} kelas</td>
+      <td><div class="row">
+        ${!t.aktif? `<button class="btn-outline btn-small" onclick="setTahunAktif('${t.id}')">Jadikan aktif</button>`:''}
+        <button class="btn-danger btn-small" onclick="hapusTahun('${t.id}')">Hapus</button>
+      </div></td></tr>`).join('');
+  const rowsDaerah = db.daerah.map(d=>`
+    <tr><td><strong>${esc(d.nama)}</strong></td>
+      <td><button class="btn-danger btn-small" onclick="hapusDaerah('${d.id}')">Hapus</button></td></tr>`).join('');
+  const ta = activeTahunAjaran();
+  const rowsKelas = ta? kelasOfTahun(ta.id).map(k=>`
+    <tr><td>${esc(kelasLabel(k))}</td><td>${guruNama(k.guruId)}</td>
+    <td><button class="btn-danger btn-small" onclick="hapusKelas('${k.id}')">Hapus</button></td></tr>`).join(''):'';
+  return `
+    <div class="toolbar"><div><h2>Tahun Ajaran</h2><p class="subtitle" style="margin:0">Kelola periode, daerah mengajar, dan kelas</p></div>
+    <button class="btn-sun" onclick="formTahun()">+ Tahun ajaran baru</button></div>
+    ${db.tahunAjaran.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Status</th><th>Kelas</th><th></th></tr></thead><tbody>${rowsTA}</tbody></table></div>`
+    : `<div class="empty">Belum ada tahun ajaran.</div>`}
+
+    <div class="toolbar" style="margin-top:32px"><h3 style="margin:0">Daerah Mengajar</h3><button class="btn-sun" onclick="formDaerah()">+ Tambah daerah</button></div>
+    <p class="subtitle" style="margin:-8px 0 12px">Daerah/lokasi tempat kelas Sekolah Minggu berlangsung (misal cabang atau titik pelayanan)</p>
+    ${db.daerah.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama daerah</th><th></th></tr></thead><tbody>${rowsDaerah}</tbody></table></div>`
+    : `<div class="empty">Belum ada daerah.</div>`}
+
+    <div class="toolbar" style="margin-top:32px"><h3 style="margin:0">Kelas — ${ta?esc(ta.nama):'—'}</h3><button class="btn-sun" onclick="formKelasBaru()">+ Buat kelas</button></div>
+    ${ta && kelasOfTahun(ta.id).length? `<div style="overflow-x:auto"><table><thead><tr><th>Kelas</th><th>Wali kelas</th><th></th></tr></thead><tbody>${rowsKelas}</tbody></table></div>`
+    : `<div class="empty">Belum ada kelas di tahun ajaran ini.</div>`}
+  `;
+}
+function formTahun(){
+  openModal(`<h3>Tahun Ajaran Baru</h3>
+    <div class="field"><label>Nama (misal 2026/2027)</label><input id="fTaNama" placeholder="2026/2027"></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanTahun()">Simpan</button></div>`);
+}
+function simpanTahun(){
+  const nama = document.getElementById('fTaNama').value.trim();
+  if(!nama) return toast('Nama tahun ajaran wajib diisi');
+  db.tahunAjaran.push({id:uid(), nama, aktif:false});
+  closeModal(); renderContent(); saveToDrive();
+}
+function setTahunAktif(id){ db.tahunAjaran.forEach(t=>t.aktif=(t.id===id)); renderContent(); saveToDrive(); toast('Tahun ajaran aktif diperbarui'); }
+function hapusTahun(id){ if(!confirm('Hapus tahun ajaran ini beserta data kelasnya?')) return;
+  db.tahunAjaran = db.tahunAjaran.filter(t=>t.id!==id); db.kelas = db.kelas.filter(k=>k.tahunAjaranId!==id);
+  renderContent(); saveToDrive();
+}
+function formDaerah(){
+  openModal(`<h3>Tambah Daerah</h3><div class="field"><label>Nama daerah</label><input id="fDNama"></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanDaerah()">Simpan</button></div>`);
+}
+function simpanDaerah(){
+  const nama=document.getElementById('fDNama').value.trim();
+  if(!nama) return toast('Nama daerah wajib diisi');
+  db.daerah.push({id:uid(), nama}); closeModal(); renderContent(); saveToDrive();
+}
+function hapusDaerah(id){ if(!confirm('Hapus daerah ini?')) return; db.daerah=db.daerah.filter(d=>d.id!==id); renderContent(); saveToDrive(); }
+function formKelasBaru(){
+  const ta = activeTahunAjaran();
+  if(!ta) return toast('Buat tahun ajaran aktif terlebih dahulu');
+  if(!db.daerah.length) return toast('Buat daerah terlebih dahulu');
+  const guruList = db.users.filter(u=>u.role==='guru');
+  openModal(`<h3>Buat Kelas Baru</h3>
+    <div class="field"><label>Tingkat</label><select id="fKTingkat">${db.tingkatKelas.map(t=>`<option value="${t.id}">${esc(t.nama)}</option>`).join('')}</select></div>
+    <div class="field"><label>Daerah</label><select id="fKDaerah">${db.daerah.map(d=>`<option value="${d.id}">${esc(d.nama)}</option>`).join('')}</select></div>
+    <div class="field"><label>Nama rombel (opsional)</label><input id="fKRombel" placeholder="misal: Kelas A"></div>
+    <div class="field"><label>Wali Kelas Utama</label><select id="fKGuru"><option value="">— pilih guru —</option>
+      ${guruList.map(g=>`<option value="${g.id}">${esc(g.nama)}</option>`).join('')}
+    </select></div>
+    <div class="field"><label>Asisten Wali Kelas (boleh lebih dari satu)</label>
+      <div class="checkbox-grid">
+        ${guruList.map(g=>`<label><input type="checkbox" value="${g.id}"> ${esc(g.nama)}</label>`).join('') || '<em>Belum ada guru</em>'}
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanKelasBaru()">Simpan</button></div>`);
+}
+function simpanKelasBaru(){
+  const ta = activeTahunAjaran();
+  const asisten = Array.from(document.querySelectorAll('.checkbox-grid input:checked')).map(x=>x.value);
+  db.kelas.push({id:uid(), tahunAjaranId:ta.id, tingkatKelasId:document.getElementById('fKTingkat').value,
+    daerahId:document.getElementById('fKDaerah').value, namaRombel:document.getElementById('fKRombel').value.trim(),
+    guruId:document.getElementById('fKGuru').value, guruAsistenIds:asisten});
+  closeModal(); renderContent(); saveToDrive(); toast('Kelas dibuat');
+}
+function hapusKelas(id){ if(!confirm('Hapus kelas ini?')) return; db.kelas=db.kelas.filter(k=>k.id!==id); renderContent(); saveToDrive(); }
+
+/* ======================= KELAS & GURU ======================= */
+function renderKelas(){
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  const guruList = db.users.filter(u=>u.role==='guru');
+  const kelasRows = kelasList.map(k=>`
+    <tr><td><strong>${esc(kelasLabel(k))}</strong></td><td>${siswaAktifDiKelas(k.id).length} siswa</td>
+      <td>${isAdmin()? `<select onchange="setGuruKelas('${k.id}', this.value)">
+        <option value="">— pilih guru —</option>
+        ${guruList.map(g=>`<option value="${g.id}" ${g.id===k.guruId?'selected':''}>${esc(g.nama)}</option>`).join('')}
+      </select>` : esc(guruNama(k.guruId))}</td>
+      <td>${isAdmin()? `<button class="btn-outline btn-small" onclick="formAsisten('${k.id}')">Atur asisten</button>`
+        : (k.guruAsistenIds||[]).map(id=>esc(guruNama(id))).join(', ') || '—'}</td>
+    </tr>`).join('');
+  return `<h2>Kelas — ${ta?esc(ta.nama):'—'}</h2>
+    <p class="subtitle">Kelola wali kelas utama & asisten. Untuk membuat kelas baru atau daerah, buka tab Tahun Ajaran (khusus Admin).</p>
+    ${kelasList.length? `<div style="overflow-x:auto"><table><thead><tr><th>Kelas</th><th>Jumlah siswa</th><th>Wali Utama</th><th>Asisten</th></tr></thead><tbody>${kelasRows}</tbody></table></div>`
+    : `<div class="empty">Belum ada kelas yang bisa diakses.</div>`}
+  `;
+}
+function setGuruKelas(kelasId, guruId){ const k=db.kelas.find(x=>x.id===kelasId); k.guruId=guruId; saveToDrive(); toast('Wali kelas diperbarui'); }
+function formAsisten(kelasId){
+  const k = db.kelas.find(x=>x.id===kelasId);
+  const guruList = db.users.filter(u=>u.role==='guru' && u.id!==k.guruId);
+  openModal(`<h3>Atur Asisten Wali Kelas</h3>
+    <p class="subtitle" style="margin-top:-6px">${esc(kelasLabel(k))}</p>
+    <div class="checkbox-grid">
+      ${guruList.map(g=>`<label><input type="checkbox" value="${g.id}" ${(k.guruAsistenIds||[]).includes(g.id)?'checked':''}> ${esc(g.nama)}</label>`).join('') || '<em>Belum ada guru lain</em>'}
+    </div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanAsisten('${kelasId}')">Simpan</button></div>`);
+}
+function simpanAsisten(kelasId){
+  const k = db.kelas.find(x=>x.id===kelasId);
+  k.guruAsistenIds = Array.from(document.querySelectorAll('.checkbox-grid input:checked')).map(x=>x.value);
+  closeModal(); renderContent(); saveToDrive(true); toast('Asisten wali kelas diperbarui');
+}
+
+/* ======================= DATA SISWA ======================= */
+let siswaFilterKelas = '';
+function renderSiswa(){
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  const kelasIds = kelasList.map(k=>k.id);
+  let list = db.siswa.filter(s=> kelasIds.includes(s.kelasId) || (isAdmin() && s.status!=='aktif'));
+  if(siswaFilterKelas) list = list.filter(s=>s.kelasId===siswaFilterKelas);
+  const rows = list.map(s=>{
+    const k = db.kelas.find(x=>x.id===s.kelasId);
+    const sudahBayar = ta && db.paramita.some(p=>p.siswaId===s.id && p.tahunAjaranId===ta.id);
+    return `<tr>
+      <td>${esc(s.noInduk||'—')}</td>
+      <td><strong>${esc(s.namaLengkap)}</strong></td>
+      <td>${k? esc(kelasLabel(k)):'—'}</td>
+      <td>${esc(s.tempatLahir||'')}${s.tempatLahir&&s.tglLahir?', ':''}${fmtDate(s.tglLahir)}</td>
+      <td>${esc(s.alamatTinggal||'—')}</td>
+      <td>${esc(s.asalSekolah||'—')}</td>
+      <td>${esc(s.namaAyah||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(s.teleponAyah||'')}</div></td>
+      <td>${esc(s.namaIbu||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(s.teleponIbu||'')}</div></td>
+      <td>${esc(s.namaWali||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(s.teleponWali||'')}</div></td>
+      <td>${esc(s.statusKetuhanan||'—')}</td>
+      <td>${esc(s.namaVihara||'—')}</td>
+      <td><span class="badge ${s.status}">${s.status}</span></td>
+      <td style="text-align:center">${ta? `<input type="checkbox" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked)" ${isAdmin()?'':'disabled'}>` : '—'}</td>
+      <td><div class="row">
+        <button class="btn-outline btn-small" onclick="formSiswa('${s.id}')">Ubah</button>
+        <button class="btn-danger btn-small" onclick="hapusSiswa('${s.id}')">Hapus</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="toolbar">
+      <div><h2>Data Siswa</h2><p class="subtitle" style="margin:0">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dana Paramita Rp${DANA_PARAMITA.toLocaleString('id-ID')}/siswa</p></div>
+      <div class="row">
+        <select onchange="siswaFilterKelas=this.value; renderContent()">
+          <option value="">Semua kelas</option>
+          ${kelasList.map(k=>`<option value="${k.id}" ${k.id===siswaFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+        </select>
+        <button class="btn-outline" onclick="downloadTemplateExcel()">Unduh template</button>
+        <label class="btn-outline" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">Import Excel
+          <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)">
+        </label>
+        <button class="btn-outline" onclick="exportExcel()">Export Excel</button>
+        <button class="btn-sun" onclick="formSiswa()">+ Tambah siswa</button>
+      </div>
+    </div>
+    ${list.length? `<div style="overflow-x:auto"><table><thead><tr><th>No Induk</th><th>Nama</th><th>Kelas</th><th>TTL</th><th>Alamat</th><th>Asal Sekolah</th><th>Ayah</th><th>Ibu</th><th>Wali</th><th>Ketuhanan</th><th>Vihara</th><th>Status</th><th>Paramita</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty"><div class="display">Belum ada data siswa</div>Tambahkan manual atau import dari Excel.</div>`}
+  `;
+}
+function toggleParamita(siswaId, checked){
+  const ta = activeTahunAjaran();
+  if(!ta) return;
+  if(checked){
+    if(db.paramita.some(p=>p.siswaId===siswaId && p.tahunAjaranId===ta.id)) return;
+    db.paramita.push({id:uid(), siswaId, tahunAjaranId:ta.id, tanggal:new Date().toISOString().slice(0,10)});
+    const s = db.siswa.find(x=>x.id===siswaId);
+    db.kas.push({id:uid(), tanggal:new Date().toISOString().slice(0,10), keterangan:`Dana Paramita — ${s?s.namaLengkap:''} (${ta.nama})`, tipe:'masuk', jumlah:DANA_PARAMITA, siswaId, tahunAjaranId:ta.id, autoGenerated:true});
+  } else {
+    db.paramita = db.paramita.filter(p=>!(p.siswaId===siswaId && p.tahunAjaranId===ta.id));
+    db.kas = db.kas.filter(k=>!(k.siswaId===siswaId && k.tahunAjaranId===ta.id && k.autoGenerated));
+  }
+  saveToDrive(true); toast(checked? 'Ditandai sudah bayar dana paramita' : 'Tanda bayar dibatalkan');
+}
+function formSiswa(id){
+  const s = id? db.siswa.find(x=>x.id===id) : null;
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  const existingKelas = s? db.kelas.find(x=>x.id===s.kelasId) : null;
+  const defaultDaerahId = existingKelas? existingKelas.daerahId : '';
+  const initialKelasFiltered = kelasList.filter(k=> !defaultDaerahId || k.daerahId===defaultDaerahId);
+  window._fsKelasList = kelasList;
+  openModal(`<h3>${s?'Ubah Data Siswa':'Tambah Siswa'}</h3>
+    <div id="fSError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
+    <div class="field"><label>Nama Lengkap *</label><input id="fSNama" value="${s?esc(s.namaLengkap):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Tempat Lahir *</label><input id="fSTempat" value="${s?esc(s.tempatLahir||''):''}"></div>
+      <div class="field"><label>Tanggal Lahir *</label>${dateFieldDDMMYYYY('fSTgl', s?s.tglLahir:'')}</div>
+    </div>
+    <div class="field"><label>No Telepon Siswa *</label><input id="fSTeleponSiswa" value="${s?esc(s.teleponSiswa||''):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Daerah Belajar *</label><select id="fSDaerah" onchange="fsFilterKelas()">
+        <option value="">— pilih —</option>
+        ${db.daerah.map(d=>`<option value="${d.id}" ${defaultDaerahId===d.id?'selected':''}>${esc(d.nama)}</option>`).join('')}
+      </select></div>
+      <div class="field"><label>Kelas *</label><select id="fSKelas">
+        <option value="">— pilih daerah dulu —</option>
+        ${initialKelasFiltered.map(k=>`<option value="${k.id}" ${s&&s.kelasId===k.id?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="field"><label>Alamat Tinggal *</label><textarea id="fSAlamat" rows="2" style="width:100%">${s?esc(s.alamatTinggal||''):''}</textarea></div>
+    <div class="field"><label>Asal Sekolah *</label><input id="fSAsalSekolah" value="${s?esc(s.asalSekolah||''):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Nama Ayah</label><input id="fSAyah" value="${s?esc(s.namaAyah||''):''}"></div>
+      <div class="field"><label>Telepon Ayah</label><input id="fSTeleponAyah" value="${s?esc(s.teleponAyah||''):''}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Nama Ibu</label><input id="fSIbu" value="${s?esc(s.namaIbu||''):''}"></div>
+      <div class="field"><label>Telepon Ibu</label><input id="fSTeleponIbu" value="${s?esc(s.teleponIbu||''):''}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Nama Wali Siswa</label><input id="fSWali" value="${s?esc(s.namaWali||''):''}"></div>
+      <div class="field"><label>Telepon Wali Siswa</label><input id="fSTeleponWali" value="${s?esc(s.teleponWali||''):''}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Status Memohon Ketuhanan *</label><select id="fSKetuhanan">
+        <option value="Belum" ${s&&s.statusKetuhanan==='Belum'?'selected':''}>Belum</option>
+        <option value="Sudah" ${s&&s.statusKetuhanan==='Sudah'?'selected':''}>Sudah</option>
+      </select></div>
+      <div class="field"><label>Nama Vihara Tempat Bersembahyang *</label><input id="fSVihara" value="${s?esc(s.namaVihara||''):''}"></div>
+    </div>
+    ${s? `<div class="field"><label>Status</label><select id="fSStatus">
+      ${['aktif','pindah','nonaktif','lulus'].map(op=>`<option value="${op}" ${s.status===op?'selected':''}>${op}</option>`).join('')}
+    </select></div>`:''}
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanSiswa('${id||''}')">Simpan</button></div>`);
+}
+function fsFilterKelas(){
+  const daerahId = document.getElementById('fSDaerah').value;
+  const sel = document.getElementById('fSKelas');
+  const filtered = (window._fsKelasList||[]).filter(k=> !daerahId || k.daerahId===daerahId);
+  sel.innerHTML = '<option value="">— pilih —</option>' + filtered.map(k=>`<option value="${k.id}">${esc(kelasLabel(k))}</option>`).join('');
+}
+function fsShowError(msg, fieldId){
+  const box = document.getElementById('fSError');
+  box.textContent = '⚠ '+msg; box.style.display='block'; box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  document.querySelectorAll('#modalRoot input, #modalRoot select, #modalRoot textarea').forEach(el=>el.style.borderColor='');
+  if(fieldId){ const f=document.getElementById(fieldId); if(f) f.style.borderColor='var(--coral)'; }
+}
+function simpanSiswa(id){
+  const namaLengkap = document.getElementById('fSNama').value.trim();
+  const tempatLahir = document.getElementById('fSTempat').value.trim();
+  const tglLahirStr = document.getElementById('fSTgl').value.trim();
+  const teleponSiswa = document.getElementById('fSTeleponSiswa').value.trim();
+  const daerahId = document.getElementById('fSDaerah').value;
+  const kelasId = document.getElementById('fSKelas').value;
+  const alamatTinggal = document.getElementById('fSAlamat').value.trim();
+  const asalSekolah = document.getElementById('fSAsalSekolah').value.trim();
+  const namaVihara = document.getElementById('fSVihara').value.trim();
+
+  if(!namaLengkap) return fsShowError('Nama Lengkap wajib diisi', 'fSNama');
+  if(!tempatLahir) return fsShowError('Tempat Lahir wajib diisi', 'fSTempat');
+  const tglLahir = ddmmyyyyToIso(tglLahirStr);
+  if(!tglLahir) return fsShowError('Tanggal Lahir wajib diisi format dd/mm/yyyy', 'fSTgl');
+  if(!teleponSiswa) return fsShowError('No Telepon Siswa wajib diisi', 'fSTeleponSiswa');
+  if(!daerahId) return fsShowError('Daerah Belajar wajib dipilih', 'fSDaerah');
+  if(!kelasId) return fsShowError('Kelas wajib dipilih', 'fSKelas');
+  if(!alamatTinggal) return fsShowError('Alamat Tinggal wajib diisi', 'fSAlamat');
+  if(!asalSekolah) return fsShowError('Asal Sekolah wajib diisi', 'fSAsalSekolah');
+  if(!namaVihara) return fsShowError('Nama Vihara wajib diisi', 'fSVihara');
+
+  const data = {
+    namaLengkap, tempatLahir, tglLahir, teleponSiswa, kelasId,
+    alamatTinggal, asalSekolah,
+    namaAyah: document.getElementById('fSAyah').value.trim(),
+    teleponAyah: document.getElementById('fSTeleponAyah').value.trim(),
+    namaIbu: document.getElementById('fSIbu').value.trim(),
+    teleponIbu: document.getElementById('fSTeleponIbu').value.trim(),
+    namaWali: document.getElementById('fSWali').value.trim(),
+    teleponWali: document.getElementById('fSTeleponWali').value.trim(),
+    statusKetuhanan: document.getElementById('fSKetuhanan').value,
+    namaVihara,
+  };
+  if(id){
+    const s = db.siswa.find(x=>x.id===id);
+    Object.assign(s, data);
+    const st = document.getElementById('fSStatus'); if(st) s.status = st.value;
+  } else {
+    db.siswa.push({id:uid(), noInduk: nextNoInduk(), status:'aktif', ...data});
+  }
+  closeModal(); renderContent(); saveToDrive();
+}
+function hapusSiswa(id){
+  if(!confirm('Hapus data siswa ini? Nomor Induk tidak akan dipakai ulang.')) return;
+  db.siswa=db.siswa.filter(s=>s.id!==id); renderContent(); saveToDrive();
+}
+
+/* ---- Excel import/export ---- */
+const EXCEL_COLUMNS = ["Nama Lengkap","Tempat Lahir","Tanggal Lahir (YYYY-MM-DD)","Daerah","Kelas","Alamat Tinggal","Asal Sekolah","Nama Ayah","Telepon Ayah","Nama Ibu","Telepon Ibu","Nama Wali Siswa","Telepon Wali Siswa","Status Memohon Ketuhanan (Sudah/Belum)","Nama Vihara"];
+function downloadTemplateExcel(){
+  const ws = XLSX.utils.aoa_to_sheet([EXCEL_COLUMNS]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Template Siswa");
+  XLSX.writeFile(wb, "template-data-siswa.xlsx");
+}
+function importExcel(input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+      const ta = activeTahunAjaran();
+      if(!ta){ toast('Buat tahun ajaran aktif terlebih dahulu'); return; }
+      let created=0, skipped=0;
+      rows.forEach(r=>{
+        const nama = (r["Nama Lengkap"]||'').toString().trim();
+        if(!nama){ skipped++; return; }
+        const daerahNama = (r["Daerah"]||'').toString().trim() || (db.daerah[0]?db.daerah[0].nama:'Pusat');
+        let daerah = db.daerah.find(d=>d.nama.toLowerCase()===daerahNama.toLowerCase());
+        if(!daerah){ daerah = {id:uid(), nama:daerahNama}; db.daerah.push(daerah); }
+        const kelasNama = (r["Kelas"]||'').toString().trim();
+        const tingkat = db.tingkatKelas.find(t=>t.nama.toLowerCase()===kelasNama.toLowerCase());
+        let kelasId = '';
+        if(tingkat){
+          let kelas = db.kelas.find(k=>k.tahunAjaranId===ta.id && k.tingkatKelasId===tingkat.id && k.daerahId===daerah.id);
+          if(!kelas){ kelas = {id:uid(), tahunAjaranId:ta.id, tingkatKelasId:tingkat.id, daerahId:daerah.id, namaRombel:'', guruId:''}; db.kelas.push(kelas); }
+          kelasId = kelas.id;
+        }
+        db.siswa.push({
+          id:uid(), noInduk: nextNoInduk(), status:'aktif',
+          namaLengkap: nama,
+          tempatLahir: (r["Tempat Lahir"]||'').toString().trim(),
+          tglLahir: parseExcelDate(r["Tanggal Lahir (YYYY-MM-DD)"]),
+          kelasId,
+          alamatTinggal: (r["Alamat Tinggal"]||'').toString().trim(),
+          asalSekolah: (r["Asal Sekolah"]||'').toString().trim(),
+          namaAyah: (r["Nama Ayah"]||'').toString().trim(),
+          teleponAyah: (r["Telepon Ayah"]||'').toString().trim(),
+          namaIbu: (r["Nama Ibu"]||'').toString().trim(),
+          teleponIbu: (r["Telepon Ibu"]||'').toString().trim(),
+          namaWali: (r["Nama Wali Siswa"]||'').toString().trim(),
+          teleponWali: (r["Telepon Wali Siswa"]||'').toString().trim(),
+          statusKetuhanan: /sudah/i.test((r["Status Memohon Ketuhanan (Sudah/Belum)"]||'').toString())? 'Sudah':'Belum',
+          namaVihara: (r["Nama Vihara"]||'').toString().trim(),
+        });
+        created++;
+      });
+      renderContent(); saveToDrive();
+      toast(`${created} siswa berhasil diimpor${skipped? `, ${skipped} baris dilewati`:''}`);
+    }catch(err){ console.error(err); toast('Gagal membaca file Excel: '+err.message); }
+    input.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
+function parseExcelDate(v){
+  if(!v) return '';
+  if(typeof v === 'number'){ const d = XLSX.SSF.parse_date_code(v); if(d) return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`; }
+  const s = v.toString().trim();
+  const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  return '';
+}
+function exportExcel(){
+  const ta = activeTahunAjaran();
+  const kelasList = ta? kelasOfTahun(ta.id):[];
+  const kelasIds = kelasList.map(k=>k.id);
+  let list = db.siswa.filter(s=> isAdmin()? true : kelasIds.filter(id=>canAccessKelas(id)).includes(s.kelasId));
+  const data = list.map(s=>{
+    const k = db.kelas.find(x=>x.id===s.kelasId);
+    return {
+      "No Induk": s.noInduk, "Nama Lengkap": s.namaLengkap, "Tempat Lahir": s.tempatLahir,
+      "Tanggal Lahir": s.tglLahir, "Daerah": k? (daerahOf(k)?daerahOf(k).nama:''):'', "Kelas": k? (tingkatOf(k)?tingkatOf(k).nama:''):'',
+      "Alamat Tinggal": s.alamatTinggal, "Asal Sekolah": s.asalSekolah,
+      "Nama Ayah": s.namaAyah, "Telepon Ayah": s.teleponAyah, "Nama Ibu": s.namaIbu, "Telepon Ibu": s.teleponIbu,
+      "Nama Wali Siswa": s.namaWali, "Telepon Wali Siswa": s.teleponWali,
+      "Status Memohon Ketuhanan": s.statusKetuhanan, "Nama Vihara": s.namaVihara, "Status": s.status
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data Siswa");
+  XLSX.writeFile(wb, `data-siswa-${ta?ta.nama.replace('/','-'):'export'}.xlsx`);
+}
+
+/* ======================= ABSENSI ======================= */
+let absensiFilterKelas = '';
+function jadwalOfTahun(taId){ return db.jadwalPertemuan.filter(j=>j.tahunAjaranId===taId).sort((a,b)=>a.tanggal.localeCompare(b.tanggal)); }
+function renderAbsensi(){
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  if(!absensiFilterKelas && kelasList.length) absensiFilterKelas = kelasList[0].id;
+  const jadwal = ta? jadwalOfTahun(ta.id):[];
+  const jadwalRows = jadwal.map(j=>`
+    <tr><td>${fmtDate(j.tanggal)}</td>
+      <td>${j.libur? '<span class="badge nonaktif">Libur</span>' : '<span class="badge aktif">Masuk</span>'}</td>
+      <td>${esc(j.keterangan||'—')}</td>
+      <td>${isAdmin()? `<button class="btn-danger btn-small" onclick="hapusJadwal('${j.id}')">Hapus</button>` : ''}</td></tr>`).join('');
+  const jadwalMasuk = jadwal.filter(j=>!j.libur);
+  const isiRows = jadwalMasuk.map(j=>`
+    <tr><td>${fmtDate(j.tanggal)}</td><td>${esc(j.keterangan||'—')}</td>
+      <td><button class="btn-outline btn-small" onclick="bukaAbsen('${absensiFilterKelas}','${j.tanggal}')" ${absensiFilterKelas?'':'disabled'}>Isi absen</button></td></tr>`).join('');
+  return `
+    <h2>Absensi</h2>
+    <p class="subtitle">${isAdmin()? 'Kalender pertemuan berlaku untuk <strong>semua kelas</strong> dalam satu tahun ajaran. Guru mengisi kehadiran siswanya sendiri pada tanggal yang sudah tersedia.' : 'Isi kehadiran siswa pada tanggal pertemuan yang sudah diatur Admin.'}</p>
+
+    ${isAdmin()? `
+    <div class="toolbar"><h3 style="margin:0">Kalender Pertemuan — ${ta?esc(ta.nama):'—'}</h3>
+      <button class="btn-sun" onclick="formJadwal()">+ Tambah tanggal</button></div>
+    ${jadwal.length? `<div style="overflow-x:auto"><table><thead><tr><th>Tanggal</th><th>Status</th><th>Keterangan</th><th></th></tr></thead><tbody>${jadwalRows}</tbody></table></div>`
+    : `<div class="empty">Belum ada tanggal pertemuan untuk tahun ajaran ini.</div>`}
+    ` : ''}
+
+    <div class="toolbar" style="margin-top:28px"><h3 style="margin:0">Isi Kehadiran per Kelas</h3></div>
+    <div class="field" style="max-width:320px"><label>Pilih kelas</label>
+      <select onchange="absensiFilterKelas=this.value; renderContent()">
+        ${kelasList.map(k=>`<option value="${k.id}" ${k.id===absensiFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+      </select>
+    </div>
+    ${jadwalMasuk.length? `<div style="overflow-x:auto"><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th></th></tr></thead><tbody>${isiRows}</tbody></table></div>`
+    : `<div class="empty">Belum ada tanggal pertemuan (bukan libur) di kalender.</div>`}
+  `;
+}
+function formJadwal(){
+  if(!isAdmin()) return toast('Hanya Admin yang dapat mengatur tanggal pertemuan');
+  const ta = activeTahunAjaran();
+  if(!ta) return toast('Buat tahun ajaran aktif terlebih dahulu');
+  openModal(`<h3>Tambah Tanggal Pertemuan</h3>
+    <p class="subtitle" style="margin-top:-6px">Berlaku untuk semua kelas di tahun ajaran ${esc(ta.nama)}</p>
+    <div class="field"><label>Tanggal</label><input id="fJTgl" type="date"></div>
+    <div class="field"><label><input type="checkbox" id="fJLibur"> Tanggal ini libur (tidak ada kegiatan)</label></div>
+    <div class="field"><label>Keterangan (opsional)</label><input id="fJKet" placeholder="misal: Libur Waisak"></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+    <button class="btn-sun btn-small" onclick="simpanJadwal()">Simpan</button></div>`);
+}
+function simpanJadwal(){
+  const ta = activeTahunAjaran();
+  const tanggal = document.getElementById('fJTgl').value;
+  if(!tanggal) return toast('Tanggal wajib diisi');
+  if(db.jadwalPertemuan.some(j=>j.tahunAjaranId===ta.id && j.tanggal===tanggal)) return toast('Tanggal ini sudah ada di kalender');
+  db.jadwalPertemuan.push({id:uid(), tahunAjaranId:ta.id, tanggal, libur:document.getElementById('fJLibur').checked, keterangan:document.getElementById('fJKet').value.trim()});
+  closeModal(); renderContent(); saveToDrive();
+}
+function hapusJadwal(id){
+  if(!isAdmin()) return toast('Hanya Admin yang dapat mengatur tanggal pertemuan');
+  if(!confirm('Hapus tanggal ini beserta seluruh data absensi semua kelas pada tanggal tersebut?')) return;
+  const j = db.jadwalPertemuan.find(x=>x.id===id);
+  db.jadwalPertemuan = db.jadwalPertemuan.filter(x=>x.id!==id);
+  if(j){
+    const kelasIdsTahun = kelasOfTahun(j.tahunAjaranId).map(k=>k.id);
+    db.absensi = db.absensi.filter(a=>!(kelasIdsTahun.includes(a.kelasId) && a.tanggal===j.tanggal));
+  }
+  renderContent(); saveToDrive();
+}
+function bukaAbsen(kelasId, tanggal){
+  const anak = siswaAktifDiKelas(kelasId);
+  const rowsHtml = anak.map(s=>{
+    const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===tanggal && a.kelasId===kelasId);
+    const st = rec? rec.status : '';
+    return `<tr><td>${esc(s.namaLengkap)}</td><td>
+      <select onchange="setAbsen('${s.id}','${kelasId}','${tanggal}', this.value)">
+        <option value="">—</option>
+        ${STATUS_ABSEN.map(o=>`<option value="${o}" ${st===o?'selected':''}>${o}</option>`).join('')}
+      </select></td></tr>`;
+  }).join('');
+  const k = db.kelas.find(x=>x.id===kelasId);
+  openModal(`<h3>Absensi ${fmtDate(tanggal)} — ${k?esc(kelasLabel(k)):''}</h3>
+    ${anak.length? `<table><thead><tr><th>Nama</th><th>Kehadiran</th></tr></thead><tbody>${rowsHtml}</tbody></table>` : `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`}
+    <div class="modal-actions"><button class="btn-sun btn-small" onclick="closeModal()">Selesai</button></div>`);
+}
+function setAbsen(siswaId, kelasId, tanggal, status){
+  let rec = db.absensi.find(a=>a.siswaId===siswaId && a.tanggal===tanggal && a.kelasId===kelasId);
+  if(!rec){ rec={id:uid(), siswaId, kelasId, tanggal, status:'', keterangan:''}; db.absensi.push(rec); }
+  rec.status = status; saveToDrive();
+}
+
+/* ======================= PENILAIAN ======================= */
+let penilaianFilterKelas = '';
+let penilaianPeriode = 'MID_GANJIL';
+function renderPenilaian(){
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  if(!penilaianFilterKelas && kelasList.length) penilaianFilterKelas = kelasList[0].id;
+  const anak = siswaAktifDiKelas(penilaianFilterKelas);
+  const rows = anak.map(s=>{
+    const nilaiSiswa = db.aspekPenilaian.map(a=>{
+      const rec = db.nilai.find(n=>n.siswaId===s.id && n.tahunAjaranId===(ta?ta.id:'') && n.periode===penilaianPeriode && n.aspekId===a.id);
+      return `<td><input type="number" min="0" max="100" style="width:64px" value="${rec?rec.nilai:''}" onchange="setNilai('${s.id}','${a.id}', this.value)"></td>`;
+    }).join('');
+    const rata = rataNilai(s.id, ta?ta.id:'', penilaianPeriode);
+    return `<tr><td><strong>${esc(s.namaLengkap)}</strong></td>${nilaiSiswa}<td><strong>${rata===null?'—':rata.toFixed(1)}</strong></td></tr>`;
+  }).join('');
+  return `
+    <h2>Penilaian — Kurikulum Merdeka 2026</h2>
+    <p class="subtitle">Nilai 0–100 per aspek. Rata-rata dihitung otomatis untuk tiap periode.</p>
+    <div class="row" style="margin-bottom:16px">
+      <div><label>Kelas</label><select onchange="penilaianFilterKelas=this.value; renderContent()">
+        ${kelasList.map(k=>`<option value="${k.id}" ${k.id===penilaianFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+      </select></div>
+      <div><label>Periode</label><select onchange="penilaianPeriode=this.value; renderContent()">
+        ${PERIODE.map(p=>`<option value="${p.key}" ${p.key===penilaianPeriode?'selected':''}>${p.label}</option>`).join('')}
+      </select></div>
+    </div>
+    ${anak.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th>${db.aspekPenilaian.map(a=>`<th title="${esc(a.deskripsi)}">${esc(a.nama)}</th>`).join('')}<th>Rata-rata</th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`}
+  `;
+}
+function rataNilai(siswaId, tahunAjaranId, periode){
+  const recs = db.nilai.filter(n=>n.siswaId===siswaId && n.tahunAjaranId===tahunAjaranId && n.periode===periode && n.nilai!=='' && n.nilai!=null);
+  if(!recs.length) return null;
+  return recs.reduce((a,b)=>a+Number(b.nilai),0)/recs.length;
+}
+function setNilai(siswaId, aspekId, val){
+  const ta = activeTahunAjaran();
+  let rec = db.nilai.find(n=>n.siswaId===siswaId && n.tahunAjaranId===ta.id && n.periode===penilaianPeriode && n.aspekId===aspekId);
+  if(!rec){ rec={id:uid(), siswaId, tahunAjaranId:ta.id, periode:penilaianPeriode, aspekId, nilai:val}; db.nilai.push(rec); }
+  else rec.nilai = val;
+  renderContent(); saveToDrive();
+}
+
+/* ======================= KENAIKAN KELAS ======================= */
+function renderKenaikan(){
+  const ta = activeTahunAjaran();
+  return `
+    <h2>Kenaikan Kelas</h2>
+    <p class="subtitle">Membuat tahun ajaran baru dan menaikkan semua siswa aktif ke tingkat berikutnya pada daerah yang sama. Siswa di tingkat tertinggi (SMA/SMK Kelas 12) ditandai "lulus".</p>
+    <div class="setup-box">⚠️ Proses ini akan membuat tahun ajaran baru & mengaktifkannya, membuat kelas baru per tingkat+daerah yang sudah ada, memindahkan siswa aktif ke kelas tingkat berikutnya, dan menandai siswa di tingkat terakhir sebagai lulus. Data lama tetap tersimpan untuk riwayat/laporan.</div>
+    <div class="field"><label>Nama tahun ajaran baru</label><input id="fKenaikanNama" placeholder="${nextTAName(ta)}" style="width:220px"></div>
+    <button class="btn-sun" onclick="prosesKenaikan()">Proses kenaikan kelas</button>
+  `;
+}
+function nextTAName(ta){ if(!ta) return defaultTAName(); const m=ta.nama.match(/(\d{4})\D+(\d{4})/); if(m) return `${+m[1]+1}/${+m[2]+1}`; return defaultTAName(); }
+function prosesKenaikan(){
+  const taLama = activeTahunAjaran();
+  if(!taLama) return toast('Tidak ada tahun ajaran aktif');
+  if(!confirm('Proses kenaikan kelas tidak dapat dibatalkan otomatis. Lanjutkan?')) return;
+  const namaBaru = document.getElementById('fKenaikanNama').value.trim() || nextTAName(taLama);
+  const taBaru = {id:uid(), nama:namaBaru, aktif:true};
+  db.tahunAjaran.forEach(t=>t.aktif=false); db.tahunAjaran.push(taBaru);
+
+  const tingkatSorted = [...db.tingkatKelas].sort((a,b)=>a.urutan-b.urutan);
+  const kelasLamaList = kelasOfTahun(taLama.id);
+  const kelasBaruMap = {}; // "tingkatId|daerahId" -> kelas baru
+  kelasLamaList.forEach(kl=>{
+    const key = kl.tingkatKelasId+'|'+kl.daerahId;
+    if(kelasBaruMap[key]) return;
+    const t = db.tingkatKelas.find(x=>x.id===kl.tingkatKelasId);
+    const tBerikut = tingkatSorted.find(x=>x.urutan===(t?t.urutan:0)+1);
+    if(!tBerikut) return; // tingkat terakhir, tidak buat kelas baru
+    let kelasBaru = db.kelas.find(k=>k.tahunAjaranId===taBaru.id && k.tingkatKelasId===tBerikut.id && k.daerahId===kl.daerahId);
+    if(!kelasBaru){ kelasBaru = {id:uid(), tahunAjaranId:taBaru.id, tingkatKelasId:tBerikut.id, daerahId:kl.daerahId, namaRombel:kl.namaRombel, guruId:kl.guruId}; db.kelas.push(kelasBaru); }
+    kelasBaruMap[key] = kelasBaru;
+  });
+
+  db.siswa.filter(s=>s.status==='aktif').forEach(s=>{
+    const kelasSekarang = db.kelas.find(k=>k.id===s.kelasId);
+    if(!kelasSekarang) return;
+    const key = kelasSekarang.tingkatKelasId+'|'+kelasSekarang.daerahId;
+    const kelasBaru = kelasBaruMap[key];
+    if(kelasBaru) s.kelasId = kelasBaru.id; else s.status='lulus';
+  });
+
+  renderTabs(); renderContent(); switchTab('dashboard'); saveToDrive();
+  toast(`Kenaikan kelas selesai → tahun ajaran ${namaBaru}`);
+}
+
+/* ======================= LAPORAN ======================= */
+let laporanSiswaId = '';
+let laporanPeriode = 'MID_GANJIL';
+function renderLaporan(){
+  const ta = activeTahunAjaran();
+  const kelasIdsAccess = accessibleKelasIds();
+  const siswaList = db.siswa.filter(s=> kelasIdsAccess===null || kelasIdsAccess.includes(s.kelasId));
+  const opts = siswaList.map(s=>`<option value="${s.id}" ${s.id===laporanSiswaId?'selected':''}>${esc(s.namaLengkap)}</option>`).join('');
+  let detail = '';
+  if(laporanSiswaId){
+    const s = db.siswa.find(x=>x.id===laporanSiswaId);
+    const k = db.kelas.find(x=>x.id===s.kelasId);
+    const taSiswa = db.tahunAjaran.find(t=>t.id===(k?k.tahunAjaranId:''));
+    const absen = db.absensi.filter(a=>a.siswaId===s.id);
+    const countBy = st => absen.filter(a=>a.status===st).length;
+    const total = absen.filter(a=>a.status).length;
+    const rata = rataNilai(s.id, taSiswa?taSiswa.id:'', laporanPeriode);
+    const periodeLabel = PERIODE.find(p=>p.key===laporanPeriode).label;
+    detail = `
+      <div class="print-only" style="margin-bottom:14px"><h2 style="margin-bottom:2px">${periodeLabel}</h2><p class="subtitle">Dicetak ${new Date().toLocaleDateString('id-ID')}</p></div>
+      <div class="grid2" style="margin-bottom:18px">
+        <div><label>No Induk</label><div><strong>${esc(s.noInduk)}</strong></div></div>
+        <div><label>Nama</label><div><strong>${esc(s.namaLengkap)}</strong></div></div>
+        <div><label>Kelas</label><div><strong>${k?esc(kelasLabel(k)):'—'}</strong></div></div>
+        <div><label>Asal Sekolah</label><div>${esc(s.asalSekolah||'—')}</div></div>
+      </div>
+      <h3>Kehadiran (keseluruhan tercatat)</h3>
+      <table><thead><tr><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Total pertemuan</th></tr></thead>
+      <tbody><tr><td>${countBy('Hadir')}</td><td>${countBy('Izin')}</td><td>${countBy('Sakit')}</td><td>${countBy('Alpa')}</td><td>${total}</td></tr></tbody></table>
+      <h3 style="margin-top:20px">${periodeLabel}</h3>
+      <table><thead><tr><th>Aspek</th><th>Nilai</th></tr></thead><tbody>
+        ${db.aspekPenilaian.map(a=>{
+          const rec = db.nilai.find(n=>n.siswaId===s.id && n.tahunAjaranId===(taSiswa?taSiswa.id:'') && n.periode===laporanPeriode && n.aspekId===a.id);
+          return `<tr><td>${esc(a.nama)}</td><td>${rec&&rec.nilai!==''?rec.nilai:'—'}</td></tr>`;
+        }).join('')}
+        <tr><td><strong>Rata-rata</strong></td><td><strong>${rata===null?'—':rata.toFixed(1)}</strong></td></tr>
+      </tbody></table>
+      <button class="btn-sun" style="margin-top:18px" onclick="window.print()">🖨️ Cetak laporan</button>
+    `;
+  }
+  return `
+    <h2>Laporan Siswa</h2>
+    <p class="subtitle">Pilih siswa dan periode untuk membuat laporan yang dikirimkan ke sekolah.</p>
+    <div class="row" style="margin-bottom:16px">
+      <div class="field" style="min-width:220px"><label>Pilih siswa</label>
+        <select onchange="laporanSiswaId=this.value; renderContent()"><option value="">— pilih —</option>${opts}</select></div>
+      <div class="field"><label>Periode</label>
+        <select onchange="laporanPeriode=this.value; renderContent()">${PERIODE.map(p=>`<option value="${p.key}" ${p.key===laporanPeriode?'selected':''}>${p.label}</option>`).join('')}</select></div>
+    </div>
+    ${detail}
+  `;
+}
+
+/* ======================= BACKEND (Google Apps Script) ======================= */
+let driveKnownVersion = null; // versi data terakhir yang kita ketahui (dari server)
+let saveBusy = false;
+
+function updateStatusUI(connected){
+  document.getElementById('statusDot').classList.toggle('on', connected);
+  document.getElementById('statusText').innerHTML = `<span class="dot ${connected?'on':''}" id="statusDot"></span> ${connected? 'Tersambung ke server data' : 'Terputus dari server'}`;
+  document.getElementById('saveBtn').style.display = connected? 'inline-block':'none';
+  document.getElementById('refreshBtn').style.display = connected? 'inline-block':'none';
+}
+function backendConfigured(){ return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('GANTI_DENGAN') && SECRET_KEY && !SECRET_KEY.includes('GANTI_DENGAN'); }
+function driveError(title, e){
+  console.error(e);
+  const msg = (e && e.message) ? e.message : String(e);
+  openModal(`<h3>⚠️ ${esc(title)}</h3>
+    <p style="font-size:13px;line-height:1.6;white-space:pre-wrap;background:#f7fafd;border:1px solid var(--line);border-radius:8px;padding:10px">${esc(msg)}</p>
+    <p style="font-size:12.5px;color:var(--ink-soft)">Jika ini terus terjadi, screenshot pesan di atas dan periksa: koneksi internet, atau apakah URL Web App / kunci rahasia di kode sudah benar (lihat PANDUAN-SETUP.md).</p>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal(); connectDrive()">Coba lagi</button>
+    <button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
+}
+async function backendFetch(options={}){
+  if(!backendConfigured()) throw new Error('URL Web App / kunci rahasia belum diisi di kode. Lihat PANDUAN-SETUP.md.');
+  const res = await fetch(APPS_SCRIPT_URL, options);
+  if(!res.ok){ throw new Error(`Server error ${res.status}`); }
+  const json = await res.json();
+  if(json.error) throw new Error(json.error);
+  return json;
+}
+function decideStageAfterLoad(){
+  if(backendInitError){ appStage='need-drive'; return; }
+  if(currentUser){
+    const match = db.users.find(u=>u.id===currentUser.id);
+    if(match){ currentUser = match; appStage = 'ready'; return; }
+    currentUser = null; // akun terhapus di tempat lain
+  }
+  if(currentSiswa){
+    const matchS = db.siswa.find(s=>s.id===currentSiswa.id && s.status==='aktif');
+    if(matchS){ currentSiswa = matchS; appStage='siswa-portal'; return; }
+    currentSiswa = null;
+  }
+  appStage = db.users.length? 'need-login' : 'need-admin-setup';
+}
+async function loadFromDrive(){
+  updateStatusUI(false);
+  try{
+    if(!backendConfigured()) throw new Error('URL Web App / kunci rahasia belum diisi di kode. Lihat PANDUAN-SETUP.md.');
+    const url = `${APPS_SCRIPT_URL}?action=load&secret=${encodeURIComponent(SECRET_KEY)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`Server error ${res.status}`);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    driveKnownVersion = data.version;
+    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[]}, data.data||{});
+    if(!db.tingkatKelas || !db.tingkatKelas.length){
+      seedDefaults();
+      await saveToDrive(false, true);
+    }
+    backendInitError = null;
+    updateStatusUI(true);
+  }catch(e){ console.error(e); backendInitError = e.message || String(e); updateStatusUI(false); }
+  decideStageAfterLoad();
+  renderTabs(); renderContent(); updateUserBadge();
+  if(!backendInitError) startPolling();
+}
+function connectDrive(){ backendInitError=null; renderContent(); loadFromDrive(); }
+async function manualRefresh(){
+  if(!confirm('Muat ulang mengambil versi terbaru dari server. Perubahan yang belum tersimpan di layar ini bisa hilang. Lanjutkan?')) return;
+  await loadFromDrive();
+  if(!backendInitError) toast('Data disegarkan dari server');
+}
+function startPolling(){
+  clearInterval(window._pollTimer);
+  window._pollTimer = setInterval(async ()=>{
+    try{
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=version&secret=${encodeURIComponent(SECRET_KEY)}`);
+      if(!res.ok) return;
+      const data = await res.json();
+      if(driveKnownVersion && data.version && data.version !== driveKnownVersion){
+        toast('Ada perubahan baru dari pengguna lain. Klik "↻ Muat ulang" untuk sinkron.');
+      }
+    }catch(e){ /* diamkan, cek berikutnya akan coba lagi */ }
+  }, 45000);
+}
+function showConflictModal(){
+  openModal(`<h3>⚠️ Ada perubahan baru</h3>
+    <p style="font-size:13.5px;line-height:1.6">Pengguna lain menyimpan perubahan ke server setelah data ini terakhir Anda muat. Menyimpan sekarang berisiko menimpa perubahan mereka.</p>
+    <div class="modal-actions">
+      <button class="btn-outline btn-small" onclick="closeModal()">Batalkan dulu</button>
+      <button class="btn-outline btn-small" onclick="closeModal(); manualRefresh()">Muat data terbaru</button>
+      <button class="btn-danger btn-small" onclick="closeModal(); saveToDrive(true, false, true)">Tetap timpa punya saya</button>
+    </div>`);
+}
+async function saveToDrive(manual, forceCreate, force){
+  if(saveBusy) return;
+  saveBusy = true;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari CORS preflight ke Apps Script
+      body: JSON.stringify({action:'save', secret:SECRET_KEY, knownVersion: driveKnownVersion, force: !!force, data: db})
+    });
+    if(!res.ok) throw new Error(`Server error ${res.status}`);
+    const json = await res.json();
+    if(json.error) throw new Error(json.error);
+    if(json.conflict){ saveBusy=false; showConflictModal(); return; }
+    driveKnownVersion = json.version;
+    updateStatusUI(true);
+    if(manual) toast('Data tersimpan ke server');
+  }catch(e){ driveError('Gagal menyimpan data', e); }
+  saveBusy = false;
+}
+
+/* ======================= INIT ======================= */
+renderTabs();
+renderContent();
+connectDrive();
+</script>
+</body>
+</html>
