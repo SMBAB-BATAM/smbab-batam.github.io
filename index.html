@@ -1072,9 +1072,9 @@ let siswaFilterKelas = '';
 let siswaSearchQuery = '';
 function renderSiswa(){
   const ta = activeTahunAjaran();
-  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
-  const kelasIds = kelasList.map(k=>k.id);
-  let list = db.siswa.filter(s=> kelasIds.includes(s.kelasId) || (isAdmin() && s.status!=='aktif'));
+  const kelasListAll = ta? kelasOfTahun(ta.id):[]; // semua guru boleh LIHAT semua kelas
+  const kelasIdsAll = kelasListAll.map(k=>k.id);
+  let list = db.siswa.filter(s=> kelasIdsAll.includes(s.kelasId) || (isAdmin() && s.status!=='aktif'));
   if(siswaFilterKelas) list = list.filter(s=>s.kelasId===siswaFilterKelas);
   if(siswaSearchQuery.trim()){
     const q = siswaSearchQuery.trim().toLowerCase();
@@ -1091,6 +1091,7 @@ function renderSiswa(){
   const rows = list.map(s=>{
     const k = db.kelas.find(x=>x.id===s.kelasId);
     const sudahBayar = ta && db.paramita.some(p=>p.siswaId===s.id && p.tahunAjaranId===ta.id);
+    const bolehUbah = isAdmin() || canAccessKelas(s.kelasId);
     return `<tr>
       <td>${esc(s.noInduk||'—')}</td>
       <td><strong>${esc(s.namaLengkap)}</strong></td>
@@ -1106,21 +1107,21 @@ function renderSiswa(){
       <td>${esc(s.waliKelasNama||'—')}</td>
       <td>${esc(s.waliKelasTelepon||'—')}</td>
       <td><span class="badge ${s.status}">${s.status}</span></td>
-      <td style="text-align:center">${ta? `<input type="checkbox" id="paramitaChk_${s.id}" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked, this)" ${isAdmin()?'':'disabled'}>${sudahBayar? `<div style="font-size:11px;color:var(--ink-soft)">Rp${(db.paramita.find(p=>p.siswaId===s.id&&p.tahunAjaranId===ta.id)?.jumlah||DANA_PARAMITA).toLocaleString('id-ID')}</div>`:''}` : '—'}</td>
-      <td><div class="row">
+      <td style="text-align:center">${ta? `<input type="checkbox" id="paramitaChk_${s.id}" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked, this)" ${bolehUbah?'':'disabled'}>${sudahBayar? `<div style="font-size:11px;color:var(--ink-soft)">Rp${(db.paramita.find(p=>p.siswaId===s.id&&p.tahunAjaranId===ta.id)?.jumlah||DANA_PARAMITA).toLocaleString('id-ID')}</div>`:''}` : '—'}</td>
+      <td>${bolehUbah? `<div class="row">
         <button class="btn-outline btn-small" onclick="formSiswa('${s.id}')">Ubah</button>
         <button class="btn-danger btn-small" onclick="hapusSiswa('${s.id}')">Hapus</button>
-      </div></td>
+      </div>` : `<span style="font-size:12px;color:var(--ink-soft)">Lihat saja</span>`}</td>
     </tr>`;
   }).join('');
   return `
     <div class="toolbar">
-      <div><h2>Data Siswa</h2><p class="subtitle" style="margin:0">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dana Paramita Rp${DANA_PARAMITA.toLocaleString('id-ID')}/siswa · ${list.length} siswa ditampilkan</p></div>
+      <div><h2>Data Siswa</h2><p class="subtitle" style="margin:0">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dana Paramita Rp${DANA_PARAMITA.toLocaleString('id-ID')}/siswa · ${list.length} siswa ditampilkan${!isAdmin()? ' · hanya bisa mengubah siswa di kelas Anda':''}</p></div>
       <div class="row">
-        <input type="text" placeholder="Cari nama, kelas, tempat lahir, dll..." value="${esc(siswaSearchQuery)}" style="min-width:220px" oninput="siswaSearchQuery=this.value; renderContent()">
+        <input type="text" id="siswaSearchBox" placeholder="Cari nama, kelas, tempat lahir, dll..." value="${esc(siswaSearchQuery)}" style="min-width:220px" oninput="onSiswaSearchInput(this)">
         <select onchange="siswaFilterKelas=this.value; renderContent()">
           <option value="">Semua kelas</option>
-          ${kelasList.map(k=>`<option value="${k.id}" ${k.id===siswaFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
+          ${kelasListAll.map(k=>`<option value="${k.id}" ${k.id===siswaFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
         </select>
         <button class="btn-outline" onclick="downloadTemplateExcel()">Unduh template</button>
         <label class="btn-outline" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">Import Excel
@@ -1133,6 +1134,13 @@ function renderSiswa(){
     ${list.length? `<div style="overflow-x:auto"><table><thead><tr><th>No Induk</th><th>Nama</th><th>Kelas</th><th>TTL</th><th>Alamat</th><th>Asal Sekolah</th><th>Ayah</th><th>Ibu</th><th>Wali</th><th>Ketuhanan</th><th>Vihara</th><th>Nama Wali Kelas</th><th>No HP Wali Kelas</th><th>Status</th><th>Paramita</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
     : `<div class="empty"><div class="display">Belum ada data siswa</div>Tambahkan manual atau import dari Excel.</div>`}
   `;
+}
+function onSiswaSearchInput(el){
+  const pos = el.selectionStart;
+  siswaSearchQuery = el.value;
+  renderContent();
+  const newEl = document.getElementById('siswaSearchBox');
+  if(newEl){ newEl.focus(); newEl.setSelectionRange(pos, pos); }
 }
 function toggleParamita(siswaId, checked, el){
   const ta = activeTahunAjaran();
