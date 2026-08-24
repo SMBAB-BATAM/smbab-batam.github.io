@@ -11,17 +11,32 @@
   :root{
     --sky:#EAF2FB; --sky-deep:#2C4770; --sky-mid:#4E6E96; --paper:#FFFFFF;
     --ink:#1F2A3C; --ink-soft:#5B6B82; --sun:#F4B942; --sun-deep:#D99A1F;
-    --coral:#EF767A; --leaf:#6FAE8A; --line:#DCE6F2; --radius:14px; --input-bg:#fbfdff; --hover-bg:#f7fafd;
+    --coral:#EF767A; --leaf:#6FAE8A; --line:#DCE6F2; --radius:14px; --input-bg:#fbfdff; --hover-bg:#f7fafd; --heading:#2C4770;
   }
   body.theme-dark{
     --sky:#101722; --sky-deep:#0B111A; --sky-mid:#8CA3C2; --paper:#1B2432;
     --ink:#E8EDF5; --ink-soft:#9CACC4; --sun:#F4B942; --sun-deep:#D99A1F;
-    --coral:#F1878B; --leaf:#7FC29A; --line:#2C384A; --input-bg:#232F40; --hover-bg:#212B3A;
+    --coral:#F1878B; --leaf:#7FC29A; --line:#2C384A; --input-bg:#232F40; --hover-bg:#212B3A; --heading:#EAF2FB;
   }
   body.theme-pink{
     --sky:#FFF0F5; --sky-deep:#B23A6B; --sky-mid:#C9769B; --paper:#FFFFFF;
     --ink:#3A2233; --ink-soft:#8C6478; --sun:#F4B942; --sun-deep:#D99A1F;
-    --coral:#EF767A; --leaf:#6FAE8A; --line:#F3D6E3; --input-bg:#FFF8FB; --hover-bg:#FFF0F6;
+    --coral:#EF767A; --leaf:#6FAE8A; --line:#F3D6E3; --input-bg:#FFF8FB; --hover-bg:#FFF0F6; --heading:#B23A6B;
+  }
+  body.theme-kuning{
+    --sky:#FFFBEA; --sky-deep:#B98900; --sky-mid:#D9A521; --paper:#FFFFFF;
+    --ink:#4A3B12; --ink-soft:#8C7530; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#E4572E; --leaf:#6FAE8A; --line:#F5E6B8; --input-bg:#FFFDF2; --hover-bg:#FFF6D9; --heading:#B98900;
+  }
+  body.theme-purple{
+    --sky:#F5F0FF; --sky-deep:#6B3FA0; --sky-mid:#9B7BC4; --paper:#FFFFFF;
+    --ink:#2E2140; --ink-soft:#7A6B94; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#EF767A; --leaf:#6FAE8A; --line:#E4D9F5; --input-bg:#FBF8FF; --hover-bg:#F3EBFF; --heading:#6B3FA0;
+  }
+  body.theme-green{
+    --sky:#EFFAF1; --sky-deep:#2F7A4F; --sky-mid:#5B9E77; --paper:#FFFFFF;
+    --ink:#1F3A2A; --ink-soft:#5B7A68; --sun:#F4B942; --sun-deep:#D99A1F;
+    --coral:#EF767A; --leaf:#4C8C4A; --line:#D7EEDD; --input-bg:#F7FCF8; --hover-bg:#EAF8EE; --heading:#2F7A4F;
   }
   .theme-picker{position:relative;display:inline-block;}
   .theme-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;display:none;z-index:60;min-width:150px;}
@@ -33,7 +48,7 @@
   body{margin:0;font-family:'Inter',sans-serif;background:var(--sky);color:var(--ink);transition:background .2s,color .2s;}
   h1,h2,h3,.display{font-family:'Baloo 2',sans-serif;}
   a{color:inherit;}
-  .topbar{background:var(--sky-deep);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .topbar{background:var(--sky-deep);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;}
   .brand{display:flex;align-items:center;gap:10px;}
   .brand-badge{width:38px;height:38px;border-radius:10px;background:var(--sun);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:800;color:var(--sky-deep);font-size:18px;transform:rotate(-6deg);}
   .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px;}
@@ -47,18 +62,18 @@
   .btn-sun:hover{background:var(--sun-deep);}
   .btn-ghost{background:rgba(255,255,255,.14);color:#fff;}
   .btn-ghost:hover{background:rgba(255,255,255,.24);}
-  .btn-outline{background:var(--paper);color:var(--sky-deep);border:1.5px solid var(--line);}
+  .btn-outline{background:var(--paper);color:var(--heading);border:1.5px solid var(--line);}
   .btn-outline:hover{border-color:var(--sky-mid);}
   .btn-danger{background:var(--paper);color:var(--coral);border:1.5px solid #f6cccd;}
   .btn-danger:hover{background:#fff5f5;}
   .btn-small{padding:6px 10px;font-size:12px;border-radius:8px;}
   .app-shell{max-width:1220px;margin:0 auto;padding:18px 24px 60px;display:flex;gap:18px;align-items:flex-start;}
-  .sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;position:sticky;top:18px;}
+  .sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;position:sticky;top:88px;max-height:calc(100vh - 108px);overflow-y:auto;}
   .tab{font-family:'Baloo 2';font-weight:600;font-size:14px;padding:10px 14px;border-radius:10px;background:transparent;color:var(--sky-mid);cursor:pointer;white-space:nowrap;border:1px solid transparent;text-align:left;}
-  .tab.active{background:var(--paper);color:var(--sky-deep);border-color:var(--line);box-shadow:0 2px 8px rgba(44,71,112,.06);}
+  .tab.active{background:var(--paper);color:var(--heading);border-color:var(--line);box-shadow:0 2px 8px rgba(44,71,112,.06);}
   main{flex:1;min-width:0;}
   .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:0 4px 18px rgba(44,71,112,.05);}
-  .card h2{margin:0 0 4px;font-size:22px;color:var(--sky-deep);}
+  .card h2{margin:0 0 4px;font-size:22px;color:var(--heading);}
   .subtitle{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px;}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
   .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
@@ -81,19 +96,20 @@
   .rate.Hadir{background:#e3f3ea;color:#2f7a52;} .rate.Izin{background:#e6eefb;color:var(--sky-deep);}
   .rate.Sakit{background:#fdf1e0;color:var(--sun-deep);} .rate.Alpa{background:#f5eaea;color:var(--coral);}
   .empty{padding:40px 20px;text-align:center;color:var(--ink-soft);}
-  .empty .display{font-size:17px;color:var(--sky-deep);margin-bottom:6px;}
+  .empty .display{font-size:17px;color:var(--heading);margin-bottom:6px;}
   .modal-bg{position:fixed;inset:0;background:rgba(31,42,60,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
   .modal{background:var(--paper);border-radius:16px;padding:26px;max-width:520px;width:100%;max-height:85vh;overflow:auto;}
-  .modal h3{margin:0 0 14px;color:var(--sky-deep);}
+  .modal h3{margin:0 0 14px;color:var(--heading);}
   .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
-  .setup-box{background:#fff8e8;border:1.5px dashed var(--sun-deep);border-radius:12px;padding:18px 20px;margin-bottom:18px;font-size:13.5px;line-height:1.6;}
+  .setup-box{background:#fff8e8;color:#4a3b12;border:1.5px dashed var(--sun-deep);border-radius:12px;padding:18px 20px;margin-bottom:18px;font-size:13.5px;line-height:1.6;}
+  .setup-box code{color:#4a3b12;}
   .setup-box code{background:#00000010;padding:2px 6px;border-radius:5px;font-size:12.5px;}
   .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
   @media(max-width:800px){.stat-grid{grid-template-columns:1fr 1fr;}}
   .stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
-  .stat .num{font-family:'Baloo 2';font-size:26px;color:var(--sky-deep);font-weight:700;}
+  .stat .num{font-family:'Baloo 2';font-size:26px;color:var(--heading);font-weight:700;}
   .stat .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
-  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1F2A3C;color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
   .gate{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:20px;}
   .gate-card{background:var(--paper);border-radius:18px;padding:36px;max-width:400px;width:100%;box-shadow:0 10px 30px rgba(44,71,112,.12);}
@@ -157,6 +173,9 @@
         <button onclick="setTheme('normal')"><span class="theme-swatch" style="background:#EAF2FB"></span> Normal</button>
         <button onclick="setTheme('dark')"><span class="theme-swatch" style="background:#101722"></span> Gelap</button>
         <button onclick="setTheme('pink')"><span class="theme-swatch" style="background:#FFC0DA"></span> Pink</button>
+        <button onclick="setTheme('kuning')"><span class="theme-swatch" style="background:#F4B942"></span> Kuning</button>
+        <button onclick="setTheme('purple')"><span class="theme-swatch" style="background:#9B7BC4"></span> Purple</button>
+        <button onclick="setTheme('green')"><span class="theme-swatch" style="background:#5B9E77"></span> Green</button>
       </div>
     </div>
     <span id="userBadge"></span>
@@ -175,7 +194,7 @@
 /* ======================= KONFIGURASI ======================= */
 // 1) Ikuti PANDUAN-SETUP.md untuk membuat Google Apps Script Web App.
 // 2) Tempel URL Web App dan kunci rahasia Anda di bawah ini.
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZCZKG_gt8MEcwCx3azMe01Nrtmm_mgHSZ0ZL9AVU_jGCtqMfR-m2oOa61SYeW0GBlbQ/exec";
+const APPS_SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
 const SECRET_KEY = "hQ4yJoC5jxA0yTj2GXD3E6M3YIywtcGg";
 const DATA_FILENAME = "data-sekolah-minggu.json"; // harus sama dengan FILE_NAME di Apps Script
 
@@ -198,9 +217,12 @@ const uid = ()=> 'x'+Math.random().toString(36).slice(2,10)+Date.now().toString(
 
 /* ======================= TEMA ======================= */
 function applyTheme(name){
-  document.body.classList.remove('theme-dark','theme-pink');
+  document.body.classList.remove('theme-dark','theme-pink','theme-kuning','theme-purple','theme-green');
   if(name==='dark') document.body.classList.add('theme-dark');
   if(name==='pink') document.body.classList.add('theme-pink');
+  if(name==='kuning') document.body.classList.add('theme-kuning');
+  if(name==='purple') document.body.classList.add('theme-purple');
+  if(name==='green') document.body.classList.add('theme-green');
 }
 function setTheme(name){
   applyTheme(name);
@@ -1065,6 +1087,8 @@ function renderSiswa(){
       <td>${esc(s.namaWali||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(s.teleponWali||'')}</div></td>
       <td>${esc(s.statusKetuhanan||'—')}</td>
       <td>${esc(s.namaVihara||'—')}</td>
+      <td>${esc(s.waliKelasNama||'—')}</td>
+      <td>${esc(s.waliKelasTelepon||'—')}</td>
       <td><span class="badge ${s.status}">${s.status}</span></td>
       <td style="text-align:center">${ta? `<input type="checkbox" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked)" ${isAdmin()?'':'disabled'}>` : '—'}</td>
       <td><div class="row">
@@ -1089,7 +1113,7 @@ function renderSiswa(){
         <button class="btn-sun" onclick="formSiswa()">+ Tambah siswa</button>
       </div>
     </div>
-    ${list.length? `<div style="overflow-x:auto"><table><thead><tr><th>No Induk</th><th>Nama</th><th>Kelas</th><th>TTL</th><th>Alamat</th><th>Asal Sekolah</th><th>Ayah</th><th>Ibu</th><th>Wali</th><th>Ketuhanan</th><th>Vihara</th><th>Status</th><th>Paramita</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    ${list.length? `<div style="overflow-x:auto"><table><thead><tr><th>No Induk</th><th>Nama</th><th>Kelas</th><th>TTL</th><th>Alamat</th><th>Asal Sekolah</th><th>Ayah</th><th>Ibu</th><th>Wali</th><th>Ketuhanan</th><th>Vihara</th><th>Nama Wali Kelas</th><th>No HP Wali Kelas</th><th>Status</th><th>Paramita</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
     : `<div class="empty"><div class="display">Belum ada data siswa</div>Tambahkan manual atau import dari Excel.</div>`}
   `;
 }
@@ -1154,6 +1178,10 @@ function formSiswa(id){
       </select></div>
       <div class="field"><label>Nama Vihara Tempat Bersembahyang *</label><input id="fSVihara" value="${s?esc(s.namaVihara||''):''}"></div>
     </div>
+    <div class="grid2">
+      <div class="field"><label>Nama Wali Kelas</label><input id="fSWaliKelasNama" value="${s?esc(s.waliKelasNama||''):''}"></div>
+      <div class="field"><label>No Telepon Wali Kelas</label><input id="fSWaliKelasTelepon" value="${s?esc(s.waliKelasTelepon||''):''}"></div>
+    </div>
     ${s? `<div class="field"><label>Status</label><select id="fSStatus">
       ${['aktif','pindah','nonaktif','lulus'].map(op=>`<option value="${op}" ${s.status===op?'selected':''}>${op}</option>`).join('')}
     </select></div>`:''}
@@ -1205,6 +1233,8 @@ function simpanSiswa(id){
     teleponWali: document.getElementById('fSTeleponWali').value.trim(),
     statusKetuhanan: document.getElementById('fSKetuhanan').value,
     namaVihara,
+    waliKelasNama: document.getElementById('fSWaliKelasNama').value.trim(),
+    waliKelasTelepon: document.getElementById('fSWaliKelasTelepon').value.trim(),
   };
   if(id){
     const s = db.siswa.find(x=>x.id===id);
@@ -1221,7 +1251,7 @@ function hapusSiswa(id){
 }
 
 /* ---- Excel import/export ---- */
-const EXCEL_COLUMNS = ["Nama Lengkap","Tempat Lahir","Tanggal Lahir (YYYY-MM-DD)","Daerah","Kelas","Alamat Tinggal","Asal Sekolah","Nama Ayah","Telepon Ayah","Nama Ibu","Telepon Ibu","Nama Wali Siswa","Telepon Wali Siswa","Status Memohon Ketuhanan (Sudah/Belum)","Nama Vihara"];
+const EXCEL_COLUMNS = ["Nama Lengkap","Tempat Lahir","Tanggal Lahir (YYYY-MM-DD)","No Telepon Siswa","Daerah","Kelas","Alamat Tinggal","Asal Sekolah","Nama Ayah","Telepon Ayah","Nama Ibu","Telepon Ibu","Nama Wali Siswa","Telepon Wali Siswa","Status Memohon Ketuhanan (Sudah/Belum)","Nama Vihara","Nama Wali Kelas","Telepon Wali Kelas"];
 function downloadTemplateExcel(){
   const ws = XLSX.utils.aoa_to_sheet([EXCEL_COLUMNS]);
   const wb = XLSX.utils.book_new();
@@ -1258,6 +1288,7 @@ function importExcel(input){
           namaLengkap: nama,
           tempatLahir: (r["Tempat Lahir"]||'').toString().trim(),
           tglLahir: parseExcelDate(r["Tanggal Lahir (YYYY-MM-DD)"]),
+          teleponSiswa: (r["No Telepon Siswa"]||'').toString().trim(),
           kelasId,
           alamatTinggal: (r["Alamat Tinggal"]||'').toString().trim(),
           asalSekolah: (r["Asal Sekolah"]||'').toString().trim(),
@@ -1269,6 +1300,8 @@ function importExcel(input){
           teleponWali: (r["Telepon Wali Siswa"]||'').toString().trim(),
           statusKetuhanan: /sudah/i.test((r["Status Memohon Ketuhanan (Sudah/Belum)"]||'').toString())? 'Sudah':'Belum',
           namaVihara: (r["Nama Vihara"]||'').toString().trim(),
+          waliKelasNama: (r["Nama Wali Kelas"]||'').toString().trim(),
+          waliKelasTelepon: (r["Telepon Wali Kelas"]||'').toString().trim(),
         });
         created++;
       });
@@ -1296,11 +1329,12 @@ function exportExcel(){
     const k = db.kelas.find(x=>x.id===s.kelasId);
     return {
       "No Induk": s.noInduk, "Nama Lengkap": s.namaLengkap, "Tempat Lahir": s.tempatLahir,
-      "Tanggal Lahir": s.tglLahir, "Daerah": k? (daerahOf(k)?daerahOf(k).nama:''):'', "Kelas": k? (tingkatOf(k)?tingkatOf(k).nama:''):'',
+      "Tanggal Lahir": s.tglLahir, "No Telepon Siswa": s.teleponSiswa, "Daerah": k? (daerahOf(k)?daerahOf(k).nama:''):'', "Kelas": k? (tingkatOf(k)?tingkatOf(k).nama:''):'',
       "Alamat Tinggal": s.alamatTinggal, "Asal Sekolah": s.asalSekolah,
       "Nama Ayah": s.namaAyah, "Telepon Ayah": s.teleponAyah, "Nama Ibu": s.namaIbu, "Telepon Ibu": s.teleponIbu,
       "Nama Wali Siswa": s.namaWali, "Telepon Wali Siswa": s.teleponWali,
-      "Status Memohon Ketuhanan": s.statusKetuhanan, "Nama Vihara": s.namaVihara, "Status": s.status
+      "Status Memohon Ketuhanan": s.statusKetuhanan, "Nama Vihara": s.namaVihara,
+      "Nama Wali Kelas": s.waliKelasNama, "Telepon Wali Kelas": s.waliKelasTelepon, "Status": s.status
     };
   });
   const ws = XLSX.utils.json_to_sheet(data);
@@ -1383,21 +1417,28 @@ function bukaAbsen(kelasId, tanggal){
   const rowsHtml = anak.map(s=>{
     const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===tanggal && a.kelasId===kelasId);
     const st = rec? rec.status : '';
+    const ket = rec? (rec.keterangan||'') : '';
     return `<tr><td>${esc(s.namaLengkap)}</td><td>
       <select onchange="setAbsen('${s.id}','${kelasId}','${tanggal}', this.value)">
         <option value="">—</option>
         ${STATUS_ABSEN.map(o=>`<option value="${o}" ${st===o?'selected':''}>${o}</option>`).join('')}
-      </select></td></tr>`;
+      </select></td>
+      <td><input type="text" placeholder="Catatan (opsional)" value="${esc(ket)}" onchange="setKeteranganAbsen('${s.id}','${kelasId}','${tanggal}', this.value)"></td></tr>`;
   }).join('');
   const k = db.kelas.find(x=>x.id===kelasId);
   openModal(`<h3>Absensi ${fmtDate(tanggal)} — ${k?esc(kelasLabel(k)):''}</h3>
-    ${anak.length? `<table><thead><tr><th>Nama</th><th>Kehadiran</th></tr></thead><tbody>${rowsHtml}</tbody></table>` : `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`}
+    ${anak.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Kehadiran</th><th>Remarks</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>` : `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`}
     <div class="modal-actions"><button class="btn-sun btn-small" onclick="closeModal()">Selesai</button></div>`);
 }
 function setAbsen(siswaId, kelasId, tanggal, status){
   let rec = db.absensi.find(a=>a.siswaId===siswaId && a.tanggal===tanggal && a.kelasId===kelasId);
   if(!rec){ rec={id:uid(), siswaId, kelasId, tanggal, status:'', keterangan:''}; db.absensi.push(rec); }
   rec.status = status; saveToDrive();
+}
+function setKeteranganAbsen(siswaId, kelasId, tanggal, keterangan){
+  let rec = db.absensi.find(a=>a.siswaId===siswaId && a.tanggal===tanggal && a.kelasId===kelasId);
+  if(!rec){ rec={id:uid(), siswaId, kelasId, tanggal, status:'', keterangan:''}; db.absensi.push(rec); }
+  rec.keterangan = keterangan.trim(); saveToDrive();
 }
 
 /* ======================= PENILAIAN ======================= */
@@ -1447,47 +1488,75 @@ function setNilai(siswaId, aspekId, val){
 /* ======================= KENAIKAN KELAS ======================= */
 function renderKenaikan(){
   const ta = activeTahunAjaran();
+  const kelasList = ta? kelasOfTahun(ta.id) : [];
+  const siswaAktif = db.siswa.filter(s=>s.status==='aktif' && kelasList.some(k=>k.id===s.kelasId));
+  const tingkatSorted = [...db.tingkatKelas].sort((a,b)=>a.urutan-b.urutan);
+  const rows = siswaAktif.map(s=>{
+    const k = db.kelas.find(x=>x.id===s.kelasId);
+    const t = k? tingkatOf(k) : null;
+    const tBerikut = t? tingkatSorted.find(x=>x.urutan===t.urutan+1) : null;
+    const tujuan = tBerikut? tBerikut.nama : 'Lulus';
+    return `<tr>
+      <td><input type="checkbox" class="kn-check" value="${s.id}" checked></td>
+      <td>${esc(s.noInduk||'—')}</td>
+      <td><strong>${esc(s.namaLengkap)}</strong></td>
+      <td>${k? esc(kelasLabel(k)):'—'}</td>
+      <td>${esc(tujuan)}</td>
+    </tr>`;
+  }).join('');
   return `
     <h2>Kenaikan Kelas</h2>
-    <p class="subtitle">Membuat tahun ajaran baru dan menaikkan semua siswa aktif ke tingkat berikutnya pada daerah yang sama. Siswa di tingkat tertinggi (SMA/SMK Kelas 12) ditandai "lulus".</p>
-    <div class="setup-box">⚠️ Proses ini akan membuat tahun ajaran baru & mengaktifkannya, membuat kelas baru per tingkat+daerah yang sudah ada, memindahkan siswa aktif ke kelas tingkat berikutnya, dan menandai siswa di tingkat terakhir sebagai lulus. Data lama tetap tersimpan untuk riwayat/laporan.</div>
+    <p class="subtitle">Centang siswa yang akan dinaikkan ke tahun ajaran baru, lalu klik Proses. Siswa yang TIDAK dicentang akan tetap tinggal di kelas/tahun ajaran sekarang.</p>
+    <div class="setup-box">⚠️ Proses ini membuat tahun ajaran baru & mengaktifkannya. Hanya siswa tercentang yang dipindah ke tingkat berikutnya (atau ditandai "lulus" jika sudah di tingkat akhir). Data lama tetap tersimpan untuk riwayat/laporan.</div>
     <div class="field"><label>Nama tahun ajaran baru</label><input id="fKenaikanNama" placeholder="${nextTAName(ta)}" style="width:220px"></div>
-    <button class="btn-sun" onclick="prosesKenaikan()">Proses kenaikan kelas</button>
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn-outline btn-small" onclick="toggleAllKenaikan(true)">Centang semua</button>
+      <button class="btn-outline btn-small" onclick="toggleAllKenaikan(false)">Kosongkan semua</button>
+    </div>
+    ${siswaAktif.length? `<div style="overflow-x:auto"><table><thead><tr><th></th><th>No Induk</th><th>Nama</th><th>Kelas Sekarang</th><th>Tujuan</th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty">Tidak ada siswa aktif untuk dinaikkan.</div>`}
+    <button class="btn-sun" style="margin-top:16px" onclick="prosesKenaikan()">Proses Kenaikan Kelas</button>
   `;
 }
+function toggleAllKenaikan(val){ document.querySelectorAll('.kn-check').forEach(c=>c.checked=val); }
 function nextTAName(ta){ if(!ta) return defaultTAName(); const m=ta.nama.match(/(\d{4})\D+(\d{4})/); if(m) return `${+m[1]+1}/${+m[2]+1}`; return defaultTAName(); }
 function prosesKenaikan(){
   const taLama = activeTahunAjaran();
   if(!taLama) return toast('Tidak ada tahun ajaran aktif');
-  if(!confirm('Proses kenaikan kelas tidak dapat dibatalkan otomatis. Lanjutkan?')) return;
+  const checkedIds = Array.from(document.querySelectorAll('.kn-check:checked')).map(x=>x.value);
+  if(!checkedIds.length) return toast('Pilih minimal satu siswa untuk dinaikkan');
+  if(!confirm(`Proses kenaikan kelas untuk ${checkedIds.length} siswa terpilih. Lanjutkan?`)) return;
   const namaBaru = document.getElementById('fKenaikanNama').value.trim() || nextTAName(taLama);
   const taBaru = {id:uid(), nama:namaBaru, aktif:true};
   db.tahunAjaran.forEach(t=>t.aktif=false); db.tahunAjaran.push(taBaru);
 
   const tingkatSorted = [...db.tingkatKelas].sort((a,b)=>a.urutan-b.urutan);
-  const kelasLamaList = kelasOfTahun(taLama.id);
   const kelasBaruMap = {}; // "tingkatId|daerahId" -> kelas baru
-  kelasLamaList.forEach(kl=>{
-    const key = kl.tingkatKelasId+'|'+kl.daerahId;
-    if(kelasBaruMap[key]) return;
-    const t = db.tingkatKelas.find(x=>x.id===kl.tingkatKelasId);
-    const tBerikut = tingkatSorted.find(x=>x.urutan===(t?t.urutan:0)+1);
-    if(!tBerikut) return; // tingkat terakhir, tidak buat kelas baru
-    let kelasBaru = db.kelas.find(k=>k.tahunAjaranId===taBaru.id && k.tingkatKelasId===tBerikut.id && k.daerahId===kl.daerahId);
-    if(!kelasBaru){ kelasBaru = {id:uid(), tahunAjaranId:taBaru.id, tingkatKelasId:tBerikut.id, daerahId:kl.daerahId, namaRombel:kl.namaRombel, guruId:kl.guruId}; db.kelas.push(kelasBaru); }
-    kelasBaruMap[key] = kelasBaru;
-  });
-
-  db.siswa.filter(s=>s.status==='aktif').forEach(s=>{
+  let jumlahLulus = 0;
+  checkedIds.forEach(sid=>{
+    const s = db.siswa.find(x=>x.id===sid);
+    if(!s) return;
     const kelasSekarang = db.kelas.find(k=>k.id===s.kelasId);
     if(!kelasSekarang) return;
-    const key = kelasSekarang.tingkatKelasId+'|'+kelasSekarang.daerahId;
-    const kelasBaru = kelasBaruMap[key];
-    if(kelasBaru) s.kelasId = kelasBaru.id; else s.status='lulus';
+    const t = tingkatOf(kelasSekarang);
+    if(!t) return;
+    const tBerikut = tingkatSorted.find(x=>x.urutan===t.urutan+1);
+    if(!tBerikut){ s.status='lulus'; jumlahLulus++; return; }
+    const key = tBerikut.id+'|'+kelasSekarang.daerahId;
+    let kelasBaru = kelasBaruMap[key];
+    if(!kelasBaru){
+      kelasBaru = db.kelas.find(k=>k.tahunAjaranId===taBaru.id && k.tingkatKelasId===tBerikut.id && k.daerahId===kelasSekarang.daerahId);
+      if(!kelasBaru){
+        kelasBaru = {id:uid(), tahunAjaranId:taBaru.id, tingkatKelasId:tBerikut.id, daerahId:kelasSekarang.daerahId, namaRombel:kelasSekarang.namaRombel, guruId:kelasSekarang.guruId, guruAsistenIds:kelasSekarang.guruAsistenIds||[]};
+        db.kelas.push(kelasBaru);
+      }
+      kelasBaruMap[key] = kelasBaru;
+    }
+    s.kelasId = kelasBaru.id;
   });
 
-  renderTabs(); renderContent(); switchTab('dashboard'); saveToDrive();
-  toast(`Kenaikan kelas selesai → tahun ajaran ${namaBaru}`);
+  renderTabs(); renderContent(); switchTab('dashboard'); saveToDrive(true);
+  toast(`Kenaikan kelas selesai untuk ${checkedIds.length} siswa (${jumlahLulus} lulus) → tahun ajaran ${namaBaru}`);
 }
 
 /* ======================= LAPORAN ======================= */
@@ -1558,7 +1627,7 @@ function driveError(title, e){
   console.error(e);
   const msg = (e && e.message) ? e.message : String(e);
   openModal(`<h3>⚠️ ${esc(title)}</h3>
-    <p style="font-size:13px;line-height:1.6;white-space:pre-wrap;background:#f7fafd;border:1px solid var(--line);border-radius:8px;padding:10px">${esc(msg)}</p>
+    <p style="font-size:13px;line-height:1.6;white-space:pre-wrap;background:#f7fafd;color:#1F2A3C;border:1px solid var(--line);border-radius:8px;padding:10px">${esc(msg)}</p>
     <p style="font-size:12.5px;color:var(--ink-soft)">Jika ini terus terjadi, screenshot pesan di atas dan periksa: koneksi internet, atau apakah URL Web App / kunci rahasia di kode sudah benar (lihat PANDUAN-SETUP.md).</p>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal(); connectDrive()">Coba lagi</button>
     <button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
