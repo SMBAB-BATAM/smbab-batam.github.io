@@ -67,7 +67,7 @@
   .btn-danger{background:var(--paper);color:var(--coral);border:1.5px solid #f6cccd;}
   .btn-danger:hover{background:#fff5f5;}
   .btn-small{padding:6px 10px;font-size:12px;border-radius:8px;}
-  .app-shell{max-width:1220px;margin:0 auto;padding:18px 24px 60px;display:flex;gap:18px;align-items:flex-start;}
+  .app-shell{max-width:1900px;width:100%;margin:0 auto;padding:18px clamp(16px,3vw,40px) 60px;display:flex;gap:18px;align-items:flex-start;box-sizing:border-box;}
   .sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;position:sticky;top:88px;max-height:calc(100vh - 108px);overflow-y:auto;}
   .tab{font-family:'Baloo 2';font-weight:600;font-size:14px;padding:10px 14px;border-radius:10px;background:transparent;color:var(--sky-mid);cursor:pointer;white-space:nowrap;border:1px solid transparent;text-align:left;}
   .tab.active{background:var(--paper);color:var(--heading);border-color:var(--line);box-shadow:0 2px 8px rgba(44,71,112,.06);}
@@ -165,8 +165,6 @@
   </div>
   <div class="drive-status">
     <span id="statusText"><span class="dot" id="statusDot"></span> Menghubungkan ke server...</span>
-    <button class="btn-ghost" id="saveBtn" style="display:none" onclick="saveToDrive(true)">Simpan sekarang</button>
-    <button class="btn-ghost" id="refreshBtn" style="display:none" onclick="manualRefresh()">↻ Muat ulang</button>
     <div class="theme-picker">
       <button class="btn-ghost" onclick="toggleThemeMenu()">🎨 Tema</button>
       <div class="theme-menu" id="themeMenu">
@@ -286,6 +284,7 @@ const STATUS_ABSEN = ['Hadir','Izin','Sakit','Alpa'];
 function isAdmin(){ return currentUser && currentUser.role==='admin'; }
 function accessibleKelasIds(){
   if(isAdmin()) return null; // null = semua
+  if(currentUser && currentUser.lihatSemuaSiswa) return null; // guru diberi akses lihat semua oleh admin
   const ta = activeTahunAjaran();
   const own = db.kelas.filter(k=> ta && k.tahunAjaranId===ta.id && (k.guruId===currentUser.id || (k.guruAsistenIds||[]).includes(currentUser.id))).map(k=>k.id);
   const granted = currentUser.kelasAksesIds||[];
@@ -600,7 +599,7 @@ function renderPengguna(){
       <td><span class="badge ${u.role}">${u.role}</span></td>
       <td>${esc(u.noHp||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(u.email||'')}</div></td>
       <td>${esc(u.pendidikanTerakhir||'—')}</td>
-      <td>${u.role==='guru' ? (u.kelasAksesIds||[]).map(id=>{const k=db.kelas.find(x=>x.id===id); return k? esc(kelasLabel(k)):'';}).filter(Boolean).join(', ') || '—' : 'Semua'}</td>
+      <td>${u.role==='guru' ? (u.lihatSemuaSiswa? '<strong>Semua siswa</strong>' : ((u.kelasAksesIds||[]).map(id=>{const k=db.kelas.find(x=>x.id===id); return k? esc(kelasLabel(k)):'';}).filter(Boolean).join(', ') || '—')) : 'Semua'}</td>
       <td><div class="row">
         <button class="btn-outline btn-small" onclick="formPengguna('${u.id}')">Ubah</button>
         ${u.id!==currentUser.id? `<button class="btn-danger btn-small" onclick="hapusPengguna('${u.id}')">Hapus</button>`:''}
@@ -641,9 +640,12 @@ function formPengguna(id){
       <option value="admin" ${u&&u.role==='admin'?'selected':''}>Admin</option>
     </select></div>
     <div id="fPAksesWrap" style="display:${u&&u.role==='admin'?'none':'block'}">
-      <label>Hak akses kelas (tahun ajaran ${ta?esc(ta.nama):'-'})</label>
-      <div class="checkbox-grid">
-        ${kelasList.map(k=>`<label><input type="checkbox" value="${k.id}" ${u&&(u.kelasAksesIds||[]).includes(k.id)?'checked':''}> ${esc(kelasLabel(k))}</label>`).join('') || '<em>Belum ada kelas dibuat</em>'}
+      <div class="field"><label style="display:flex;align-items:center;gap:6px;font-weight:600"><input type="checkbox" id="fPLihatSemua" ${u&&u.lihatSemuaSiswa?'checked':''} onchange="document.getElementById('fPAksesGridWrap').style.opacity=this.checked?'0.4':'1'"> Bisa melihat data SEMUA siswa (bukan hanya kelasnya)</label></div>
+      <div id="fPAksesGridWrap" style="opacity:${u&&u.lihatSemuaSiswa?'0.4':'1'}">
+        <label>Hak akses kelas spesifik (tahun ajaran ${ta?esc(ta.nama):'-'})</label>
+        <div class="checkbox-grid">
+          ${kelasList.map(k=>`<label><input type="checkbox" value="${k.id}" ${u&&(u.kelasAksesIds||[]).includes(k.id)?'checked':''}> ${esc(kelasLabel(k))}</label>`).join('') || '<em>Belum ada kelas dibuat</em>'}
+        </div>
       </div>
     </div>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
@@ -668,7 +670,8 @@ async function simpanPengguna(id){
   const username=document.getElementById('fPUser').value.trim();
   const pass=document.getElementById('fPPass').value;
   const role=document.getElementById('fPRole').value;
-  const akses = Array.from(document.querySelectorAll('#fPAksesWrap input:checked')).map(x=>x.value);
+  const akses = Array.from(document.querySelectorAll('#fPAksesGridWrap input:checked')).map(x=>x.value);
+  const lihatSemuaSiswa = document.getElementById('fPLihatSemua').checked;
   const profil = {
     tempatLahir: document.getElementById('fPTempat').value.trim(),
     tglLahir: ddmmyyyyToIso(document.getElementById('fPTgl').value.trim()),
@@ -686,10 +689,10 @@ async function simpanPengguna(id){
   try{
     if(id){
       const u = db.users.find(x=>x.id===id);
-      Object.assign(u, {nama, username, role, kelasAksesIds:akses}, profil);
+      Object.assign(u, {nama, username, role, kelasAksesIds:akses, lihatSemuaSiswa}, profil);
       if(pass) u.passwordHash = await sha256(pass);
     } else {
-      const u = {id:uid(), username, passwordHash: await sha256(pass), nama, role, kelasAksesIds:akses, ...profil};
+      const u = {id:uid(), username, passwordHash: await sha256(pass), nama, role, kelasAksesIds:akses, lihatSemuaSiswa, ...profil};
       db.users.push(u);
     }
     closeModal(); renderContent();
@@ -1066,12 +1069,25 @@ function simpanAsisten(kelasId){
 
 /* ======================= DATA SISWA ======================= */
 let siswaFilterKelas = '';
+let siswaSearchQuery = '';
 function renderSiswa(){
   const ta = activeTahunAjaran();
   const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
   const kelasIds = kelasList.map(k=>k.id);
   let list = db.siswa.filter(s=> kelasIds.includes(s.kelasId) || (isAdmin() && s.status!=='aktif'));
   if(siswaFilterKelas) list = list.filter(s=>s.kelasId===siswaFilterKelas);
+  if(siswaSearchQuery.trim()){
+    const q = siswaSearchQuery.trim().toLowerCase();
+    list = list.filter(s=>{
+      const k = db.kelas.find(x=>x.id===s.kelasId);
+      const haystack = [
+        s.noInduk, s.namaLengkap, s.tempatLahir, s.tglLahir? isoToDdmmyyyy(s.tglLahir):'',
+        s.alamatTinggal, s.asalSekolah, s.namaAyah, s.namaIbu, s.namaWali,
+        s.namaVihara, s.waliKelasNama, k? kelasLabel(k):''
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }
   const rows = list.map(s=>{
     const k = db.kelas.find(x=>x.id===s.kelasId);
     const sudahBayar = ta && db.paramita.some(p=>p.siswaId===s.id && p.tahunAjaranId===ta.id);
@@ -1090,7 +1106,7 @@ function renderSiswa(){
       <td>${esc(s.waliKelasNama||'—')}</td>
       <td>${esc(s.waliKelasTelepon||'—')}</td>
       <td><span class="badge ${s.status}">${s.status}</span></td>
-      <td style="text-align:center">${ta? `<input type="checkbox" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked)" ${isAdmin()?'':'disabled'}>` : '—'}</td>
+      <td style="text-align:center">${ta? `<input type="checkbox" id="paramitaChk_${s.id}" ${sudahBayar?'checked':''} onchange="toggleParamita('${s.id}', this.checked, this)" ${isAdmin()?'':'disabled'}>${sudahBayar? `<div style="font-size:11px;color:var(--ink-soft)">Rp${(db.paramita.find(p=>p.siswaId===s.id&&p.tahunAjaranId===ta.id)?.jumlah||DANA_PARAMITA).toLocaleString('id-ID')}</div>`:''}` : '—'}</td>
       <td><div class="row">
         <button class="btn-outline btn-small" onclick="formSiswa('${s.id}')">Ubah</button>
         <button class="btn-danger btn-small" onclick="hapusSiswa('${s.id}')">Hapus</button>
@@ -1099,8 +1115,9 @@ function renderSiswa(){
   }).join('');
   return `
     <div class="toolbar">
-      <div><h2>Data Siswa</h2><p class="subtitle" style="margin:0">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dana Paramita Rp${DANA_PARAMITA.toLocaleString('id-ID')}/siswa</p></div>
+      <div><h2>Data Siswa</h2><p class="subtitle" style="margin:0">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dana Paramita Rp${DANA_PARAMITA.toLocaleString('id-ID')}/siswa · ${list.length} siswa ditampilkan</p></div>
       <div class="row">
+        <input type="text" placeholder="Cari nama, kelas, tempat lahir, dll..." value="${esc(siswaSearchQuery)}" style="min-width:220px" oninput="siswaSearchQuery=this.value; renderContent()">
         <select onchange="siswaFilterKelas=this.value; renderContent()">
           <option value="">Semua kelas</option>
           ${kelasList.map(k=>`<option value="${k.id}" ${k.id===siswaFilterKelas?'selected':''}>${esc(kelasLabel(k))}</option>`).join('')}
@@ -1117,19 +1134,38 @@ function renderSiswa(){
     : `<div class="empty"><div class="display">Belum ada data siswa</div>Tambahkan manual atau import dari Excel.</div>`}
   `;
 }
-function toggleParamita(siswaId, checked){
+function toggleParamita(siswaId, checked, el){
   const ta = activeTahunAjaran();
   if(!ta) return;
   if(checked){
     if(db.paramita.some(p=>p.siswaId===siswaId && p.tahunAjaranId===ta.id)) return;
-    db.paramita.push({id:uid(), siswaId, tahunAjaranId:ta.id, tanggal:new Date().toISOString().slice(0,10)});
-    const s = db.siswa.find(x=>x.id===siswaId);
-    db.kas.push({id:uid(), tanggal:new Date().toISOString().slice(0,10), keterangan:`Dana Paramita — ${s?s.namaLengkap:''} (${ta.nama})`, tipe:'masuk', jumlah:DANA_PARAMITA, siswaId, tahunAjaranId:ta.id, autoGenerated:true});
+    formParamitaJumlah(siswaId, ta, el);
   } else {
     db.paramita = db.paramita.filter(p=>!(p.siswaId===siswaId && p.tahunAjaranId===ta.id));
     db.kas = db.kas.filter(k=>!(k.siswaId===siswaId && k.tahunAjaranId===ta.id && k.autoGenerated));
+    saveToDrive(true); toast('Tanda bayar dibatalkan');
   }
-  saveToDrive(true); toast(checked? 'Ditandai sudah bayar dana paramita' : 'Tanda bayar dibatalkan');
+}
+function formParamitaJumlah(siswaId, ta, el){
+  const s = db.siswa.find(x=>x.id===siswaId);
+  openModal(`<h3>Dana Paramita — ${esc(s?s.namaLengkap:'')}</h3>
+    <div class="field"><label>Jumlah yang disetor (Rp)</label><input id="fParamitaJumlah" type="number" min="0" value="${DANA_PARAMITA}"></div>
+    <div class="modal-actions">
+      <button class="btn-outline btn-small" onclick="batalParamita('${el?el.id||'':''}')">Batal</button>
+      <button class="btn-sun btn-small" onclick="simpanParamita('${siswaId}','${ta.id}')">Simpan</button>
+    </div>`);
+}
+function batalParamita(elId){
+  closeModal();
+  if(elId){ const el = document.getElementById(elId); if(el) el.checked = false; }
+}
+function simpanParamita(siswaId, tahunAjaranId){
+  const jumlah = Number(document.getElementById('fParamitaJumlah').value) || DANA_PARAMITA;
+  const ta = db.tahunAjaran.find(t=>t.id===tahunAjaranId);
+  const s = db.siswa.find(x=>x.id===siswaId);
+  db.paramita.push({id:uid(), siswaId, tahunAjaranId, jumlah, tanggal:new Date().toISOString().slice(0,10)});
+  db.kas.push({id:uid(), tanggal:new Date().toISOString().slice(0,10), keterangan:`Dana Paramita — ${s?s.namaLengkap:''} (${ta?ta.nama:''})`, tipe:'masuk', jumlah, siswaId, tahunAjaranId, autoGenerated:true});
+  closeModal(); renderContent(); saveToDrive(true); toast('Dana paramita Rp'+jumlah.toLocaleString('id-ID')+' dicatat');
 }
 function formSiswa(id){
   const s = id? db.siswa.find(x=>x.id===id) : null;
@@ -1614,13 +1650,15 @@ function renderLaporan(){
 
 /* ======================= BACKEND (Google Apps Script) ======================= */
 let driveKnownVersion = null; // versi data terakhir yang kita ketahui (dari server)
+let lastSyncedSnapshot = null; // salinan db persis setelah load/save sukses terakhir, untuk deteksi apa yang berubah lokal
 let saveBusy = false;
+let saveQueued = false;
+
+function snapshotDb(){ try{ return JSON.parse(JSON.stringify(db)); }catch(e){ return null; } }
 
 function updateStatusUI(connected){
   document.getElementById('statusDot').classList.toggle('on', connected);
-  document.getElementById('statusText').innerHTML = `<span class="dot ${connected?'on':''}" id="statusDot"></span> ${connected? 'Tersambung ke server data' : 'Terputus dari server'}`;
-  document.getElementById('saveBtn').style.display = connected? 'inline-block':'none';
-  document.getElementById('refreshBtn').style.display = connected? 'inline-block':'none';
+  document.getElementById('statusText').innerHTML = `<span class="dot ${connected?'on':''}" id="statusDot"></span> ${connected? 'Tersambung' : 'Terputus dari server'}`;
 }
 function backendConfigured(){ return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('GANTI_DENGAN') && SECRET_KEY && !SECRET_KEY.includes('GANTI_DENGAN'); }
 function driveError(title, e){
@@ -1631,14 +1669,6 @@ function driveError(title, e){
     <p style="font-size:12.5px;color:var(--ink-soft)">Jika ini terus terjadi, screenshot pesan di atas dan periksa: koneksi internet, atau apakah URL Web App / kunci rahasia di kode sudah benar (lihat PANDUAN-SETUP.md).</p>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal(); connectDrive()">Coba lagi</button>
     <button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
-}
-async function backendFetch(options={}){
-  if(!backendConfigured()) throw new Error('URL Web App / kunci rahasia belum diisi di kode. Lihat PANDUAN-SETUP.md.');
-  const res = await fetch(APPS_SCRIPT_URL, options);
-  if(!res.ok){ throw new Error(`Server error ${res.status}`); }
-  const json = await res.json();
-  if(json.error) throw new Error(json.error);
-  return json;
 }
 function decideStageAfterLoad(){
   if(backendInitError){ appStage='need-drive'; return; }
@@ -1669,6 +1699,7 @@ async function loadFromDrive(){
       seedDefaults();
       await saveToDrive(false, true);
     }
+    lastSyncedSnapshot = snapshotDb();
     backendInitError = null;
     updateStatusUI(true);
   }catch(e){ console.error(e); backendInitError = e.message || String(e); updateStatusUI(false); }
@@ -1677,11 +1708,11 @@ async function loadFromDrive(){
   if(!backendInitError) startPolling();
 }
 function connectDrive(){ backendInitError=null; renderContent(); loadFromDrive(); }
-async function manualRefresh(){
-  if(!confirm('Muat ulang mengambil versi terbaru dari server. Perubahan yang belum tersimpan di layar ini bisa hilang. Lanjutkan?')) return;
-  await loadFromDrive();
-  if(!backendInitError) toast('Data disegarkan dari server');
-}
+async function manualRefresh(){ await loadFromDrive(); }
+
+// Cek berkala di latar belakang; kalau ada perubahan dari pengguna lain dan
+// tidak sedang ada modal terbuka (supaya tidak mengganggu yang sedang mengetik),
+// diam-diam muat ulang & gabungkan datanya.
 function startPolling(){
   clearInterval(window._pollTimer);
   window._pollTimer = setInterval(async ()=>{
@@ -1689,39 +1720,67 @@ function startPolling(){
       const res = await fetch(`${APPS_SCRIPT_URL}?action=version&secret=${encodeURIComponent(SECRET_KEY)}`);
       if(!res.ok) return;
       const data = await res.json();
-      if(driveKnownVersion && data.version && data.version !== driveKnownVersion){
-        toast('Ada perubahan baru dari pengguna lain. Klik "↻ Muat ulang" untuk sinkron.');
+      const modalOpen = document.getElementById('modalRoot') && document.getElementById('modalRoot').innerHTML.trim().length>0;
+      if(driveKnownVersion && data.version && data.version !== driveKnownVersion && !modalOpen && !saveBusy){
+        await mergeFromRemote();
+        renderTabs(); renderContent(); updateUserBadge();
       }
     }catch(e){ /* diamkan, cek berikutnya akan coba lagi */ }
-  }, 45000);
+  }, 20000);
 }
-function showConflictModal(){
-  openModal(`<h3>⚠️ Ada perubahan baru</h3>
-    <p style="font-size:13.5px;line-height:1.6">Pengguna lain menyimpan perubahan ke server setelah data ini terakhir Anda muat. Menyimpan sekarang berisiko menimpa perubahan mereka.</p>
-    <div class="modal-actions">
-      <button class="btn-outline btn-small" onclick="closeModal()">Batalkan dulu</button>
-      <button class="btn-outline btn-small" onclick="closeModal(); manualRefresh()">Muat data terbaru</button>
-      <button class="btn-danger btn-small" onclick="closeModal(); saveToDrive(true, false, true)">Tetap timpa punya saya</button>
-    </div>`);
+
+// Ambil data terbaru dari server dan gabungkan dengan perubahan lokal yang
+// belum tersimpan, per-koleksi (bukan per-record) supaya sederhana & aman:
+// koleksi yang BERUBAH secara lokal sejak sinkron terakhir akan dipertahankan
+// versi lokalnya; koleksi yang tidak disentuh mengambil versi terbaru server.
+async function mergeFromRemote(){
+  const url = `${APPS_SCRIPT_URL}?action=load&secret=${encodeURIComponent(SECRET_KEY)}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`Server error ${res.status}`);
+  const data = await res.json();
+  if(data.error) throw new Error(data.error);
+  const remote = data.data || {};
+  const base = lastSyncedSnapshot || {};
+  const merged = {};
+  const allKeys = new Set([...Object.keys(db), ...Object.keys(remote)]);
+  allKeys.forEach(key=>{
+    if(key==='meta'){
+      const remoteCounter = (remote.meta && remote.meta.noIndukCounter) || 0;
+      const localCounter = (db.meta && db.meta.noIndukCounter) || 0;
+      merged.meta = { noIndukCounter: Math.max(remoteCounter, localCounter) };
+      return;
+    }
+    const localChanged = JSON.stringify(db[key]) !== JSON.stringify(base[key]);
+    merged[key] = localChanged ? db[key] : remote[key];
+  });
+  db = merged;
+  driveKnownVersion = data.version;
+  lastSyncedSnapshot = snapshotDb();
 }
-async function saveToDrive(manual, forceCreate, force){
-  if(saveBusy) return;
+async function saveToDrive(manual, forceCreate){
+  if(saveBusy){ saveQueued = true; return; }
   saveBusy = true;
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari CORS preflight ke Apps Script
-      body: JSON.stringify({action:'save', secret:SECRET_KEY, knownVersion: driveKnownVersion, force: !!force, data: db})
+      body: JSON.stringify({action:'save', secret:SECRET_KEY, knownVersion: driveKnownVersion, force: !!forceCreate, data: db})
     });
     if(!res.ok) throw new Error(`Server error ${res.status}`);
     const json = await res.json();
     if(json.error) throw new Error(json.error);
-    if(json.conflict){ saveBusy=false; showConflictModal(); return; }
+    if(json.conflict){
+      // Ada yang menyimpan duluan — gabungkan otomatis lalu simpan ulang, tanpa mengganggu pengguna.
+      await mergeFromRemote();
+      saveBusy = false;
+      return saveToDrive(manual, forceCreate);
+    }
     driveKnownVersion = json.version;
+    lastSyncedSnapshot = snapshotDb();
     updateStatusUI(true);
-    if(manual) toast('Data tersimpan ke server');
   }catch(e){ driveError('Gagal menyimpan data', e); }
   saveBusy = false;
+  if(saveQueued){ saveQueued = false; saveToDrive(false); }
 }
 
 /* ======================= INIT ======================= */
