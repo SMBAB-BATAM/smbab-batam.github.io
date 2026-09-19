@@ -1606,7 +1606,18 @@ function prosesKenaikan(){
 /* ======================= LAPORAN ======================= */
 let laporanSiswaId = '';
 let laporanPeriode = 'MID_GANJIL';
+let laporanMode = 'siswa'; // siswa | kelas
+let laporanKelasId = '';
 function renderLaporan(){
+  const toggle = `
+    <div class="row" style="margin-bottom:18px">
+      <button class="${laporanMode==='siswa'?'btn-sun':'btn-outline'}" onclick="laporanMode='siswa'; renderContent()">Laporan Per Siswa</button>
+      <button class="${laporanMode==='kelas'?'btn-sun':'btn-outline'}" onclick="laporanMode='kelas'; renderContent()">Laporan Absensi per Kelas</button>
+    </div>
+  `;
+  return toggle + (laporanMode==='kelas'? renderLaporanAbsensiKelas() : renderLaporanSiswa());
+}
+function renderLaporanSiswa(){
   const ta = activeTahunAjaran();
   const kelasIdsAccess = accessibleKelasIds();
   const siswaList = db.siswa.filter(s=> kelasIdsAccess===null || kelasIdsAccess.includes(s.kelasId));
@@ -1653,6 +1664,75 @@ function renderLaporan(){
         <select onchange="laporanPeriode=this.value; renderContent()">${PERIODE.map(p=>`<option value="${p.key}" ${p.key===laporanPeriode?'selected':''}>${p.label}</option>`).join('')}</select></div>
     </div>
     ${detail}
+  `;
+}
+function renderLaporanAbsensiKelas(){
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  if(!laporanKelasId && kelasList.length) laporanKelasId = kelasList[0].id;
+  const k = db.kelas.find(x=>x.id===laporanKelasId);
+  const jadwal = ta? jadwalOfTahun(ta.id).filter(j=>!j.libur).sort((a,b)=>a.tanggal.localeCompare(b.tanggal)) : [];
+  const siswaList = laporanKelasId? siswaAktifDiKelas(laporanKelasId) : [];
+  const picker = `
+    <h2>Laporan Absensi per Kelas</h2>
+    <p class="subtitle">Rekap kehadiran seluruh siswa dalam satu kelas, per tanggal pertemuan — H (Hadir), I (Izin), S (Sakit), A (Alpa).</p>
+    <div class="field" style="max-width:320px;margin-bottom:16px"><label>Pilih kelas</label>
+      <select onchange="laporanKelasId=this.value; renderContent()">
+        ${kelasList.map(x=>`<option value="${x.id}" ${x.id===laporanKelasId?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}
+      </select>
+    </div>
+  `;
+  if(!kelasList.length) return picker + `<div class="empty">Tidak ada kelas yang bisa diakses.</div>`;
+  if(!jadwal.length) return picker + `<div class="empty">Belum ada tanggal pertemuan untuk tahun ajaran ini.</div>`;
+  if(!siswaList.length) return picker + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
+
+  const statusSymbol = {Hadir:'H', Izin:'I', Sakit:'S', Alpa:'A'};
+  const monthGroups = [];
+  jadwal.forEach(j=>{
+    const d = new Date(j.tanggal+'T00:00:00');
+    const label = d.toLocaleDateString('id-ID',{month:'short', year:'2-digit'});
+    let grp = monthGroups[monthGroups.length-1];
+    if(!grp || grp.label!==label){ grp = {label, dates:[]}; monthGroups.push(grp); }
+    grp.dates.push(j);
+  });
+  const headerMonthRow = monthGroups.map(g=>`<th colspan="${g.dates.length}" style="text-align:center">${g.label}</th>`).join('');
+  const headerDateRow = jadwal.map(j=>`<th style="text-align:center">${new Date(j.tanggal+'T00:00:00').getDate()}</th>`).join('');
+  const rows = siswaList.map((s,idx)=>{
+    const cells = jadwal.map(j=>{
+      const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===j.tanggal && a.kelasId===laporanKelasId);
+      const sym = rec && statusSymbol[rec.status] ? statusSymbol[rec.status] : '';
+      const cls = sym==='A'? 'color:var(--coral);font-weight:700' : (sym==='H'? 'color:#2f7a52;font-weight:700' : '');
+      return `<td style="text-align:center;${cls}">${sym}</td>`;
+    }).join('');
+    return `<tr><td>${idx+1}</td><td style="white-space:nowrap"><strong>${esc(s.namaLengkap)}</strong></td>${cells}</tr>`;
+  }).join('');
+  const totalRow = jadwal.map(j=>{
+    const count = siswaList.filter(s=>{
+      const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===j.tanggal && a.kelasId===laporanKelasId);
+      return rec && rec.status==='Hadir';
+    }).length;
+    return `<td style="text-align:center"><strong>${count||''}</strong></td>`;
+  }).join('');
+
+  return picker + `
+    <div class="print-only" style="margin-bottom:10px">
+      <h2 style="margin-bottom:2px">Daftar Kehadiran — ${k?esc(kelasLabel(k)):''}</h2>
+      <p class="subtitle">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dicetak ${new Date().toLocaleDateString('id-ID')}</p>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr><th rowspan="2" style="vertical-align:bottom">No</th><th rowspan="2" style="vertical-align:bottom">Nama</th>${headerMonthRow}</tr>
+          <tr>${headerDateRow}</tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr><td colspan="2"><strong>TOTAL HADIR</strong></td>${totalRow}</tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px"><strong>Keterangan:</strong> H = Hadir · I = Izin · S = Sakit · A = Alpa</p>
+    <button class="btn-sun" style="margin-top:8px" onclick="window.print()">🖨️ Cetak laporan</button>
   `;
 }
 
