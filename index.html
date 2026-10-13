@@ -118,10 +118,97 @@
   .checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px;}
   .checkbox-grid label{display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink);font-size:13px;}
   .print-only{display:none;}
+
+  /* ---- Laporan absensi per kelas (layar) ---- */
+  .abs-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:2px 0 18px;}
+  .abs-summary .stat{padding:14px 16px;position:relative;overflow:hidden;}
+  .abs-summary .stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sky-mid);opacity:.55;}
+  .abs-summary .stat.good::before{background:#2f7a52;opacity:1;} .abs-summary .stat.warn::before{background:var(--coral);opacity:1;}
+  .abs-summary .num{font-size:23px;line-height:1.1;}
+  .abs-summary .num small{font-size:13px;color:var(--ink-soft);font-weight:600;}
+  @media(max-width:800px){.abs-summary{grid-template-columns:1fr 1fr;}}
+  .abs-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .abs-chip{background:var(--hover-bg);border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12.5px;color:var(--ink-soft);}
+  .abs-chip strong{color:var(--ink);font-weight:600;}
+  .abs-wrap{border:1px solid var(--line);border-radius:14px;overflow-x:auto;background:var(--paper);}
+  .abs-table{border-collapse:separate;border-spacing:0;font-size:12.5px;width:100%;}
+  .abs-table th,.abs-table td{padding:7px 4px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line);}
+  .abs-table thead th{background:var(--hover-bg);color:var(--ink-soft);font-size:11px;text-transform:none;letter-spacing:0;border-bottom:1px solid var(--line);}
+  .abs-table thead tr.m th{font-family:'Baloo 2';font-size:13px;color:var(--heading);padding-top:10px;text-transform:uppercase;letter-spacing:.04em;}
+  .abs-table thead tr.d th{font-weight:600;color:var(--ink);font-size:12px;}
+  .abs-table .ms{border-left:1px solid var(--line);}
+  .abs-table th.fut{opacity:.4;}
+  .abs-table .c-no{position:sticky;left:0;z-index:1;width:42px;min-width:42px;background:var(--paper);color:var(--ink-soft);}
+  .abs-table .c-nama{position:sticky;left:42px;z-index:1;text-align:left;min-width:180px;padding-left:10px;padding-right:14px;background:var(--paper);box-shadow:inset -1px 0 0 var(--line);font-weight:600;}
+  .abs-table thead .c-no,.abs-table thead .c-nama{background:var(--hover-bg);z-index:2;vertical-align:bottom;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
+  .abs-table .c-induk{font-size:11px;color:var(--ink-soft);font-weight:400;margin-top:1px;}
+  .abs-table tbody tr:last-child td{border-bottom:1px solid var(--line);}
+  .abs-table tbody tr:hover td{background:var(--hover-bg);}
+  .abs-cell{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border-radius:7px;font-weight:700;font-size:11.5px;}
+  .abs-cell.H{background:#e3f3ea;color:#2f7a52;} .abs-cell.I{background:#e6eefb;color:#2C4770;}
+  .abs-cell.S{background:#fdf1e0;color:#b9800f;} .abs-cell.A{background:#fbe2e3;color:#c94a4f;}
+  .abs-cell.kosong{color:var(--line);font-weight:400;}
+  .abs-table .sum{font-weight:700;color:var(--ink);min-width:34px;}
+  .abs-table td.sum{background:var(--hover-bg);}
+  .abs-table .pct.good{color:#2f7a52;} .abs-table .pct.mid{color:var(--sun-deep);} .abs-table .pct.low{color:var(--coral);}
+  .abs-table tfoot td{background:var(--hover-bg);font-weight:700;color:var(--heading);border-bottom:none;}
+  .abs-table tfoot .c-foot{position:sticky;left:0;z-index:1;text-align:left;padding-left:12px;background:var(--hover-bg);box-shadow:inset -1px 0 0 var(--line);font-size:11.5px;letter-spacing:.03em;}
+  .abs-legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;font-size:12.5px;color:var(--ink-soft);}
+  .abs-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .abs-legend .abs-cell{width:21px;height:21px;font-size:10.5px;}
+
+  /* ---- Pengaturan logo kop ---- */
+  .kop-setting{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1.5px dashed var(--line);border-radius:12px;margin-bottom:18px;}
+  .kop-setting .info{flex:1;min-width:180px;font-size:13px;}
+  .kop-setting .info div{font-size:12px;color:var(--ink-soft);}
+  .kop-thumb{width:52px;height:52px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+  .kop-thumb img{max-width:100%;max-height:100%;object-fit:contain;}
+
+  /* ---- Kop surat & dokumen cetak ---- */
+  .kop{display:flex;align-items:center;gap:14px;font-family:'Times New Roman',Times,serif;color:#000;}
+  .kop-logo{width:96px;height:82px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .kop-logo img{max-width:100%;max-height:100%;object-fit:contain;}
+  .kop-logo-ph{width:88px;height:72px;border:1.5px solid #000;border-radius:50%;position:relative;}
+  .kop-logo-ph::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#000;left:50%;top:50%;transform:translate(-50%,-50%);}
+  .kop-text{flex:1;text-align:center;line-height:1.28;}
+  .kop-1{font-size:16pt;font-weight:700;letter-spacing:.3px;}
+  .kop-2{font-size:13pt;font-weight:700;}
+  .kop-3{font-size:11pt;}
+  .kop-4{font-size:10pt;}
+  .kop-line{border-top:3px solid #000;border-bottom:1px solid #000;height:3px;margin:6px 0 14px;}
+  .doc-title{text-align:center;font-family:'Times New Roman',Times,serif;font-weight:700;font-size:13pt;letter-spacing:.6px;text-decoration:underline;color:#000;margin:2px 0 2px;}
+  .doc-sub{text-align:center;font-family:'Times New Roman',Times,serif;font-size:10.5pt;color:#000;margin-bottom:12px;}
+  .doc-info{width:auto;font-family:'Times New Roman',Times,serif;font-size:10.5pt;color:#000;margin-bottom:10px;border-collapse:collapse;}
+  .doc-info td{border:none !important;padding:1px 10px 1px 0;background:none !important;}
+  .ttd{display:flex;justify-content:space-between;margin-top:22px;font-family:'Times New Roman',Times,serif;font-size:10.5pt;color:#000;page-break-inside:avoid;break-inside:avoid;}
+  .ttd > div{width:40%;text-align:center;line-height:1.5;}
+  .ttd .ttd-space{height:62px;}
+  .ttd .ttd-nama{font-weight:700;text-decoration:underline;}
+  .doc-legend{font-family:'Times New Roman',Times,serif;font-size:9.5pt;color:#000;margin-top:6px;}
+
   @media print{
-    .topbar,.sidebar,.toolbar,button{display:none !important;}
-    body{background:#fff;} .app-shell{padding:0;max-width:100%;display:block;}
-    .card{box-shadow:none;border:none;border-radius:0;} .print-only{display:block;}
+    .topbar,.sidebar,.toolbar,button,.no-print{display:none !important;}
+    body,body[class]{--paper:#fff;--ink:#000;--ink-soft:#333;--line:#bbb;--heading:#000;--hover-bg:#fff;background:#fff;color:#000;}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .app-shell{padding:0;max-width:100%;display:block;}
+    .card{box-shadow:none;border:none;border-radius:0;padding:0;} .print-only{display:block;}
+    .abs-wrap{overflow:visible;border:none;border-radius:0;}
+    .abs-table{font-size:8.5pt;width:100%;border-collapse:collapse;}
+    .abs-table th,.abs-table td{border:0.6pt solid #555 !important;padding:2px 2px;position:static !important;background:#fff !important;box-shadow:none !important;color:#000;}
+    .abs-table thead th{background:#e8ecf2 !important;color:#000 !important;font-weight:700;font-size:8.5pt;font-family:Arial,sans-serif;opacity:1 !important;}
+    .abs-table,.abs-table *{font-family:Arial,Helvetica,sans-serif !important;}
+    .abs-table .c-no{width:3%;min-width:0;}
+    .abs-table .c-nama{width:24%;min-width:0;padding-left:5px;font-weight:400;white-space:normal;}
+    .abs-table thead tr.m th{font-size:8pt;}
+    .abs-table thead tr.d th,.abs-table td.dc{width:3%;}
+    .abs-table .sum{min-width:0;width:3%;}
+    .abs-table .c-induk{display:none;}
+    .abs-table td.sum{background:#f3f3f3 !important;}
+    .abs-cell{width:auto;height:auto;background:none !important;font-size:8.5pt;}
+    .abs-cell.kosong{color:transparent;}
+    .abs-table tfoot td{background:#e8ecf2 !important;}
+    .abs-table tr{page-break-inside:avoid;break-inside:avoid;}
+    .abs-table thead{display:table-header-group;}
   }
 
   /* ---- Tampilan mobile ---- */
@@ -210,6 +297,79 @@ let db = {
   pendaftaran:[], paramita:[], kas:[]
 };
 const DANA_PARAMITA = 20000;
+
+/* ======================= KOP SURAT (untuk cetakan) ======================= */
+// Ubah teks di bawah bila ada perubahan alamat/telepon. Logo diunggah Admin lewat tab Laporan.
+const KOP = {
+  nama:   "SEKOLAH MINGGU BUDDHIS MAITREYA",
+  vihara: "Maha Vihara Duta Maitreya",
+  telp:   "Telp. (0778) 462347, 462901 (Ext. 110) Fax (0778) 462349",
+  alamat: "Bukit Beruntung - Sei. Panas Kota Batam 29432",
+  nsl:    "Nomor Statistik Lembaga Pendidikan Keagamaan Buddha (086121710008)",
+  kota:   "Batam",
+};
+function kopSuratHtml(){
+  const logo = db.meta && db.meta.kopLogo;
+  return `<div class="kop">
+      <div class="kop-logo">${logo? `<img src="${logo}" alt="Logo SMB">` : '<div class="kop-logo-ph"></div>'}</div>
+      <div class="kop-text">
+        <div class="kop-1">${esc(KOP.nama)}</div>
+        <div class="kop-2">${esc(KOP.vihara)}</div>
+        <div class="kop-3">${esc(KOP.telp)}</div>
+        <div class="kop-3">${esc(KOP.alamat)}</div>
+        <div class="kop-4">${esc(KOP.nsl)}</div>
+      </div>
+      <div class="kop-logo"></div>
+    </div>
+    <div class="kop-line"></div>`;
+}
+function tglPanjang(d){ return (d||new Date()).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}); }
+function cetakLaporan(orientasi){
+  let st = document.getElementById('printPageStyle');
+  if(!st){ st = document.createElement('style'); st.id='printPageStyle'; document.head.appendChild(st); }
+  st.textContent = `@page{size:A4 ${orientasi||'portrait'};margin:12mm 10mm;}`;
+  window.print();
+}
+function uploadLogoKop(input){
+  const f = input.files[0]; input.value='';
+  if(!f) return;
+  if(!/^image\//.test(f.type)) return toast('File harus berupa gambar (PNG/JPG)');
+  const r = new FileReader();
+  r.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      // perkecil supaya file data di Drive tetap ringan
+      const max = 300, sc = Math.min(1, max/Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      db.meta = db.meta || {};
+      db.meta.kopLogo = c.toDataURL('image/png');
+      renderContent(); saveToDrive(true); toast('Logo kop surat disimpan');
+    };
+    img.onerror = ()=> toast('Gambar tidak bisa dibaca');
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function hapusLogoKop(){
+  if(!confirm('Hapus logo kop surat?')) return;
+  if(db.meta) delete db.meta.kopLogo;
+  renderContent(); saveToDrive(true);
+}
+
+/* ======================= CEK DATA GANDA PENDAFTARAN ======================= */
+function normTeks(s){ return (s||'').toString().trim().toLowerCase().replace(/\s+/g,' '); }
+// Cocok bila Nama + Tempat Lahir + Tanggal Lahir sama (tidak peka huruf besar/kecil & spasi berlebih)
+function cariDuplikatPendaftar(nama, tempatLahir, tglLahir){
+  const n = normTeks(nama), t = normTeks(tempatLahir);
+  const cocok = x => normTeks(x.namaLengkap)===n && normTeks(x.tempatLahir)===t && x.tglLahir===tglLahir;
+  const s = db.siswa.find(cocok);
+  if(s) return {jenis:'siswa', data:s};
+  const p = db.pendaftaran.find(x=>x.status==='pending' && cocok(x));
+  if(p) return {jenis:'pendaftaran', data:p};
+  return null;
+}
 
 const uid = ()=> 'x'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 
@@ -494,7 +654,7 @@ function screenLogin(){
       </select></div>
       <div class="field"><label>Nama Vihara Tempat Bersembahyang *</label><input id="dfVihara"></div>
     </div>
-    <button class="btn-sun" style="width:100%" onclick="submitPendaftaran()">Submit Pendaftaran</button>
+    <button class="btn-sun" id="dfSubmitBtn" style="width:100%" onclick="submitPendaftaran()">Submit Pendaftaran</button>
     <button class="btn-outline" style="width:100%;margin-top:8px" onclick="setLoginMode('pilih')">← Kembali</button>
   </div></div>`;
 }
@@ -539,6 +699,22 @@ async function submitPendaftaran(){
   if(!alamatTinggal) return dfShowError('Alamat Tinggal wajib diisi', 'dfAlamat');
   if(!asalSekolah) return dfShowError('Asal Sekolah wajib diisi', 'dfAsalSekolah');
   if(!namaVihara) return dfShowError('Nama Vihara wajib diisi', 'dfVihara');
+
+  // ---- Cek data ganda: ambil data terbaru dari server dulu, lalu bandingkan ----
+  const btn = document.getElementById('dfSubmitBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Memeriksa data...'; }
+  try{ await mergeFromRemote(); }catch(e){ /* tetap cek dengan data yang ada */ }
+  const dup = cariDuplikatPendaftar(nama, tempatLahir, tglLahir);
+  if(dup){
+    if(btn){ btn.disabled = false; btn.textContent = 'Submit Pendaftaran'; }
+    const pesan = dup.jenis==='siswa'
+      ? `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar dan sudah terdaftar sebagai siswa SMB. Tidak perlu mendaftar lagi — silakan masuk lewat "Masuk sebagai Siswa SMB", atau hubungi Admin bila lupa Nomor Induk.`
+      : `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar pada ${fmtDate(dup.data.tanggalDaftar)} dan sedang menunggu persetujuan Admin. Mohon tidak mendaftar ulang.`;
+    dfShowError(pesan, 'dfNama');
+    ['dfTempat','dfTgl'].forEach(fid=>{ const f=document.getElementById(fid); if(f) f.style.borderColor='var(--coral)'; });
+    return;
+  }
+
   const entry = {
     id:uid(), status:'pending', tanggalDaftar: new Date().toISOString().slice(0,10),
     namaLengkap: nama, tempatLahir, tglLahir, teleponSiswa,
@@ -840,6 +1016,8 @@ function prosesApprove(id){
   const kelasId = document.getElementById('apKelas').value;
   if(!kelasId) return toast('Pilih kelas tujuan terlebih dahulu');
   const p = db.pendaftaran.find(x=>x.id===id);
+  const sudahAda = db.siswa.find(s=> normTeks(s.namaLengkap)===normTeks(p.namaLengkap) && normTeks(s.tempatLahir)===normTeks(p.tempatLahir) && s.tglLahir===p.tglLahir);
+  if(sudahAda && !confirm(`Sudah ada siswa "${sudahAda.namaLengkap}" dengan tempat & tanggal lahir yang sama (No Induk ${sudahAda.noInduk}). Tetap setujui sebagai siswa baru?`)) return;
   const siswaBaru = {
     id:uid(), noInduk: nextNoInduk(), status:'aktif',
     namaLengkap: p.namaLengkap, tempatLahir: p.tempatLahir, tglLahir: p.tglLahir, teleponSiswa: p.teleponSiswa,
@@ -1610,12 +1788,21 @@ let laporanMode = 'siswa'; // siswa | kelas
 let laporanKelasId = '';
 function renderLaporan(){
   const toggle = `
-    <div class="row" style="margin-bottom:18px">
+    <div class="row no-print" style="margin-bottom:18px">
       <button class="${laporanMode==='siswa'?'btn-sun':'btn-outline'}" onclick="laporanMode='siswa'; renderContent()">Laporan Per Siswa</button>
       <button class="${laporanMode==='kelas'?'btn-sun':'btn-outline'}" onclick="laporanMode='kelas'; renderContent()">Laporan Absensi per Kelas</button>
     </div>
   `;
-  return toggle + (laporanMode==='kelas'? renderLaporanAbsensiKelas() : renderLaporanSiswa());
+  const logo = db.meta && db.meta.kopLogo;
+  const kopSetting = isAdmin()? `
+    <div class="kop-setting no-print">
+      <div class="kop-thumb">${logo? `<img src="${logo}" alt="Logo">` : '<span style="font-size:11px;color:#999">Logo</span>'}</div>
+      <div class="info"><strong>Logo Kop Surat</strong><div>Tampil di kiri atas setiap cetakan laporan. Disarankan PNG berlatar transparan.</div></div>
+      <label class="btn-outline btn-small" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">${logo?'Ganti logo':'Unggah logo'}
+        <input type="file" accept="image/*" style="display:none" onchange="uploadLogoKop(this)"></label>
+      ${logo? `<button class="btn-danger btn-small" onclick="hapusLogoKop()">Hapus</button>`:''}
+    </div>` : '';
+  return toggle + kopSetting + (laporanMode==='kelas'? renderLaporanAbsensiKelas() : renderLaporanSiswa());
 }
 function renderLaporanSiswa(){
   const ta = activeTahunAjaran();
@@ -1633,7 +1820,7 @@ function renderLaporanSiswa(){
     const rata = rataNilai(s.id, taSiswa?taSiswa.id:'', laporanPeriode);
     const periodeLabel = PERIODE.find(p=>p.key===laporanPeriode).label;
     detail = `
-      <div class="print-only" style="margin-bottom:14px"><h2 style="margin-bottom:2px">${periodeLabel}</h2><p class="subtitle">Dicetak ${new Date().toLocaleDateString('id-ID')}</p></div>
+      <div class="print-only">${kopSuratHtml()}<div class="doc-title">LAPORAN HASIL BELAJAR SISWA</div><div class="doc-sub">${esc(periodeLabel)} · Tahun Ajaran ${esc(taSiswa?taSiswa.nama:'—')}</div></div>
       <div class="grid2" style="margin-bottom:18px">
         <div><label>No Induk</label><div><strong>${esc(s.noInduk)}</strong></div></div>
         <div><label>Nama</label><div><strong>${esc(s.namaLengkap)}</strong></div></div>
@@ -1651,13 +1838,17 @@ function renderLaporanSiswa(){
         }).join('')}
         <tr><td><strong>Rata-rata</strong></td><td><strong>${rata===null?'—':rata.toFixed(1)}</strong></td></tr>
       </tbody></table>
-      <button class="btn-sun" style="margin-top:18px" onclick="window.print()">🖨️ Cetak laporan</button>
+      <button class="btn-sun" style="margin-top:18px" onclick="cetakLaporan('portrait')">🖨️ Cetak laporan</button>
+      <div class="print-only"><div class="ttd">
+        <div>Mengetahui,<br>Kepala Sekolah Minggu<div class="ttd-space"></div>(...................................)</div>
+        <div>${esc(KOP.kota)}, ${tglPanjang()}<br>Wali Kelas<div class="ttd-space"></div>${k&&k.guruId? `<span class="ttd-nama">${esc(guruNama(k.guruId))}</span>` : '(...................................)'}</div>
+      </div></div>
     `;
   }
   return `
-    <h2>Laporan Siswa</h2>
-    <p class="subtitle">Pilih siswa dan periode untuk membuat laporan yang dikirimkan ke sekolah.</p>
-    <div class="row" style="margin-bottom:16px">
+    <div class="no-print"><h2>Laporan Siswa</h2>
+    <p class="subtitle">Pilih siswa dan periode untuk membuat laporan yang dikirimkan ke sekolah.</p></div>
+    <div class="row no-print" style="margin-bottom:16px">
       <div class="field" style="min-width:220px"><label>Pilih siswa</label>
         <select onchange="laporanSiswaId=this.value; renderContent()"><option value="">— pilih —</option>${opts}</select></div>
       <div class="field"><label>Periode</label>
@@ -1669,70 +1860,128 @@ function renderLaporanSiswa(){
 function renderLaporanAbsensiKelas(){
   const ta = activeTahunAjaran();
   const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
-  if(!laporanKelasId && kelasList.length) laporanKelasId = kelasList[0].id;
+  if((!laporanKelasId || !kelasList.some(x=>x.id===laporanKelasId)) && kelasList.length) laporanKelasId = kelasList[0].id;
   const k = db.kelas.find(x=>x.id===laporanKelasId);
   const jadwal = ta? jadwalOfTahun(ta.id).filter(j=>!j.libur).sort((a,b)=>a.tanggal.localeCompare(b.tanggal)) : [];
-  const siswaList = laporanKelasId? siswaAktifDiKelas(laporanKelasId) : [];
-  const picker = `
+  const siswaList = laporanKelasId? siswaAktifDiKelas(laporanKelasId).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap)) : [];
+  const picker = `<div class="no-print">
     <h2>Laporan Absensi per Kelas</h2>
-    <p class="subtitle">Rekap kehadiran seluruh siswa dalam satu kelas, per tanggal pertemuan — H (Hadir), I (Izin), S (Sakit), A (Alpa).</p>
-    <div class="field" style="max-width:320px;margin-bottom:16px"><label>Pilih kelas</label>
+    <p class="subtitle">Rekap kehadiran seluruh siswa dalam satu kelas per tanggal pertemuan.</p>
+    <div class="field" style="max-width:340px;margin-bottom:16px"><label>Pilih kelas</label>
       <select onchange="laporanKelasId=this.value; renderContent()">
         ${kelasList.map(x=>`<option value="${x.id}" ${x.id===laporanKelasId?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}
       </select>
-    </div>
-  `;
+    </div></div>`;
   if(!kelasList.length) return picker + `<div class="empty">Tidak ada kelas yang bisa diakses.</div>`;
   if(!jadwal.length) return picker + `<div class="empty">Belum ada tanggal pertemuan untuk tahun ajaran ini.</div>`;
   if(!siswaList.length) return picker + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
 
-  const statusSymbol = {Hadir:'H', Izin:'I', Sakit:'S', Alpa:'A'};
-  const monthGroups = [];
+  const SYM = {Hadir:'H', Izin:'I', Sakit:'S', Alpa:'A'};
+  const absMap = {};
+  db.absensi.forEach(a=>{ if(a.kelasId===laporanKelasId && a.status) absMap[a.siswaId+'|'+a.tanggal]=a; });
+  const sudahDiisi = j => siswaList.some(s=>absMap[s.id+'|'+j.tanggal]);
+  const nTer = jadwal.filter(sudahDiisi).length; // pertemuan yang sudah terlaksana/diabsen
+  const today = new Date().toISOString().slice(0,10);
+
+  // Kelompok bulan
+  const monthGroups = []; const monthStart = new Set();
   jadwal.forEach(j=>{
-    const d = new Date(j.tanggal+'T00:00:00');
-    const label = d.toLocaleDateString('id-ID',{month:'short', year:'2-digit'});
-    let grp = monthGroups[monthGroups.length-1];
-    if(!grp || grp.label!==label){ grp = {label, dates:[]}; monthGroups.push(grp); }
-    grp.dates.push(j);
+    const label = new Date(j.tanggal+'T00:00:00').toLocaleDateString('id-ID',{month:'short', year:'2-digit'});
+    let g = monthGroups[monthGroups.length-1];
+    if(!g || g.label!==label){ g={label, count:0}; monthGroups.push(g); monthStart.add(j.tanggal); }
+    g.count++;
   });
-  const headerMonthRow = monthGroups.map(g=>`<th colspan="${g.dates.length}" style="text-align:center">${g.label}</th>`).join('');
-  const headerDateRow = jadwal.map(j=>`<th style="text-align:center">${new Date(j.tanggal+'T00:00:00').getDate()}</th>`).join('');
+  const msc = j => monthStart.has(j.tanggal)? ' ms':'';
+
+  let tot = {H:0,I:0,S:0,A:0};
   const rows = siswaList.map((s,idx)=>{
+    const c = {H:0,I:0,S:0,A:0};
     const cells = jadwal.map(j=>{
-      const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===j.tanggal && a.kelasId===laporanKelasId);
-      const sym = rec && statusSymbol[rec.status] ? statusSymbol[rec.status] : '';
-      const cls = sym==='A'? 'color:var(--coral);font-weight:700' : (sym==='H'? 'color:#2f7a52;font-weight:700' : '');
-      return `<td style="text-align:center;${cls}">${sym}</td>`;
+      const rec = absMap[s.id+'|'+j.tanggal];
+      const sym = rec? SYM[rec.status] : '';
+      if(sym) c[sym]++;
+      const tip = rec? esc(rec.status)+(rec.keterangan? ' — '+esc(rec.keterangan):'') : '';
+      return `<td class="dc${msc(j)}">${sym? `<span class="abs-cell ${sym}" title="${tip}">${sym}</span>` : '<span class="abs-cell kosong">·</span>'}</td>`;
     }).join('');
-    return `<tr><td>${idx+1}</td><td style="white-space:nowrap"><strong>${esc(s.namaLengkap)}</strong></td>${cells}</tr>`;
+    Object.keys(c).forEach(x=>tot[x]+=c[x]);
+    const pct = nTer? Math.round(c.H/nTer*100) : null;
+    const pctCls = pct===null? '' : (pct>=80? 'good' : pct>=60? 'mid' : 'low');
+    return `<tr><td class="c-no">${idx+1}</td>
+      <td class="c-nama">${esc(s.namaLengkap)}<div class="c-induk">No Induk ${esc(s.noInduk||'—')}</div></td>
+      ${cells}
+      <td class="sum ms">${c.H}</td><td class="sum">${c.I}</td><td class="sum">${c.S}</td><td class="sum">${c.A}</td>
+      <td class="sum pct ${pctCls}">${pct===null?'—':pct+'%'}</td></tr>`;
   }).join('');
-  const totalRow = jadwal.map(j=>{
-    const count = siswaList.filter(s=>{
-      const rec = db.absensi.find(a=>a.siswaId===s.id && a.tanggal===j.tanggal && a.kelasId===laporanKelasId);
-      return rec && rec.status==='Hadir';
-    }).length;
-    return `<td style="text-align:center"><strong>${count||''}</strong></td>`;
+  const footCells = jadwal.map(j=>{
+    if(!sudahDiisi(j)) return `<td class="${msc(j).trim()}"></td>`;
+    const n = siswaList.filter(s=>{ const r=absMap[s.id+'|'+j.tanggal]; return r && r.status==='Hadir'; }).length;
+    return `<td class="${msc(j).trim()}">${n}</td>`;
   }).join('');
+  const rataPct = nTer? Math.round(tot.H/(nTer*siswaList.length)*100) : null;
+
+  const waliNama = k && k.guruId? guruNama(k.guruId) : '';
+  const tingkat = k? tingkatOf(k) : null, daerah = k? daerahOf(k) : null;
+  const kelasTeks = tingkat? tingkat.nama + (k.namaRombel? ' - '+k.namaRombel : '') : '—';
 
   return picker + `
-    <div class="print-only" style="margin-bottom:10px">
-      <h2 style="margin-bottom:2px">Daftar Kehadiran — ${k?esc(kelasLabel(k)):''}</h2>
-      <p class="subtitle">Tahun ajaran ${ta?esc(ta.nama):'—'} · Dicetak ${new Date().toLocaleDateString('id-ID')}</p>
+    <!-- Ringkasan (layar) -->
+    <div class="abs-meta no-print">
+      <span class="abs-chip">Kelas <strong>${esc(kelasTeks)}</strong></span>
+      <span class="abs-chip">Daerah <strong>${esc(daerah?daerah.nama:'—')}</strong></span>
+      <span class="abs-chip">Wali kelas <strong>${esc(waliNama||'—')}</strong></span>
+      <span class="abs-chip">Tahun ajaran <strong>${esc(ta?ta.nama:'—')}</strong></span>
     </div>
-    <div style="overflow-x:auto">
-      <table>
+    <div class="abs-summary no-print">
+      <div class="stat"><div class="num">${siswaList.length}</div><div class="lbl">Siswa aktif</div></div>
+      <div class="stat"><div class="num">${nTer} <small>/ ${jadwal.length}</small></div><div class="lbl">Pertemuan terlaksana</div></div>
+      <div class="stat ${rataPct!==null&&rataPct>=80?'good':''}"><div class="num">${rataPct===null?'—':rataPct+'%'}</div><div class="lbl">Rata-rata kehadiran</div></div>
+      <div class="stat ${tot.A?'warn':''}"><div class="num">${tot.A}</div><div class="lbl">Total alpa</div></div>
+    </div>
+
+    <!-- Kepala dokumen (cetak) -->
+    <div class="print-only">
+      ${kopSuratHtml()}
+      <div class="doc-title">DAFTAR HADIR SISWA</div>
+      <div class="doc-sub">Tahun Ajaran ${esc(ta?ta.nama:'—')}</div>
+      <table class="doc-info"><tbody>
+        <tr><td>Kelas</td><td>: ${esc(kelasTeks)}</td><td style="padding-left:40px">Wali Kelas</td><td>: ${esc(waliNama||'—')}</td></tr>
+        <tr><td>Daerah</td><td>: ${esc(daerah?daerah.nama:'—')}</td><td style="padding-left:40px">Jumlah Siswa</td><td>: ${siswaList.length} siswa</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="abs-wrap">
+      <table class="abs-table">
         <thead>
-          <tr><th rowspan="2" style="vertical-align:bottom">No</th><th rowspan="2" style="vertical-align:bottom">Nama</th>${headerMonthRow}</tr>
-          <tr>${headerDateRow}</tr>
+          <tr class="m"><th rowspan="2" class="c-no">No</th><th rowspan="2" class="c-nama">Nama Siswa</th>
+            ${monthGroups.map(g=>`<th colspan="${g.count}" class="ms">${g.label}</th>`).join('')}
+            <th colspan="5" class="ms">Rekap</th></tr>
+          <tr class="d">
+            ${jadwal.map(j=>`<th class="${msc(j).trim()}${j.tanggal>today?' fut':''}">${new Date(j.tanggal+'T00:00:00').getDate()}</th>`).join('')}
+            <th class="ms">H</th><th>I</th><th>S</th><th>A</th><th>%</th></tr>
         </thead>
-        <tbody>
-          ${rows}
-          <tr><td colspan="2"><strong>TOTAL HADIR</strong></td>${totalRow}</tr>
-        </tbody>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td colspan="2" class="c-foot">TOTAL HADIR</td>${footCells}
+          <td class="ms">${tot.H}</td><td>${tot.I}</td><td>${tot.S}</td><td>${tot.A}</td><td>${rataPct===null?'—':rataPct+'%'}</td></tr></tfoot>
       </table>
     </div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px"><strong>Keterangan:</strong> H = Hadir · I = Izin · S = Sakit · A = Alpa</p>
-    <button class="btn-sun" style="margin-top:8px" onclick="window.print()">🖨️ Cetak laporan</button>
+
+    <div class="abs-legend no-print">
+      <span><span class="abs-cell H">H</span> Hadir</span>
+      <span><span class="abs-cell I">I</span> Izin</span>
+      <span><span class="abs-cell S">S</span> Sakit</span>
+      <span><span class="abs-cell A">A</span> Alpa</span>
+      <span>% = Hadir ÷ pertemuan terlaksana</span>
+    </div>
+    <button class="btn-sun" style="margin-top:16px" onclick="cetakLaporan('landscape')">🖨️ Cetak laporan</button>
+
+    <!-- Kaki dokumen (cetak) -->
+    <div class="print-only">
+      <div class="doc-legend">Keterangan: H = Hadir · I = Izin · S = Sakit · A = Alpa · % = persentase kehadiran dari ${nTer} pertemuan terlaksana</div>
+      <div class="ttd">
+        <div>Mengetahui,<br>Kepala Sekolah Minggu<div class="ttd-space"></div>(...................................)</div>
+        <div>${esc(KOP.kota)}, ${tglPanjang()}<br>Wali Kelas<div class="ttd-space"></div>${waliNama? `<span class="ttd-nama">${esc(waliNama)}</span>` : '(...................................)'}</div>
+      </div>
+    </div>
   `;
 }
 
@@ -1835,7 +2084,9 @@ async function mergeFromRemote(){
     if(key==='meta'){
       const remoteCounter = (remote.meta && remote.meta.noIndukCounter) || 0;
       const localCounter = (db.meta && db.meta.noIndukCounter) || 0;
-      merged.meta = { noIndukCounter: Math.max(remoteCounter, localCounter) };
+      const rm = remote.meta||{}, lm = db.meta||{}, bm = base.meta||{};
+      merged.meta = Object.assign({}, rm, { noIndukCounter: Math.max(remoteCounter, localCounter) });
+      if((lm.kopLogo||'') !== (bm.kopLogo||'')){ if(lm.kopLogo) merged.meta.kopLogo = lm.kopLogo; else delete merged.meta.kopLogo; }
       return;
     }
     const localChanged = JSON.stringify(db[key]) !== JSON.stringify(base[key]);
