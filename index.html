@@ -119,6 +119,33 @@
   .checkbox-grid label{display:flex;align-items:center;gap:6px;font-weight:400;color:var(--ink);font-size:13px;}
   .print-only{display:none;}
 
+  /* ---- Beranda ---- */
+  .stat-note{font-size:11.5px;color:var(--ink-soft);margin-top:6px;border-top:1px dashed var(--line);padding-top:6px;}
+  .dash-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:12px;margin-bottom:18px;overflow:hidden;}
+  .dash-strip > div{padding:12px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:3px;background:var(--hover-bg);}
+  .dash-strip > div:last-child{border-right:none;}
+  .dash-strip span{font-size:11.5px;color:var(--ink-soft);}
+  .dash-strip strong{font-size:14.5px;color:var(--heading);}
+  .dash-strip em{font-style:normal;font-size:12px;color:var(--ink-soft);}
+  .dash-strip button{align-self:flex-start;margin-top:3px;}
+  .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:1200px){.dash-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:800px){.dash-grid,.dash-strip{grid-template-columns:1fr;} .dash-strip > div{border-right:none;border-bottom:1px solid var(--line);}}
+  .dash-panel{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--paper);}
+  .dash-h{font-family:'Baloo 2';font-weight:700;font-size:16px;color:var(--heading);line-height:1.2;}
+  .dash-sub{font-size:12px;color:var(--ink-soft);margin:2px 0 12px;}
+  .dash-empty{font-size:13px;color:var(--ink-soft);padding:8px 0;}
+  .meter{margin-bottom:11px;}
+  .meter:last-child{margin-bottom:0;}
+  .meter-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:4px;}
+  .meter-lbl{color:var(--ink);}
+  .meter-val{color:var(--ink-soft);white-space:nowrap;}
+  .meter-val strong{color:var(--ink);}
+  .meter-track{height:8px;border-radius:4px;background:var(--line);overflow:hidden;}
+  .meter-fill{height:100%;border-radius:4px;background:var(--sky-mid);}
+  .meter-fill.H{background:#4f9a73;} .meter-fill.I{background:#5b7fb5;} .meter-fill.S{background:#d9a13a;} .meter-fill.A{background:#d9666b;}
+  .dash-pct.good{color:#2f7a52;font-weight:700;} .dash-pct.mid{color:var(--sun-deep);font-weight:700;} .dash-pct.low{color:var(--coral);font-weight:700;}
+
   /* ---- Laporan absensi per kelas (layar) ---- */
   .abs-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:2px 0 18px;}
   .abs-summary .stat{padding:14px 16px;position:relative;overflow:hidden;}
@@ -139,7 +166,7 @@
   .abs-table .ms{border-left:1px solid var(--line);}
   .abs-table th.fut{opacity:.4;}
   .abs-table .c-no{position:sticky;left:0;z-index:1;width:42px;min-width:42px;background:var(--paper);color:var(--ink-soft);}
-  .abs-table .c-nama{position:sticky;left:42px;z-index:1;text-align:left;min-width:180px;padding-left:10px;padding-right:14px;background:var(--paper);box-shadow:inset -1px 0 0 var(--line);font-weight:600;}
+  .abs-table .c-nama{position:sticky;left:42px;z-index:1;text-align:left;min-width:200px;padding-left:10px;padding-right:14px;background:var(--paper);box-shadow:inset -1px 0 0 var(--line);font-weight:600;}
   .abs-table thead .c-no,.abs-table thead .c-nama{background:var(--hover-bg);z-index:2;vertical-align:bottom;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
   .abs-table .c-induk{font-size:11px;color:var(--ink-soft);font-weight:400;margin-top:1px;}
   .abs-table tbody tr:last-child td{border-bottom:1px solid var(--line);}
@@ -202,7 +229,7 @@
     .abs-table thead tr.m th{font-size:8pt;}
     .abs-table thead tr.d th,.abs-table td.dc{width:3%;}
     .abs-table .sum{min-width:0;width:3%;}
-    .abs-table .c-induk{display:none;}
+    .abs-table .c-induk{font-size:7pt;color:#333 !important;}
     .abs-table td.sum{background:#f3f3f3 !important;}
     .abs-cell{width:auto;height:auto;background:none !important;font-size:8.5pt;}
     .abs-cell.kosong{color:transparent;}
@@ -331,6 +358,7 @@ function cetakLaporan(orientasi){
   window.print();
 }
 function uploadLogoKop(input){
+  if(!isAdmin()){ input.value=''; return toast('Hanya Admin yang dapat mengganti logo kop surat'); }
   const f = input.files[0]; input.value='';
   if(!f) return;
   if(!/^image\//.test(f.type)) return toast('File harus berupa gambar (PNG/JPG)');
@@ -353,6 +381,7 @@ function uploadLogoKop(input){
   r.readAsDataURL(f);
 }
 function hapusLogoKop(){
+  if(!isAdmin()) return toast('Hanya Admin yang dapat menghapus logo kop surat');
   if(!confirm('Hapus logo kop surat?')) return;
   if(db.meta) delete db.meta.kopLogo;
   renderContent(); saveToDrive(true);
@@ -1097,22 +1126,116 @@ function simpanKas(id){
 function hapusKas(id){ if(!confirm('Hapus catatan kas ini?')) return; db.kas=db.kas.filter(k=>k.id!==id); renderContent(); saveToDrive(true); }
 
 /* ======================= DASHBOARD ======================= */
+function meterRows(items, total, opts){
+  opts = opts||{};
+  if(!total) return `<div class="dash-empty">Belum ada data.</div>`;
+  return items.map(it=>{
+    const pct = Math.round(it.n/total*1000)/10;
+    return `<div class="meter" title="${esc(it.label)}: ${it.n} dari ${total} (${pct}%)">
+      <div class="meter-top"><span class="meter-lbl">${esc(it.label)}</span><span class="meter-val"><strong>${pct}%</strong> · ${it.n}${opts.unit?' '+opts.unit:''}</span></div>
+      <div class="meter-track"><div class="meter-fill${it.cls?' '+it.cls:''}" style="width:${Math.max(pct, it.n?2:0)}%"></div></div>
+    </div>`;
+  }).join('');
+}
 function renderDashboard(){
   const ta = activeTahunAjaran();
-  const totalSiswaAktif = db.siswa.filter(s=>s.status==='aktif').length;
-  const totalKelas = ta? kelasOfTahun(ta.id).length : 0;
-  const totalGuru = db.users.filter(u=>u.role==='guru').length;
-  const totalLulus = db.siswa.filter(s=>s.status==='lulus').length;
+  const kelasTA = ta? kelasOfTahun(ta.id) : [];
+  const kelasTAIds = new Set(kelasTA.map(k=>k.id));
+  const semuaSiswa = db.siswa;
+  const aktif = semuaSiswa.filter(s=>s.status==='aktif');
+  const guruList = db.users.filter(u=>u.role==='guru');
+  const pct = (n,t)=> t? Math.round(n/t*1000)/10 : 0;
+
+  // --- Siswa per daerah & jenjang ---
+  const byDaerah = {}, byJenjang = {};
+  aktif.forEach(s=>{
+    const k = db.kelas.find(x=>x.id===s.kelasId);
+    const d = k? daerahOf(k) : null, t = k? tingkatOf(k) : null;
+    const dn = d? d.nama : 'Belum ada kelas', jn = t? t.jenjang : 'Belum ada kelas';
+    byDaerah[dn] = (byDaerah[dn]||0)+1; byJenjang[jn] = (byJenjang[jn]||0)+1;
+  });
+  const urutJenjang = ['SD','SMP','SMA/SMK','Belum ada kelas'];
+  const daerahItems = Object.entries(byDaerah).sort((a,b)=>b[1]-a[1]).map(([label,n])=>({label,n}));
+  const jenjangItems = Object.entries(byJenjang).sort((a,b)=>urutJenjang.indexOf(a[0])-urutJenjang.indexOf(b[0])).map(([label,n])=>({label,n}));
+
+  // --- Ketuhanan & status siswa ---
+  const sudahKet = aktif.filter(s=>s.statusKetuhanan==='Sudah').length;
+  const ketItems = [{label:'Sudah memohon Ketuhanan', n:sudahKet}, {label:'Belum', n:aktif.length-sudahKet}];
+  const statusLbl = {aktif:'Aktif', lulus:'Lulus', pindah:'Pindah', nonaktif:'Nonaktif'};
+  const statusItems = Object.keys(statusLbl).map(st=>({label:statusLbl[st], n:semuaSiswa.filter(s=>s.status===st).length}));
+
+  // --- Guru ---
+  const waliIds = new Set(kelasTA.map(k=>k.guruId).filter(Boolean));
+  const asistenIds = new Set(kelasTA.flatMap(k=>k.guruAsistenIds||[]));
+  const nWali = guruList.filter(g=>waliIds.has(g.id)).length;
+  const nAsisten = guruList.filter(g=>!waliIds.has(g.id) && asistenIds.has(g.id)).length;
+  const guruItems = [{label:'Wali kelas utama', n:nWali}, {label:'Asisten wali kelas saja', n:nAsisten}, {label:'Belum ditugaskan', n:guruList.length-nWali-nAsisten}];
+  const kelasTanpaWali = kelasTA.filter(k=>!k.guruId).length;
+  const rasio = guruList.length? (aktif.length/guruList.length).toFixed(1) : '—';
+
+  // --- Kehadiran tahun ajaran ini ---
+  const absTA = db.absensi.filter(a=>a.status && kelasTAIds.has(a.kelasId));
+  const cAbs = st=> absTA.filter(a=>a.status===st).length;
+  const absItems = [{label:'Hadir',n:cAbs('Hadir'),cls:'H'},{label:'Izin',n:cAbs('Izin'),cls:'I'},{label:'Sakit',n:cAbs('Sakit'),cls:'S'},{label:'Alpa',n:cAbs('Alpa'),cls:'A'}];
+  const pctHadir = pct(cAbs('Hadir'), absTA.length);
+  const nPertemuan = ta? jadwalOfTahun(ta.id).filter(j=>!j.libur).length : 0;
+  const nPertemuanLewat = ta? jadwalOfTahun(ta.id).filter(j=>!j.libur && j.tanggal<=new Date().toISOString().slice(0,10)).length : 0;
+
+  // --- Paramita & kas (admin) ---
+  const aktifTA = aktif.filter(s=>kelasTAIds.has(s.kelasId));
+  const paramitaTA = ta? db.paramita.filter(p=>p.tahunAjaranId===ta.id) : [];
+  const nBayar = aktifTA.filter(s=>paramitaTA.some(p=>p.siswaId===s.id)).length;
+  const totalParamita = paramitaTA.reduce((a,p)=>a+Number(p.jumlah||0),0);
+  const saldoKas = db.kas.reduce((a,k)=>a+(k.tipe==='masuk'?1:-1)*Number(k.jumlah||0),0);
+
+  // --- Tabel kelas ---
+  const kelasTampil = isAdmin()? kelasTA : kelasTA.filter(k=>canAccessKelas(k.id));
+  const kelasRows = kelasTampil.map(k=>{
+    const nS = siswaAktifDiKelas(k.id).length;
+    const rec = absTA.filter(a=>a.kelasId===k.id);
+    const h = rec.filter(a=>a.status==='Hadir').length;
+    const p = rec.length? Math.round(h/rec.length*100) : null;
+    const cls = p===null? '' : (p>=80?'good':p>=60?'mid':'low');
+    return `<tr><td><strong>${esc(kelasLabel(k))}</strong></td><td>${esc(k.guruId?guruNama(k.guruId):'—')}${!k.guruId?' <span class="badge nonaktif">tanpa wali</span>':''}</td>
+      <td style="text-align:right">${nS}</td><td style="text-align:right">${pct(nS, aktifTA.length)}%</td>
+      <td style="text-align:right" class="dash-pct ${cls}">${p===null?'—':p+'%'}</td></tr>`;
+  }).join('');
+
+  const panel = (judul, sub, isi)=> `<div class="dash-panel"><div class="dash-h">${judul}</div>${sub?`<div class="dash-sub">${sub}</div>`:''}${isi}</div>`;
+
   return `
     <h2>Selamat datang, ${esc(currentUser.nama)} 👋</h2>
     <p class="subtitle">Tahun ajaran aktif: <strong>${ta? esc(ta.nama):'belum ada'}</strong> · Peran: <span class="badge ${currentUser.role}">${currentUser.role}</span></p>
+
     <div class="stat-grid">
-      <div class="stat"><div class="num">${totalSiswaAktif}</div><div class="lbl">Siswa aktif</div></div>
-      <div class="stat"><div class="num">${totalKelas}</div><div class="lbl">Kelas berjalan</div></div>
-      <div class="stat"><div class="num">${totalGuru}</div><div class="lbl">Guru terdaftar</div></div>
-      <div class="stat"><div class="num">${totalLulus}</div><div class="lbl">Total lulus</div></div>
+      <div class="stat"><div class="num">${aktif.length}</div><div class="lbl">Siswa aktif</div><div class="stat-note">${pct(aktif.length, semuaSiswa.length)}% dari ${semuaSiswa.length} siswa tercatat</div></div>
+      <div class="stat"><div class="num">${kelasTA.length}</div><div class="lbl">Kelas berjalan</div><div class="stat-note">${kelasTA.length? (aktifTA.length/kelasTA.length).toFixed(1):'0'} siswa / kelas · ${kelasTanpaWali} tanpa wali</div></div>
+      <div class="stat"><div class="num">${guruList.length}</div><div class="lbl">Guru terdaftar</div><div class="stat-note">${pct(nWali+nAsisten, guruList.length)}% sudah mengajar · 1 guru : ${rasio} siswa</div></div>
+      <div class="stat"><div class="num">${absTA.length? pctHadir+'%' : '—'}</div><div class="lbl">Rata-rata kehadiran</div><div class="stat-note">${nPertemuanLewat} dari ${nPertemuan} pertemuan sudah lewat</div></div>
     </div>
-    <div class="setup-box">📁 Semua data disimpan di satu file <code>${DATA_FILENAME}</code> di Google Drive (lewat server penghubung/Apps Script) — tidak perlu login Google di perangkat ini. Gunakan tombol <em>Simpan sekarang</em> di kanan atas untuk menyimpan manual, atau data otomatis tersimpan setiap ada perubahan.</div>
+
+    ${isAdmin()? `<div class="dash-strip">
+      <div><span>Pendaftaran menunggu</span><strong>${pendingCount()}</strong>${pendingCount()? `<button class="btn-outline btn-small" onclick="switchTab('pendaftaran')">Tinjau</button>`:''}</div>
+      <div><span>Dana Paramita ${ta?esc(ta.nama):''}</span><strong>${nBayar}/${aktifTA.length} siswa · ${pct(nBayar, aktifTA.length)}%</strong><em>Rp${totalParamita.toLocaleString('id-ID')}</em></div>
+      <div><span>Saldo Kas SMB</span><strong>Rp${saldoKas.toLocaleString('id-ID')}</strong></div>
+      <div><span>Total lulus</span><strong>${semuaSiswa.filter(s=>s.status==='lulus').length}</strong></div>
+    </div>`:''}
+
+    <div class="dash-grid">
+      ${panel('Siswa per Daerah', `${aktif.length} siswa aktif`, meterRows(daerahItems, aktif.length, {unit:'siswa'}))}
+      ${panel('Siswa per Jenjang', `${aktif.length} siswa aktif`, meterRows(jenjangItems, aktif.length, {unit:'siswa'}))}
+      ${panel('Kehadiran Tahun Ajaran Ini', `${absTA.length} catatan absensi`, meterRows(absItems, absTA.length))}
+      ${panel('Status Memohon Ketuhanan', `${aktif.length} siswa aktif`, meterRows(ketItems, aktif.length, {unit:'siswa'}))}
+      ${panel('Penugasan Guru', `${guruList.length} guru · ${kelasTanpaWali} kelas belum punya wali`, meterRows(guruItems, guruList.length, {unit:'guru'}))}
+      ${panel('Status Seluruh Siswa', `${semuaSiswa.length} siswa tercatat`, meterRows(statusItems, semuaSiswa.length, {unit:'siswa'}))}
+    </div>
+
+    <div class="dash-panel" style="margin-top:14px">
+      <div class="dash-h">${isAdmin()? 'Rincian per Kelas' : 'Kelas Saya'}</div>
+      <div class="dash-sub">Persentase siswa dihitung dari ${aktifTA.length} siswa aktif tahun ajaran ini; kehadiran = Hadir ÷ seluruh catatan absensi kelas</div>
+      ${kelasRows? `<div style="overflow-x:auto"><table><thead><tr><th>Kelas</th><th>Wali kelas</th><th style="text-align:right">Siswa</th><th style="text-align:right">% Siswa</th><th style="text-align:right">Kehadiran</th></tr></thead><tbody>${kelasRows}</tbody></table></div>`
+      : `<div class="dash-empty">Belum ada kelas.</div>`}
+    </div>
   `;
 }
 
@@ -1797,7 +1920,7 @@ function renderLaporan(){
   const kopSetting = isAdmin()? `
     <div class="kop-setting no-print">
       <div class="kop-thumb">${logo? `<img src="${logo}" alt="Logo">` : '<span style="font-size:11px;color:#999">Logo</span>'}</div>
-      <div class="info"><strong>Logo Kop Surat</strong><div>Tampil di kiri atas setiap cetakan laporan. Disarankan PNG berlatar transparan.</div></div>
+      <div class="info"><strong>Logo Kop Surat</strong> <span class="badge admin" style="font-size:10px">Khusus Admin</span><div>Tampil di kiri atas setiap cetakan laporan. Disarankan PNG berlatar transparan. Menu ini tidak terlihat oleh akun Guru.</div></div>
       <label class="btn-outline btn-small" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">${logo?'Ganti logo':'Unggah logo'}
         <input type="file" accept="image/*" style="display:none" onchange="uploadLogoKop(this)"></label>
       ${logo? `<button class="btn-danger btn-small" onclick="hapusLogoKop()">Hapus</button>`:''}
@@ -1907,7 +2030,7 @@ function renderLaporanAbsensiKelas(){
     const pct = nTer? Math.round(c.H/nTer*100) : null;
     const pctCls = pct===null? '' : (pct>=80? 'good' : pct>=60? 'mid' : 'low');
     return `<tr><td class="c-no">${idx+1}</td>
-      <td class="c-nama">${esc(s.namaLengkap)}<div class="c-induk">No Induk ${esc(s.noInduk||'—')}</div></td>
+      <td class="c-nama">${esc(s.namaLengkap)}<div class="c-induk">No Induk ${esc(s.noInduk||'—')} · ${esc(s.asalSekolah||'Asal sekolah belum diisi')}</div></td>
       ${cells}
       <td class="sum ms">${c.H}</td><td class="sum">${c.I}</td><td class="sum">${c.S}</td><td class="sum">${c.A}</td>
       <td class="sum pct ${pctCls}">${pct===null?'—':pct+'%'}</td></tr>`;
