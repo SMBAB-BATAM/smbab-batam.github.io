@@ -567,6 +567,178 @@
     .paper{box-shadow:none;width:auto;padding:0;margin:0;}
     .rp-ident,.rp-cols{grid-template-columns:1fr 1fr !important;}
   }
+
+  /* ======================= LOADING (tanpa kartu) ======================= */
+  .page-loader{position:fixed;top:0;left:0;right:0;height:3px;overflow:hidden;z-index:100;background:transparent;}
+  .page-loader::before{content:'';position:absolute;top:0;bottom:0;width:35%;background:var(--sun-deep);animation:pl 1.1s ease-in-out infinite;}
+  @keyframes pl{0%{left:-35%}100%{left:100%}}
+  @media (prefers-reduced-motion: reduce){ .page-loader::before{animation:none;left:0;width:100%;opacity:.5;} }
+
+  /* ======================= PEMBELAJARAN ======================= */
+  .cnt{display:inline-block;min-width:18px;padding:0 6px;border-radius:10px;background:var(--coral);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center;margin-left:4px;}
+  .pb-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .pb-bar .sd-sub{max-width:68ch;line-height:1.5;}
+  .pb-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .pb-row{display:flex;align-items:center;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);}
+  .pb-row:last-child{border-bottom:none;}
+  .pb-late .pb-date{border-color:var(--coral);}
+  .pb-date{width:52px;height:56px;flex-shrink:0;border:1.5px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;}
+  .pb-date strong{font-family:'Baloo 2';font-size:22px;color:var(--heading);}
+  .pb-date span{font-size:11.5px;color:var(--ink-soft);}
+  .pb-main{flex:1;min-width:0;}
+  .pb-title{background:transparent;padding:0;color:var(--heading);font-weight:700;font-size:14.5px;text-align:left;border-radius:4px;}
+  .pb-title:hover{text-decoration:underline;}
+  .pb-sub{font-size:13px;color:var(--ink);margin-top:2px;}
+  .pb-meta{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .pb-done{display:flex !important;align-items:center;gap:6px;font-size:12.5px !important;color:var(--ink-soft) !important;font-weight:500 !important;margin:0 !important;white-space:nowrap;}
+  .rp-tahap{display:grid;grid-template-columns:1fr 84px;gap:10px;}
+  .rpp-p{font-size:10.5pt;line-height:1.55;color:#000;}
+  .perlu{display:block;font-size:11px;font-weight:700;color:var(--coral);}
+  .tstat{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .st-draf{background:var(--hover-bg);color:var(--ink-soft);border:1px solid var(--line);}
+  .st-buka{background:#e3f3ea;color:#2f7a52;} .st-jadwal{background:#e6eefb;color:#2C4770;}
+  .st-lewat{background:#fdf1e0;color:#a8730c;} .st-tutup{background:#fbe2e3;color:#c94a4f;}
+  .mt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .mt-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;background:var(--paper);}
+  .mt-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);}
+  .mt-card h4{margin:0;font-family:'Baloo 2';font-size:17px;color:var(--heading);line-height:1.25;}
+  .mt-isi{font-size:13.5px;line-height:1.6;color:var(--ink);}
+  .mt-isi.full p{margin:0 0 10px;max-width:70ch;}
+  .mt-link{align-self:flex-start;font-size:13px;font-weight:600;color:var(--heading);text-decoration:none;}
+  .mt-act{display:flex;gap:6px;margin-top:auto;padding-top:6px;}
+  .mt-read{display:flex;flex-direction:column;gap:14px;max-width:820px;}
+
+  /* editor */
+  .ed-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .ed-title{flex:1;min-width:220px;}
+  .ed-title h2{margin:0;font-size:22px;}
+  .ed-warn{background:#fdf1e0;color:#7a5408;border:1px solid #f2d7a6;border-radius:10px;padding:10px 14px;font-size:13px;margin:0 0 14px;}
+  .ed-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start;}
+  .ed-set{position:sticky;top:86px;padding:18px;}
+  @media(max-width:1000px){.ed-grid{grid-template-columns:1fr;} .ed-set{position:static;}}
+  .ed-soal{display:flex;flex-direction:column;gap:12px;}
+  .eq{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--paper);}
+  .eq.eq-err{border-color:var(--coral);box-shadow:0 0 0 3px rgba(217,102,107,.15);}
+  .eq-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .eq-no{width:28px;height:28px;border-radius:8px;background:var(--sky-deep);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+  .eq-head select{width:auto;padding:6px 10px;font-size:13px;}
+  .eq-poin{display:flex !important;align-items:center;gap:6px;font-size:12.5px !important;margin:0 !important;font-weight:600 !important;}
+  .eq-poin input{width:64px;padding:6px 8px;}
+  .eq-tools{margin-left:auto;display:flex;gap:2px;}
+  .eq-teks{width:100%;font-size:14px;margin-bottom:10px;}
+  .eq-opts{display:flex;flex-direction:column;gap:6px;}
+  .eq-opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:4px 6px 4px 4px;}
+  .eq-opt.ok{border-color:#4f9a73;background:#f0f8f3;}
+  body.theme-dark .eq-opt.ok{background:rgba(79,154,115,.15);}
+  .eq-opt > input{flex:1;border:none;background:transparent;padding:6px 4px;}
+  .eq-key{margin:0 !important;cursor:pointer;}
+  .eq-key input{position:absolute;opacity:0;width:0;height:0;}
+  .eq-key span{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:var(--hover-bg);color:var(--ink-soft);border:1px solid var(--line);}
+  .eq-key input:checked + span{background:#4f9a73;color:#fff;border-color:#4f9a73;}
+  .eq-key input:focus-visible + span{outline:2px solid var(--sun-deep);outline-offset:2px;}
+  .eq-foot{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;}
+  .eq-bs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .eq-bs-opt{margin:0 !important;cursor:pointer;}
+  .eq-bs-opt input{position:absolute;opacity:0;width:0;height:0;}
+  .eq-bs-opt span{display:inline-block;padding:7px 18px;border-radius:9px;border:1.5px solid var(--line);font-weight:600;font-size:13px;color:var(--ink);}
+  .eq-bs-opt input:checked + span{background:#4f9a73;border-color:#4f9a73;color:#fff;}
+  .eq-bs-opt input:focus-visible + span{outline:2px solid var(--sun-deep);outline-offset:2px;}
+  .eq-pemb{margin-top:10px;font-size:12.5px;}
+  .eq-pemb summary{cursor:pointer;color:var(--ink-soft);font-weight:600;margin-bottom:6px;}
+  .ed-add{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 16px;border:1.5px dashed var(--line);border-radius:12px;}
+  .ed-add span{font-size:13px;color:var(--ink-soft);font-weight:600;}
+
+  /* hasil */
+  .hs-skor{font-family:'Baloo 2';font-weight:700;font-size:17px;color:var(--heading);}
+  .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+  .an-item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+  .an-top{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+  .an-sub{font-size:11px;color:var(--ink-soft);margin-top:5px;}
+  .pk-total{margin-left:auto;text-align:right;display:flex;flex-direction:column;}
+  .pk-total strong{font-family:'Baloo 2';font-size:28px;line-height:1;color:var(--heading);}
+  .pk-total span{font-size:12px;color:var(--ink-soft);}
+  .pk-list{display:flex;flex-direction:column;gap:8px;max-height:56vh;overflow:auto;padding-right:4px;}
+  .pk-item{border:1px solid var(--line);border-left:4px solid var(--sky-mid);border-radius:10px;padding:10px 14px;}
+  .pk-ok{border-left-color:#4f9a73 !important;} .pk-no{border-left-color:var(--coral) !important;}
+  .pk-h{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;}
+  .pk-poin{color:var(--ink);display:flex;align-items:center;gap:6px;}
+  .pk-poin input{width:64px;padding:4px 6px;text-align:center;}
+  .pk-q{font-size:13.5px;color:var(--ink);margin-bottom:6px;}
+  .pk-a{font-size:13.5px;background:var(--hover-bg);border-radius:8px;padding:8px 10px;color:var(--ink);}
+  .pk-k{font-size:12.5px;color:#2f7a52;margin-top:6px;}
+  .pk-k span{font-weight:700;}
+
+  /* kartu login (cetak) */
+  .kartu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-family:Arial,sans-serif;color:#000;}
+  .kartu{border:1px dashed #555;padding:12px 14px;break-inside:avoid;page-break-inside:avoid;}
+  .kartu-h{font-weight:700;font-size:11pt;}
+  .kartu-sub{font-size:8.5pt;color:#444;margin-bottom:6px;}
+  .kartu table{width:100%;border-collapse:collapse;font-size:9.5pt;}
+  .kartu td{border:none !important;padding:2px 0;background:none !important;color:#000;}
+  .kartu td:first-child{width:72px;color:#444;}
+  .kartu-code{font-family:'Courier New',monospace;font-size:13pt;font-weight:700;letter-spacing:1px;}
+  .kartu-foot{font-size:7.5pt;color:#444;margin-top:6px;border-top:1px solid #ccc;padding-top:4px;}
+
+  /* ======================= PORTAL SISWA: TUGAS ======================= */
+  .ts-grp{font-size:15px;margin:20px 0 10px;color:var(--heading);}
+  .ts-list{display:flex;flex-direction:column;gap:8px;}
+  .ts-card{display:flex;align-items:center;gap:14px;justify-content:space-between;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--ink);font-weight:400;}
+  .ts-card:hover{border-color:var(--sky-mid);}
+  .ts-card.ts-todo{border-left:4px solid var(--sun-deep);}
+  .ts-l{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .ts-l strong{font-size:15px;color:var(--heading);}
+  .ts-jenis{font-size:11.5px;font-weight:700;color:var(--sun-deep);}
+  .ts-r{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .ts-skor{font-family:'Baloo 2';font-size:22px;font-weight:700;color:var(--heading);}
+  .kj-head{margin-bottom:14px;}
+  .kj-intro{max-width:640px;margin:10px auto 0;text-align:left;border:1px solid var(--line);border-radius:16px;padding:28px;}
+  .kj-intro h2{margin:4px 0 8px;font-size:26px;}
+  .kj-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .kj-meta span{background:var(--hover-bg);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12.5px;color:var(--ink);}
+  .kj-intro .btn-sun{padding:12px 24px;font-size:15px;margin-top:6px;}
+  .kj-instr{max-width:860px;box-sizing:border-box;background:var(--hover-bg);border-left:3px solid var(--sun);border-radius:0 10px 10px 0;padding:12px 16px;font-size:14px;line-height:1.6;margin:0 0 16px;color:var(--ink);}
+  .kj-bar{position:sticky;top:66px;z-index:10;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px 12px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 6px 18px rgba(31,42,60,.08);}
+  .kj-bar-l{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+  .kj-bar-l strong{display:block;color:var(--heading);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kj-bar-l span{font-size:12.5px;color:var(--ink-soft);}
+  .kj-timer{font-size:12.5px;color:var(--ink-soft);background:var(--hover-bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;}
+  .kj-timer b{font-family:'Baloo 2';font-size:20px;color:var(--heading);font-variant-numeric:tabular-nums;margin-left:4px;}
+  .kj-timer.low{background:#fbe2e3;border-color:#f3c1c3;} .kj-timer.low b{color:#c94a4f;}
+  .kj-prog{position:absolute;left:12px;right:12px;bottom:5px;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .kj-prog div{height:100%;background:#4f9a73;transition:width .2s;}
+  .kj-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:860px;}
+  .kj-q{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--paper);}
+  .kj-q.done{border-color:#bfe0cc;}
+  .kj-qh{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
+  .kj-q.done .kj-qh span:first-child{color:#2f7a52;}
+  .kj-teks{font-size:15px;line-height:1.6;color:var(--ink);margin-bottom:12px;}
+  .kj-opts{display:flex;flex-direction:column;gap:8px;}
+  .kj-bs{flex-direction:row;} .kj-bs .kj-opt{flex:1;justify-content:center;}
+  .kj-opt{display:flex !important;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;margin:0 !important;font-weight:400 !important;font-size:14px !important;color:var(--ink) !important;}
+  .kj-opt:hover{border-color:var(--sky-mid);}
+  .kj-opt input{position:absolute;opacity:0;width:0;height:0;}
+  .kj-opt:has(input:checked){border-color:var(--sky-deep);background:var(--sky);}
+  .kj-opt:has(input:focus-visible){outline:2px solid var(--sun-deep);outline-offset:2px;}
+  .kj-l{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:var(--ink-soft);}
+  .kj-opt:has(input:checked) .kj-l{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff;}
+  .kj-in{width:100%;font-size:14.5px;}
+  .kj-submit{display:flex;justify-content:flex-end;align-items:center;gap:14px;max-width:860px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .kj-submit .btn-sun{padding:12px 24px;font-size:15px;}
+  .kj-done{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .kj-done h2{margin:0;}
+  .kj-check{width:46px;height:46px;border-radius:50%;background:#e3f3ea;color:#2f7a52;display:inline-flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0;}
+  .kj-score{display:flex;align-items:baseline;gap:12px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:16px;max-width:860px;}
+  .kj-score strong{font-family:'Baloo 2';font-size:44px;line-height:1;color:var(--heading);}
+  .kj-score span{font-size:13.5px;color:var(--ink-soft);}
+  .kj-pemb{font-size:13px;color:var(--ink-soft);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+  @media(max-width:700px){
+    body.kerja .topbar{position:static;} body.kerja .kj-bar{top:0;border-radius:0 0 12px 12px;} .kj-bar-l strong{max-width:52vw;}
+    .kj-intro{padding:20px;} .pb-row{flex-wrap:wrap;} .pb-done{order:3;}
+    .ts-card{flex-direction:column;align-items:flex-start;} .ts-r{width:100%;justify-content:space-between;}
+    .kartu-grid{grid-template-columns:1fr;}
+  }
+  @media print{ .kartu-grid{grid-template-columns:1fr 1fr !important;} #toast,.toast{display:none !important;} }
+  .kj-q.pk-ok,.kj-q.pk-no{border-left-width:4px;}
 </style>
 </head>
 <body>
@@ -621,7 +793,7 @@ let db = {
   meta:{noIndukCounter:0},
   users:[], daerah:[], tingkatKelas:[], tahunAjaran:[], kelas:[],
   siswa:[], jadwalPertemuan:[], absensi:[], aspekPenilaian:[], nilai:[],
-  pendaftaran:[], paramita:[], kas:[], settings:{}, berita:[], penilaianKelas:[]
+  pendaftaran:[], paramita:[], kas:[], settings:{}, berita:[], penilaianKelas:[], rencana:[], materi:[], tugas:[], pengumpulan:[]
 };
 const DANA_PARAMITA = 20000;
 
@@ -842,6 +1014,7 @@ function allTabs(){
     {key:"siswa", label:"Data Siswa"},
     {key:"absensi", label:"Absensi"},
     {key:"penilaian", label:"Penilaian"},
+    {key:"pembelajaran", label:"Pembelajaran"+(()=>{ const ids=accessibleKelasIds(); const n=perluDinilaiCount(ids); return n? ` (${n})`:''; })()},
     {key:"kenaikan", label:"Kenaikan Kelas"},
     {key:"laporan", label:"Laporan"},
   ];
@@ -869,6 +1042,7 @@ function renderContent(){
   const isPublic = publicPreview || ['need-drive','need-admin-setup','need-login'].includes(appStage);
   document.body.classList.toggle('mode-public', isPublic);
   document.body.classList.toggle('no-sidebar', appStage==='siswa-portal');
+  document.body.classList.toggle('kerja', kerjaAktif());
   if(isPublic){ renderPublic(); return; }
   document.getElementById('publicRoot').innerHTML = '';
   if(appStage==='siswa-portal'){ c.innerHTML = screenSiswaPortal(); return; }
@@ -876,7 +1050,7 @@ function renderContent(){
     dashboard: renderDashboard, tahunajaran: renderTahunAjaran, kelas: renderKelas,
     siswa: renderSiswa, absensi: renderAbsensi, penilaian: renderPenilaian,
     kenaikan: renderKenaikan, laporan: renderLaporan, pengguna: renderPengguna,
-    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan
+    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan, pembelajaran: renderPembelajaran
   };
   if(!allTabs().some(t=>t.key===activeTab)) activeTab='dashboard';
   c.innerHTML = renderers[activeTab]();
@@ -943,7 +1117,7 @@ function heroLoginCard(){
     <p class="pub-muted">Pilih sesuai peran Anda.</p>
     <div class="pub-login-opts">
       <button class="pub-opt" onclick="setLoginMode('guru')"><strong>Guru / Admin</strong><span>Absensi, penilaian, dan data siswa</span></button>
-      <button class="pub-opt" onclick="setLoginMode('siswa')"><strong>Siswa</strong><span>Lihat kehadiran dan nilai</span></button>
+      <button class="pub-opt" onclick="setLoginMode('siswa')"><strong>Siswa</strong><span>Kerjakan tugas & ujian, lihat nilai</span></button>
     </div>
     <div class="pub-login-foot">Belum terdaftar? <a href="javascript:void 0" onclick="setLoginMode('daftar')">Isi formulir pendaftaran</a></div>
   </div>`;
@@ -1049,7 +1223,10 @@ function renderPublic(){
   const root = document.getElementById('publicRoot');
   let inner;
   if(publicPreview) inner = screenPublicHome();
-  else if(appStage==='need-drive') inner = `<section class="pub-auth">${screenNeedDrive()}</section>`;
+  else if(appStage==='need-drive'){
+    if(!backendInitError){ root.innerHTML = '<div class="page-loader" role="progressbar" aria-label="Memuat"></div>'; return; }
+    inner = `<section class="pub-auth">${screenNeedDrive()}</section>`;
+  }
   else if(appStage==='need-admin-setup') inner = `<section class="pub-auth">${screenSetupAdmin()}</section>`;
   else if(loginMode==='pilih') inner = screenPublicHome();
   else inner = `<section class="pub-auth">${screenLogin()}</section>`;
@@ -1276,6 +1453,885 @@ function hapusBerita(id){
   renderContent(); saveToDrive(true); toast('Berita dihapus');
 }
 
+/* ======================= PEMBELAJARAN (guru) ======================= */
+const JENIS_TUGAS = [
+  {key:'tugas',   label:'Tugas',          komp:'tugas'},
+  {key:'latihan', label:'Latihan',        komp:'tugas'},
+  {key:'ulangan', label:'Ulangan Harian', komp:'ulangan'},
+  {key:'praktek', label:'Praktek',        komp:'praktek'},
+  {key:'uts',     label:'UTS',            komp:'uts'},
+  {key:'uas',     label:'UAS',            komp:'uas'},
+];
+const TIPE_SOAL = {pg:'Pilihan ganda', bs:'Benar / salah', isian:'Isian singkat', esai:'Esai / uraian'};
+const HURUF = ['A','B','C','D','E','F'];
+const KOMP_LABEL = {tugas:'Tugas Harian', ulangan:'Ulangan Harian', praktek:'Praktek', uts:'UTS', uas:'UAS'};
+let pbKelasId = '', pbTab = 'tugas';
+let pbEditTugas = null, pbEditAsli = '';      // editor tugas (salinan kerja)
+let pbHasilTugasId = '';                       // halaman hasil tugas
+let pbCetak = null;                            // {jenis:'rencana', id} | {jenis:'kartu', list}
+
+function pbInit(){ ['rencana','materi','tugas','pengumpulan'].forEach(k=>{ if(!Array.isArray(db[k])) db[k]=[]; }); }
+function nowIso(){ return new Date().toISOString(); }
+function toLocalInput(iso){ if(!iso) return ''; const d=new Date(iso), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+function fromLocalInput(v){ return v? new Date(v).toISOString() : ''; }
+function fmtDT(iso){ if(!iso) return '—'; return new Date(iso).toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function fmtSisa(ms){ const s=Math.max(0,Math.floor(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), d=s%60, p=n=>String(n).padStart(2,'0'); return h? `${h}:${p(m)}:${p(d)}` : `${p(m)}:${p(d)}`; }
+function teksBr(t){ return esc(t||'').replace(/\n/g,'<br>'); }
+function jenisLabel(k){ const j=JENIS_TUGAS.find(x=>x.key===k); return j? j.label : k; }
+function totalPoin(t){ return (t.soal||[]).reduce((a,s)=>a+(Number(s.poin)||0),0); }
+function namaUser(id){ const u=db.users.find(x=>x.id===id); return u? u.nama : ''; }
+
+/* ---------- Penilaian otomatis ---------- */
+function dijawab(v){ return v!=null && String(v).trim()!==''; }
+function poinOtomatis(soal, jwb){
+  if(soal.tipe==='esai') return null;
+  if(!dijawab(jwb)) return 0;
+  const p = Number(soal.poin)||0;
+  if(soal.tipe==='pg') return Number(jwb)===Number(soal.kunci)? p : 0;
+  if(soal.tipe==='bs') return String(jwb)===String(soal.kunci)? p : 0;
+  if(soal.tipe==='isian') return String(soal.kunci||'').split('|').map(normTeks).filter(Boolean).includes(normTeks(jwb))? p : 0;
+  return 0;
+}
+function hitungSkor(t, p){
+  let total=0, dapat=0, perluNilai=0;
+  (t.soal||[]).forEach(s=>{
+    total += Number(s.poin)||0;
+    const j = (p.jawaban||{})[s.id];
+    if(s.tipe==='esai'){
+      const m = (p.nilaiManual||{})[s.id];
+      if(m!=null && m!=='') dapat += Number(m);
+      else if(dijawab(j)) perluNilai++;
+    } else dapat += poinOtomatis(s, j);
+  });
+  return {total, dapat, skor: total? Math.round(dapat/total*1000)/10 : 0, perluNilai};
+}
+function nilaiUlangPengumpulan(t, p){
+  const r = hitungSkor(t, p);
+  p.skor = r.skor;
+  p.status = r.perluNilai? 'dikumpulkan' : 'dinilai';
+  return r;
+}
+function pengumpulanDari(tugasId, siswaId){ return db.pengumpulan.find(p=>p.tugasId===tugasId && p.siswaId===siswaId); }
+function perluDinilaiCount(kelasIds){
+  pbInit();
+  const tIds = new Set(db.tugas.filter(t=>!kelasIds || kelasIds.includes(t.kelasId)).map(t=>t.id));
+  return db.pengumpulan.filter(p=>tIds.has(p.tugasId) && p.status==='dikumpulkan').length;
+}
+
+/* ---------- Halaman utama ---------- */
+function renderPembelajaran(){
+  pbInit();
+  const ta = activeTahunAjaran();
+  const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
+  if((!pbKelasId || !kelasList.some(k=>k.id===pbKelasId)) && kelasList.length) pbKelasId = kelasList[0].id;
+  if(pbEditTugas) return renderEditorTugas();
+  if(pbHasilTugasId) return renderHasilTugas();
+  const head = `<div class="page-head"><div><h2>Pembelajaran</h2><p class="subtitle">Rencana pembelajaran, materi untuk siswa, serta tugas dan ujian yang dikerjakan siswa secara online.</p></div></div>`;
+  if(!kelasList.length) return head + `<div class="empty"><div class="display">Belum ada kelas</div>Kelas yang Anda ajar akan muncul di sini.</div>`;
+  const k = db.kelas.find(x=>x.id===pbKelasId);
+  const nPerlu = perluDinilaiCount([k.id]);
+  const tabs = [
+    {key:'tugas', label:'Tugas & ujian'+(nPerlu? ` <span class="cnt">${nPerlu}</span>`:'')},
+    {key:'rencana', label:'Rencana pembelajaran'},
+    {key:'materi', label:'Materi & catatan'},
+    {key:'akun', label:'Akun siswa'},
+  ];
+  const controls = `<div class="pn-controls">
+      <div class="field"><label>Kelas</label><select onchange="pbKelasId=this.value; renderContent()">
+        ${kelasList.map(x=>`<option value="${x.id}" ${x.id===k.id?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}</select></div>
+      <div class="pn-meta"><span>Wali kelas <strong>${esc(k.guruId? guruNama(k.guruId):'—')}</strong></span><span><strong>${siswaAktifDiKelas(k.id).length}</strong> siswa aktif</span></div>
+    </div>
+    <div class="sheet-tabs">${tabs.map(t=>`<button class="${t.key===pbTab?'on':''}" onclick="pbTab='${t.key}'; renderContent()">${t.label}</button>`).join('')}</div>`;
+  const body = {tugas:pbDaftarTugas, rencana:pbDaftarRencana, materi:pbDaftarMateri, akun:pbAkunSiswa}[pbTab](k);
+  let cetak = '';
+  if(pbCetak && pbCetak.jenis==='rencana'){ const r=db.rencana.find(x=>x.id===pbCetak.id); if(r) cetak = `<div class="paper">${dokumenRencana(r)}</div>`; }
+  if(pbCetak && pbCetak.jenis==='kartu') cetak = dokumenKartuLogin(pbCetak.list, k);
+  return `<div class="no-print">${head}${controls}${body}</div>${cetak? `<div class="print-only">${cetak}</div>`:''}`;
+}
+
+/* ---------- Rencana pembelajaran ---------- */
+function pbDaftarRencana(k){
+  const list = db.rencana.filter(r=>r.kelasId===k.id).sort((a,b)=>(a.tanggal||'').localeCompare(b.tanggal||''));
+  const nOk = list.filter(r=>r.status==='terlaksana').length;
+  const today = new Date().toISOString().slice(0,10);
+  return `<div class="pb-bar"><span class="sd-sub">${list.length} rencana · ${nOk} sudah terlaksana</span>
+      <button class="btn-sun" onclick="formRencana()">+ Buat rencana</button></div>
+    ${list.length? `<div class="pb-list">${list.map(r=>{
+      const d = r.tanggal? new Date(r.tanggal+'T00:00:00') : null;
+      return `<div class="pb-row ${r.tanggal && r.tanggal<today && r.status!=='terlaksana'?'pb-late':''}">
+        <div class="pb-date">${d? `<strong>${d.getDate()}</strong><span>${d.toLocaleDateString('id-ID',{month:'short'})}</span>` : '<span>—</span>'}</div>
+        <div class="pb-main"><button class="pb-title" onclick="lihatRencana('${r.id}')">${esc(r.judul)}</button>
+          <div class="pb-sub">${r.tujuan? esc(r.tujuan.split('\n')[0]).slice(0,140) : 'Tujuan belum diisi'}</div>
+          <div class="pb-meta">${r.dibuatOleh? 'Oleh '+esc(namaUser(r.dibuatOleh))+' · ':''}${[r.waktuPembuka,r.waktuInti,r.waktuPenutup].some(Boolean)? (Number(r.waktuPembuka||0)+Number(r.waktuInti||0)+Number(r.waktuPenutup||0))+' menit':''}</div></div>
+        <label class="pb-done" title="Tandai sudah terlaksana"><input type="checkbox" ${r.status==='terlaksana'?'checked':''} onchange="tandaiRencana('${r.id}', this.checked)"> Terlaksana</label>
+        <div class="sd-act"><button class="ib" title="Lihat" onclick="lihatRencana('${r.id}')">${ICON.eye}</button>
+          <button class="ib" title="Ubah" onclick="formRencana('${r.id}')">${ICON.edit}</button>
+          <button class="ib ib-danger" title="Hapus" onclick="hapusRencana('${r.id}')">${ICON.trash}</button></div>
+      </div>`;}).join('')}</div>`
+    : `<div class="empty"><div class="display">Belum ada rencana pembelajaran</div>Susun rencana untuk setiap pertemuan: tujuan, materi, kegiatan, dan cara menilai.</div>`}`;
+}
+function formRencana(id){
+  const r = id? db.rencana.find(x=>x.id===id) : null;
+  const ta = activeTahunAjaran();
+  const sudah = new Set(db.rencana.filter(x=>x.kelasId===pbKelasId).map(x=>x.tanggal));
+  const today = new Date().toISOString().slice(0,10);
+  const usul = ta? (jadwalOfTahun(ta.id).find(j=>!j.libur && j.tanggal>=today && !sudah.has(j.tanggal))||{}).tanggal : '';
+  const v = f=> r? (r[f]||'') : '';
+  const area = (lbl,id,f,rows,ph)=>`<div class="field"><label for="${id}">${lbl}</label><textarea id="${id}" rows="${rows}" placeholder="${ph||''}" style="width:100%">${esc(v(f))}</textarea></div>`;
+  const tahap = (lbl,f,wf,ph)=>`<div class="rp-tahap"><div class="field"><label>${lbl}</label><textarea id="fr_${f}" rows="3" placeholder="${ph}" style="width:100%">${esc(v(f))}</textarea></div>
+     <div class="field"><label>Menit</label><input id="fr_${wf}" type="number" min="0" value="${esc(v(wf))}" style="width:100%"></div></div>`;
+  openModal(`<h3>${r?'Ubah':'Buat'} rencana pembelajaran</h3>
+    <div class="grid2">
+      <div class="field"><label>Tanggal pertemuan</label><input id="fr_tanggal" type="date" value="${r? r.tanggal||'' : usul||''}" style="width:100%"></div>
+      <div class="field"><label>Judul / topik *</label><input id="fr_judul" value="${esc(v('judul'))}" placeholder="misal: Riwayat Hidup Pangeran Siddharta" style="width:100%"></div>
+    </div>
+    ${area('Tujuan pembelajaran','fr_tujuan','tujuan',3,'Setelah pertemuan ini siswa dapat…')}
+    ${area('Materi pokok','fr_materi','materi',3,'Pokok bahasan yang diajarkan')}
+    <div class="rp-tahap-wrap"><div class="set-h" style="margin:4px 0 8px">Kegiatan pembelajaran</div>
+      ${tahap('Pembuka','pembuka','waktuPembuka','Puja bakti, salam, apersepsi…')}
+      ${tahap('Inti','inti','waktuInti','Penjelasan, diskusi, praktek…')}
+      ${tahap('Penutup','penutup','waktuPenutup','Rangkuman, refleksi, doa penutup…')}</div>
+    <div class="grid2">${area('Media / alat','fr_media','media',2,'Buku, gambar, video…')}${area('Penilaian','fr_penilaian','penilaian',2,'Cara menilai pencapaian tujuan')}</div>
+    ${area('Refleksi setelah pertemuan','fr_refleksi','refleksi',2,'Diisi setelah pertemuan: apa yang berjalan baik, apa yang perlu diperbaiki')}
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+      <button class="btn-sun btn-small" onclick="simpanRencana('${id||''}')">Simpan rencana</button></div>`, 'wide');
+}
+function simpanRencana(id){
+  const g = f=> (document.getElementById('fr_'+f)||{}).value || '';
+  const judul = g('judul').trim();
+  if(!judul) return toast('Judul / topik wajib diisi');
+  const data = {tanggal:g('tanggal'), judul, tujuan:g('tujuan').trim(), materi:g('materi').trim(),
+    pembuka:g('pembuka').trim(), inti:g('inti').trim(), penutup:g('penutup').trim(),
+    waktuPembuka:g('waktuPembuka'), waktuInti:g('waktuInti'), waktuPenutup:g('waktuPenutup'),
+    media:g('media').trim(), penilaian:g('penilaian').trim(), refleksi:g('refleksi').trim(), diubah:nowIso()};
+  if(id) Object.assign(db.rencana.find(x=>x.id===id), data);
+  else { const k=db.kelas.find(x=>x.id===pbKelasId); db.rencana.push(Object.assign({id:uid(), kelasId:pbKelasId, tahunAjaranId:k.tahunAjaranId, status:'rencana', dibuatOleh:currentUser.id}, data)); }
+  closeModal(); renderContent(); saveToDrive(true); toast('Rencana pembelajaran disimpan');
+}
+function tandaiRencana(id, ok){ const r=db.rencana.find(x=>x.id===id); r.status = ok? 'terlaksana':'rencana'; renderContent(); scheduleSave(); }
+function hapusRencana(id){ if(!confirm('Hapus rencana pembelajaran ini?')) return; db.rencana=db.rencana.filter(x=>x.id!==id); renderContent(); saveToDrive(true); }
+function lihatRencana(id){
+  const r = db.rencana.find(x=>x.id===id); if(!r) return;
+  openModal(`<div class="paper-stage" style="padding:14px"><div class="paper" style="padding:28px 30px">${dokumenRencana(r)}</div></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button>
+    <button class="btn-outline btn-small" onclick="formRencana('${id}')">Ubah</button>
+    <button class="btn-sun btn-small" onclick="cetakRencana('${id}')">Cetak</button></div>`, 'wide');
+}
+function cetakRencana(id){ closeModal(); pbCetak={jenis:'rencana', id}; renderContent(); cetakLaporan('portrait'); }
+function dokumenRencana(r){
+  const k = db.kelas.find(x=>x.id===r.kelasId);
+  const ta = db.tahunAjaran.find(t=>t.id===r.tahunAjaranId);
+  const t = k? tingkatOf(k):null, d = k? daerahOf(k):null;
+  const ident = (l,v)=>`<tr><td class="id-l">${l}</td><td class="id-s">:</td><td>${v||'—'}</td></tr>`;
+  const blok = (h, isi)=> isi? `<div class="rp-h">${h}</div><div class="rpp-p">${teksBr(isi)}</div>` : '';
+  const total = Number(r.waktuPembuka||0)+Number(r.waktuInti||0)+Number(r.waktuPenutup||0);
+  const guru = namaUser(r.dibuatOleh) || (k&&k.guruId? guruNama(k.guruId):'');
+  const st = S();
+  return `${kopSuratHtml()}
+    <div class="doc-title">RENCANA PELAKSANAAN PEMBELAJARAN</div>
+    <div class="doc-sub">Pendidikan Agama Buddha dan Budi Pekerti</div>
+    <div class="rp-ident">
+      <table>${ident('Topik', `<strong>${esc(r.judul)}</strong>`)}${ident('Kelas', esc(t? t.nama+(k.namaRombel?' - '+k.namaRombel:''):''))}${ident('Daerah belajar', esc(d?d.nama:''))}</table>
+      <table>${ident('Tanggal', r.tanggal? tglPanjang(new Date(r.tanggal+'T00:00:00')):'')}${ident('Tahun ajaran', esc(ta?ta.nama:''))}${ident('Alokasi waktu', total? total+' menit':'')}</table>
+    </div>
+    ${blok('A. Tujuan pembelajaran', r.tujuan)}
+    ${blok('B. Materi pokok', r.materi)}
+    <div class="rp-h">C. Kegiatan pembelajaran</div>
+    <table class="rp-t"><thead><tr><th style="width:90px">Tahap</th><th>Kegiatan</th><th style="width:64px">Waktu</th></tr></thead><tbody>
+      ${[['Pembuka','pembuka','waktuPembuka'],['Inti','inti','waktuInti'],['Penutup','penutup','waktuPenutup']].map(([l,f,w])=>`<tr><td class="c"><strong>${l}</strong></td><td>${teksBr(r[f])||'—'}</td><td class="c">${r[w]? r[w]+' mnt':'—'}</td></tr>`).join('')}
+    </tbody></table>
+    ${blok('D. Media / alat', r.media)}
+    ${blok('E. Penilaian', r.penilaian)}
+    ${blok('F. Refleksi', r.refleksi)}
+    <div class="ttd3" style="margin-top:30px">
+      <div>Mengetahui,<br>Koordinator Umum SMB<div class="ttd-space"></div>${st.ttd.koordinatorNama? `<span class="ttd-nama">${esc(st.ttd.koordinatorNama)}</span>`:'(...................................)'}</div>
+      <div>${esc(st.kop.kota)}, ${tglPanjang()}<br>Guru Pengajar<div class="ttd-space"></div>${guru? `<span class="ttd-nama">${esc(guru)}</span>`:'(...................................)'}</div>
+    </div>`;
+}
+
+/* ---------- Materi & catatan ---------- */
+function pbDaftarMateri(k){
+  const list = db.materi.filter(m=>m.kelasId===k.id).sort((a,b)=>(b.tanggal||'').localeCompare(a.tanggal||''));
+  return `<div class="pb-bar"><span class="sd-sub">Catatan yang ditandai "Tampil untuk siswa" bisa dibaca siswa di portal siswa.</span>
+      <button class="btn-sun" onclick="formMateri()">+ Tulis materi / catatan</button></div>
+    ${list.length? `<div class="mt-grid">${list.map(m=>`<article class="mt-card">
+        <div class="mt-head"><span class="pill ${m.tampilSiswa?'pill-ok':'pill-muted'}">${m.tampilSiswa?'Tampil untuk siswa':'Catatan guru'}</span><time>${fmtDate(m.tanggal)}</time></div>
+        <h4>${esc(m.judul)}</h4>
+        <div class="mt-isi">${teksBr((m.isi||'').slice(0,320))}${(m.isi||'').length>320?'…':''}</div>
+        ${m.link? `<a class="mt-link" href="${esc(m.link)}" target="_blank" rel="noopener">Buka tautan</a>`:''}
+        <div class="mt-act"><button class="btn-outline btn-small" onclick="formMateri('${m.id}')">Ubah</button><button class="btn-danger btn-small" onclick="hapusMateri('${m.id}')">Hapus</button></div>
+      </article>`).join('')}</div>`
+    : `<div class="empty"><div class="display">Belum ada materi</div>Tulis ringkasan pelajaran, bacaan Dhamma, atau catatan perkembangan kelas.</div>`}`;
+}
+function formMateri(id){
+  const m = id? db.materi.find(x=>x.id===id) : null;
+  openModal(`<h3>${m?'Ubah':'Tulis'} materi / catatan</h3>
+    <div class="grid2"><div class="field"><label>Judul *</label><input id="fm_judul" value="${esc(m?m.judul:'')}" style="width:100%"></div>
+      <div class="field"><label>Tanggal</label><input id="fm_tgl" type="date" value="${m? m.tanggal : new Date().toISOString().slice(0,10)}" style="width:100%"></div></div>
+    <div class="field"><label>Isi *</label><textarea id="fm_isi" rows="9" style="width:100%">${esc(m?m.isi:'')}</textarea></div>
+    <div class="field"><label>Tautan (opsional)</label><input id="fm_link" value="${esc(m?m.link:'')}" placeholder="https://… (video YouTube, Google Drive, dll.)" style="width:100%"></div>
+    <label class="chk"><input type="checkbox" id="fm_tampil" ${!m||m.tampilSiswa?'checked':''}> Tampil untuk siswa</label>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button><button class="btn-sun btn-small" onclick="simpanMateri('${id||''}')">Simpan</button></div>`, 'wide');
+}
+function simpanMateri(id){
+  const judul = val('fm_judul'), isi = (document.getElementById('fm_isi').value||'').trim(), link = val('fm_link');
+  if(!judul) return toast('Judul wajib diisi');
+  if(!isi) return toast('Isi wajib diisi');
+  if(link && !/^https?:\/\//i.test(link)) return toast('Tautan harus diawali https://');
+  const data = {judul, isi, link, tanggal: document.getElementById('fm_tgl').value || new Date().toISOString().slice(0,10), tampilSiswa: document.getElementById('fm_tampil').checked};
+  if(id) Object.assign(db.materi.find(x=>x.id===id), data);
+  else db.materi.push(Object.assign({id:uid(), kelasId:pbKelasId, dibuatOleh:currentUser.id}, data));
+  closeModal(); renderContent(); saveToDrive(true); toast('Materi disimpan');
+}
+function hapusMateri(id){ if(!confirm('Hapus materi ini?')) return; db.materi=db.materi.filter(x=>x.id!==id); renderContent(); saveToDrive(true); }
+
+/* ---------- Tugas & ujian: daftar ---------- */
+function statusTugasLabel(t){
+  const now = Date.now();
+  if(t.status==='draf') return {cls:'st-draf', txt:'Draf'};
+  if(t.status==='tutup') return {cls:'st-tutup', txt:'Ditutup'};
+  if(t.mulai && new Date(t.mulai).getTime()>now) return {cls:'st-jadwal', txt:'Terjadwal'};
+  if(t.tenggat && new Date(t.tenggat).getTime()<now) return {cls:'st-lewat', txt:'Lewat tenggat'};
+  return {cls:'st-buka', txt:'Dibuka'};
+}
+function pbDaftarTugas(k){
+  const list = db.tugas.filter(t=>t.kelasId===k.id).sort((a,b)=>(b.dibuat||'').localeCompare(a.dibuat||''));
+  const nSiswa = siswaAktifDiKelas(k.id).length;
+  return `<div class="pb-bar"><span class="sd-sub">Siswa mengerjakan lewat portal siswa. Pilihan ganda, benar/salah, dan isian dinilai otomatis.</span>
+      <button class="btn-sun" onclick="bukaEditorTugas()">+ Buat tugas / ujian</button></div>
+    ${list.length? `<div class="sd-table-wrap"><table class="sd-table">
+      <thead><tr><th>Judul</th><th>Jenis</th><th>Soal</th><th>Waktu</th><th>Status</th><th>Dikumpulkan</th><th></th></tr></thead>
+      <tbody>${list.map(t=>{
+        const st = statusTugasLabel(t);
+        const ps = db.pengumpulan.filter(p=>p.tugasId===t.id && p.status!=='mengerjakan');
+        const perlu = ps.filter(p=>p.status==='dikumpulkan').length;
+        return `<tr>
+          <td><button class="pb-title" onclick="${t.status==='draf'? `bukaEditorTugas('${t.id}')` : `pbHasilTugasId='${t.id}'; renderContent()`}">${esc(t.judul||'(tanpa judul)')}</button>
+            ${t.dikirimKe? `<small class="sd-sub">Masuk ke Penilaian: ${KOMP_LABEL[t.dikirimKe.komp]}</small>`:''}</td>
+          <td><span class="pill pill-muted">${jenisLabel(t.jenis)}</span></td>
+          <td class="sd-no">${(t.soal||[]).length} soal · ${totalPoin(t)} poin</td>
+          <td><small class="sd-sub" style="white-space:nowrap">${t.tenggat? 'Tenggat '+fmtDT(t.tenggat) : 'Tanpa tenggat'}</small><small class="sd-sub">${t.durasi>0? 'Durasi '+t.durasi+' menit' : 'Tanpa batas durasi'}</small></td>
+          <td><span class="tstat ${st.cls}">${st.txt}</span></td>
+          <td>${t.status==='draf'? '<span class="sd-sub">—</span>' : `<strong>${ps.length}</strong><span class="sd-sub" style="display:inline"> / ${nSiswa}</span>${perlu? `<small class="perlu">${perlu} perlu dinilai</small>`:''}`}</td>
+          <td class="sd-act">
+            ${t.status!=='draf'? `<button class="btn-outline btn-small" onclick="pbHasilTugasId='${t.id}'; renderContent()">Hasil</button>`:''}
+            <button class="ib" title="Ubah" onclick="bukaEditorTugas('${t.id}')">${ICON.edit}</button>
+            <button class="ib" title="Duplikat" onclick="duplikatTugas('${t.id}')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
+            <button class="ib ib-danger" title="Hapus" onclick="hapusTugas('${t.id}')">${ICON.trash}</button>
+          </td></tr>`;}).join('')}</tbody></table></div>`
+    : `<div class="empty"><div class="display">Belum ada tugas atau ujian</div>Buat tugas, latihan, ulangan, UTS, atau UAS. Siswa mengerjakannya secara online dan nilainya bisa langsung dimasukkan ke menu Penilaian.</div>`}`;
+}
+function duplikatTugas(id){
+  const t = db.tugas.find(x=>x.id===id); if(!t) return;
+  const c = JSON.parse(JSON.stringify(t));
+  c.id = uid(); c.judul = t.judul+' (salinan)'; c.status='draf'; c.dibuat=nowIso(); delete c.dikirimKe;
+  c.soal.forEach(s=>s.id=uid());
+  db.tugas.push(c); renderContent(); saveToDrive(true); toast('Tugas diduplikat sebagai draf');
+}
+function hapusTugas(id){
+  const n = db.pengumpulan.filter(p=>p.tugasId===id).length;
+  if(!confirm(`Hapus tugas ini?${n? ` ${n} jawaban siswa ikut terhapus.`:''}`)) return;
+  db.tugas = db.tugas.filter(t=>t.id!==id);
+  db.pengumpulan = db.pengumpulan.filter(p=>p.tugasId!==id);
+  renderContent(); saveToDrive(true); toast('Tugas dihapus');
+}
+
+/* ---------- Editor tugas & soal ---------- */
+function soalBaru(tipe){
+  const s = {id:uid(), tipe, teks:'', poin:10, pembahasan:''};
+  if(tipe==='pg'){ s.opsi=['','','','']; s.kunci=null; }
+  else if(tipe==='bs') s.kunci=null;
+  else s.kunci='';
+  return s;
+}
+function bukaEditorTugas(id){
+  const t = id? db.tugas.find(x=>x.id===id) : null;
+  pbEditTugas = t? JSON.parse(JSON.stringify(t)) : {id:uid(), kelasId:pbKelasId, jenis:'tugas', judul:'', instruksi:'', mulai:'', tenggat:'', durasi:0,
+    acak:false, terimaTerlambat:false, tampilHasil:'nilai', status:'draf', soal:[soalBaru('pg')], dibuatOleh:currentUser.id, dibuat:nowIso(), baru:true};
+  pbEditAsli = JSON.stringify(pbEditTugas);
+  renderContent(); window.scrollTo(0,0);
+}
+function tutupEditor(){
+  if(JSON.stringify(pbEditTugas)!==pbEditAsli && !confirm('Perubahan belum disimpan. Tetap keluar?')) return;
+  pbEditTugas = null; renderContent(); window.scrollTo(0,0);
+}
+function edT(f, v){ pbEditTugas[f] = v; }
+function edS(i, f, v){ pbEditTugas.soal[i][f] = v; const c=document.getElementById('eq'+i); if(c) c.classList.remove('eq-err'); }
+function edOpsi(i, oi, v){ pbEditTugas.soal[i].opsi[oi] = v; }
+function updTotalPoin(){ const e=document.getElementById('edTotal'); if(e) e.textContent = totalPoin(pbEditTugas)+' poin'; }
+function tambahSoal(tipe){ pbEditTugas.soal.push(soalBaru(tipe)); renderContent(); setTimeout(()=>{ const n=document.getElementById('eq'+(pbEditTugas.soal.length-1)); if(n){ n.scrollIntoView({behavior:'smooth',block:'center'}); const ta=n.querySelector('textarea'); ta && ta.focus(); } },30); }
+function hapusSoal(i){ if(pbEditTugas.soal[i].teks && !confirm('Hapus soal '+(i+1)+'?')) return; pbEditTugas.soal.splice(i,1); renderContent(); }
+function geserSoal(i, d){ const a=pbEditTugas.soal, j=i+d; if(j<0||j>=a.length) return; [a[i],a[j]]=[a[j],a[i]]; renderContent(); }
+function duplikatSoal(i){ const c=JSON.parse(JSON.stringify(pbEditTugas.soal[i])); c.id=uid(); pbEditTugas.soal.splice(i+1,0,c); renderContent(); }
+function ubahTipeSoal(i, tipe){ const lama=pbEditTugas.soal[i]; const b=soalBaru(tipe); b.id=lama.id; b.teks=lama.teks; b.poin=lama.poin; b.pembahasan=lama.pembahasan; pbEditTugas.soal[i]=b; renderContent(); }
+function tambahOpsi(i){ const s=pbEditTugas.soal[i]; if(s.opsi.length>=6) return; s.opsi.push(''); renderContent(); }
+function hapusOpsi(i, oi){ const s=pbEditTugas.soal[i]; s.opsi.splice(oi,1); if(s.kunci===oi) s.kunci=null; else if(s.kunci>oi) s.kunci--; renderContent(); }
+function editorSoalHtml(s, i, n){
+  const tools = `<span class="eq-tools">
+      <button class="ib" title="Naikkan" ${i===0?'disabled':''} onclick="geserSoal(${i},-1)">↑</button>
+      <button class="ib" title="Turunkan" ${i===n-1?'disabled':''} onclick="geserSoal(${i},1)">↓</button>
+      <button class="ib" title="Duplikat soal" onclick="duplikatSoal(${i})">⧉</button>
+      <button class="ib ib-danger" title="Hapus soal" onclick="hapusSoal(${i})">${ICON.trash}</button></span>`;
+  let body = '';
+  if(s.tipe==='pg'){
+    body = `<div class="eq-opts">${s.opsi.map((o,oi)=>`<div class="eq-opt ${s.kunci===oi?'ok':''}">
+        <label class="eq-key" title="Tandai sebagai jawaban benar"><input type="radio" name="kunci_${s.id}" ${s.kunci===oi?'checked':''} onchange="edS(${i},'kunci',${oi}); this.closest('.eq-opts').querySelectorAll('.eq-opt').forEach((e,x)=>e.classList.toggle('ok',x===${oi}))"><span>${HURUF[oi]}</span></label>
+        <input value="${esc(o)}" placeholder="Pilihan ${HURUF[oi]}" oninput="edOpsi(${i},${oi},this.value)">
+        ${s.opsi.length>2? `<button class="ib" title="Hapus pilihan" onclick="hapusOpsi(${i},${oi})">×</button>`:''}</div>`).join('')}</div>
+      <div class="eq-foot">${s.opsi.length<6? `<button class="btn-outline btn-small" onclick="tambahOpsi(${i})">+ Pilihan</button>`:''}<span class="sd-sub">Klik huruf untuk menandai jawaban yang benar.</span></div>`;
+  } else if(s.tipe==='bs'){
+    body = `<div class="eq-bs">${['benar','salah'].map(v=>`<label class="eq-bs-opt"><input type="radio" name="kunci_${s.id}" ${s.kunci===v?'checked':''} onchange="edS(${i},'kunci','${v}')"><span>${v==='benar'?'Benar':'Salah'}</span></label>`).join('')}<span class="sd-sub">Pilih jawaban yang benar.</span></div>`;
+  } else if(s.tipe==='isian'){
+    body = `<div class="field" style="margin:0"><label>Kunci jawaban</label><input value="${esc(s.kunci)}" placeholder="misal: Sidharta Gautama | Siddhattha Gotama" oninput="edS(${i},'kunci',this.value)" style="width:100%">
+      <div class="help">Pisahkan dengan tanda | bila ada beberapa jawaban yang diterima. Huruf besar/kecil tidak berpengaruh.</div></div>`;
+  } else {
+    body = `<div class="field" style="margin:0"><label>Pedoman jawaban (hanya terlihat guru)</label><textarea rows="2" oninput="edS(${i},'kunci',this.value)" style="width:100%" placeholder="Poin-poin yang diharapkan ada dalam jawaban">${esc(s.kunci)}</textarea>
+      <div class="help">Soal esai dinilai guru di halaman Hasil.</div></div>`;
+  }
+  return `<div class="eq" id="eq${i}">
+    <div class="eq-head"><span class="eq-no">${i+1}</span>
+      <select onchange="ubahTipeSoal(${i}, this.value)" aria-label="Jenis soal">${Object.entries(TIPE_SOAL).map(([k,l])=>`<option value="${k}" ${k===s.tipe?'selected':''}>${l}</option>`).join('')}</select>
+      <label class="eq-poin">Poin <input type="number" min="1" value="${s.poin}" oninput="edS(${i},'poin',Number(this.value)); updTotalPoin()"></label>
+      ${tools}</div>
+    <textarea class="eq-teks" rows="2" placeholder="Tulis pertanyaan…" oninput="edS(${i},'teks',this.value)">${esc(s.teks)}</textarea>
+    ${body}
+    <details class="eq-pemb" ${s.pembahasan?'open':''}><summary>Pembahasan (opsional)</summary>
+      <textarea rows="2" oninput="edS(${i},'pembahasan',this.value)" placeholder="Penjelasan yang ditampilkan ke siswa setelah mengumpulkan, bila diizinkan" style="width:100%">${esc(s.pembahasan)}</textarea></details>
+  </div>`;
+}
+function renderEditorTugas(){
+  const t = pbEditTugas;
+  const k = db.kelas.find(x=>x.id===t.kelasId);
+  const nKumpul = db.pengumpulan.filter(p=>p.tugasId===t.id && p.status!=='mengerjakan').length;
+  return `<div class="ed-top">
+      <button class="btn-outline btn-small" onclick="tutupEditor()">← Kembali</button>
+      <div class="ed-title"><h2>${t.baru? 'Buat tugas / ujian' : 'Ubah tugas / ujian'}</h2><span class="sd-sub">${esc(k? kelasLabel(k):'')} · <span id="edTotal">${totalPoin(t)} poin</span> · ${t.soal.length} soal</span></div>
+      <div class="row">${t.status==='draf'? `<button class="btn-outline" onclick="simpanTugas('draf')">Simpan draf</button><button class="btn-sun" onclick="simpanTugas('terbit')">Terbitkan untuk siswa</button>`
+        : `<button class="btn-sun" onclick="simpanTugas()">Simpan perubahan</button>`}</div>
+    </div>
+    ${nKumpul? `<div class="ed-warn">${nKumpul} siswa sudah mengumpulkan. Bila kunci jawaban atau poin diubah, nilai otomatis mereka dihitung ulang.</div>`:''}
+    <div class="ed-grid">
+      <section class="set-card ed-set">
+        <div class="set-h" style="margin-top:0">Pengaturan</div>
+        <div class="field"><label>Jenis</label><select onchange="edT('jenis',this.value)" style="width:100%">${JENIS_TUGAS.map(j=>`<option value="${j.key}" ${j.key===t.jenis?'selected':''}>${j.label}</option>`).join('')}</select></div>
+        <div class="field"><label>Judul *</label><input value="${esc(t.judul)}" oninput="edT('judul',this.value)" placeholder="misal: Ulangan Bab 2 — Tri Ratna" style="width:100%"></div>
+        <div class="field"><label>Petunjuk untuk siswa</label><textarea rows="3" oninput="edT('instruksi',this.value)" style="width:100%" placeholder="Bacalah setiap soal dengan teliti…">${esc(t.instruksi)}</textarea></div>
+        <div class="field"><label>Dibuka mulai</label><input type="datetime-local" value="${toLocalInput(t.mulai)}" onchange="edT('mulai', fromLocalInput(this.value))" style="width:100%"><div class="help">Kosongkan agar langsung dibuka saat diterbitkan.</div></div>
+        <div class="field"><label>Tenggat</label><input type="datetime-local" value="${toLocalInput(t.tenggat)}" onchange="edT('tenggat', fromLocalInput(this.value))" style="width:100%"></div>
+        <div class="field"><label>Durasi pengerjaan (menit)</label><input type="number" min="0" value="${t.durasi||0}" oninput="edT('durasi', Number(this.value)||0)" style="width:100%"><div class="help">0 = tanpa batas waktu. Untuk ujian, isi misal 60.</div></div>
+        <div class="field"><label>Setelah mengumpulkan, siswa melihat</label><select onchange="edT('tampilHasil',this.value)" style="width:100%">
+          ${[['pembahasan','Nilai, kunci jawaban & pembahasan'],['nilai','Nilai saja'],['tidak','Tidak ada (nilai disembunyikan)']].map(([v,l])=>`<option value="${v}" ${t.tampilHasil===v?'selected':''}>${l}</option>`).join('')}</select></div>
+        <label class="chk"><input type="checkbox" ${t.acak?'checked':''} onchange="edT('acak',this.checked)"> Acak urutan soal untuk tiap siswa</label>
+        <label class="chk"><input type="checkbox" ${t.terimaTerlambat?'checked':''} onchange="edT('terimaTerlambat',this.checked)"> Terima pengumpulan setelah tenggat (ditandai terlambat)</label>
+      </section>
+      <section class="ed-soal">
+        ${t.soal.map((s,i)=>editorSoalHtml(s,i,t.soal.length)).join('')}
+        <div class="ed-add"><span>Tambah soal:</span>${Object.entries(TIPE_SOAL).map(([k,l])=>`<button class="btn-outline btn-small" onclick="tambahSoal('${k}')">+ ${l}</button>`).join('')}</div>
+      </section>
+    </div>`;
+}
+function validasiTugas(t){
+  if(!t.judul.trim()) return {msg:'Judul wajib diisi'};
+  if(!t.soal.length) return {msg:'Tambahkan minimal satu soal'};
+  if(t.mulai && t.tenggat && t.tenggat<=t.mulai) return {msg:'Tenggat harus setelah waktu dibuka'};
+  for(let i=0;i<t.soal.length;i++){
+    const s=t.soal[i], no='Soal '+(i+1)+': ';
+    if(!String(s.teks||'').trim()) return {i, msg:no+'pertanyaan belum diisi'};
+    if(!(Number(s.poin)>0)) return {i, msg:no+'poin harus lebih dari 0'};
+    if(s.tipe==='pg'){
+      if(s.opsi.filter(o=>String(o).trim()).length<2) return {i, msg:no+'isi minimal dua pilihan jawaban'};
+      if(s.kunci==null || !String(s.opsi[s.kunci]||'').trim()) return {i, msg:no+'tandai pilihan yang benar'};
+    }
+    if(s.tipe==='bs' && !s.kunci) return {i, msg:no+'pilih Benar atau Salah sebagai kunci'};
+    if(s.tipe==='isian' && !String(s.kunci||'').trim()) return {i, msg:no+'isi kunci jawaban'};
+  }
+  return null;
+}
+function simpanTugas(statusBaru){
+  const t = pbEditTugas;
+  t.judul = (t.judul||'').trim();
+  if(statusBaru==='draf'){ if(!t.judul) return toast('Judul wajib diisi'); }
+  else {
+    const err = validasiTugas(t);
+    if(err){ toast(err.msg); if(err.i!=null){ const c=document.getElementById('eq'+err.i); if(c){ c.classList.add('eq-err'); c.scrollIntoView({behavior:'smooth',block:'center'}); } } return; }
+  }
+  if(statusBaru) t.status = statusBaru;
+  if(t.status==='terbit' && !t.diterbitkan) t.diterbitkan = nowIso();
+  delete t.baru;
+  t.diubah = nowIso();
+  const idx = db.tugas.findIndex(x=>x.id===t.id);
+  if(idx>=0) db.tugas[idx] = t; else db.tugas.push(t);
+  db.pengumpulan.filter(p=>p.tugasId===t.id && p.status!=='mengerjakan').forEach(p=>nilaiUlangPengumpulan(t, p));
+  pbEditTugas = null;
+  renderContent(); window.scrollTo(0,0); saveToDrive(true);
+  toast(statusBaru==='terbit'? 'Tugas diterbitkan — siswa sudah bisa melihatnya' : statusBaru==='draf'? 'Draf disimpan' : 'Perubahan disimpan');
+}
+
+/* ---------- Hasil & pemeriksaan ---------- */
+function renderHasilTugas(){
+  const t = db.tugas.find(x=>x.id===pbHasilTugasId);
+  if(!t){ pbHasilTugasId=''; return renderPembelajaran(); }
+  const siswa = siswaAktifDiKelas(t.kelasId).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
+  const rows = siswa.map(s=>({s, p:pengumpulanDari(t.id, s.id)}));
+  const kumpul = rows.filter(r=>r.p && r.p.status!=='mengerjakan');
+  const dinilai = kumpul.filter(r=>r.p.status==='dinilai');
+  const rata = dinilai.length? Math.round(dinilai.reduce((a,r)=>a+r.p.skor,0)/dinilai.length*10)/10 : null;
+  const st = statusTugasLabel(t);
+  const analisis = (t.soal||[]).map((s,i)=>{
+    if(!kumpul.length) return {i, s, pct:null};
+    if(s.tipe==='esai'){ const v=kumpul.map(r=>(r.p.nilaiManual||{})[s.id]).filter(x=>x!=null&&x!==''); return {i, s, pct: v.length? v.reduce((a,b)=>a+Number(b),0)/v.length/(s.poin||1)*100 : null}; }
+    return {i, s, pct: kumpul.filter(r=>poinOtomatis(s,(r.p.jawaban||{})[s.id])>0).length/kumpul.length*100};
+  });
+  const stPill = p=>{
+    if(!p) return '<span class="tstat st-draf">Belum mengerjakan</span>';
+    if(p.status==='mengerjakan') return '<span class="tstat st-jadwal">Sedang mengerjakan</span>';
+    if(p.status==='dikumpulkan') return '<span class="tstat st-lewat">Perlu dinilai</span>';
+    return '<span class="tstat st-buka">Selesai dinilai</span>';
+  };
+  return `<div class="ed-top">
+      <button class="btn-outline btn-small" onclick="pbHasilTugasId=''; renderContent()">← Kembali</button>
+      <div class="ed-title"><h2>${esc(t.judul)}</h2><span class="sd-sub">${jenisLabel(t.jenis)} · ${t.soal.length} soal · ${totalPoin(t)} poin · ${t.tenggat? 'Tenggat '+fmtDT(t.tenggat) : 'Tanpa tenggat'}</span></div>
+      <div class="row">
+        <button class="btn-outline" onclick="bukaEditorTugas('${t.id}')">Ubah soal</button>
+        ${t.status==='tutup'? `<button class="btn-outline" onclick="setStatusTugas('${t.id}','terbit')">Buka kembali</button>` : `<button class="btn-outline" onclick="setStatusTugas('${t.id}','tutup')">Tutup tugas</button>`}
+        <button class="btn-sun" onclick="formKirimPenilaian('${t.id}')">Masukkan ke Penilaian</button>
+      </div>
+    </div>
+    <div class="sd-summary">
+      <div><strong>${kumpul.length}/${siswa.length}</strong><span>sudah mengumpulkan</span></div>
+      <div><strong>${kumpul.length-dinilai.length}</strong><span>perlu dinilai (esai)</span></div>
+      <div><strong>${rata==null?'—':fmtN(rata)}</strong><span>rata-rata nilai</span></div>
+      <div><strong><span class="tstat ${st.cls}" style="font-size:13px">${st.txt}</span></strong><span>status</span></div>
+    </div>
+    ${t.dikirimKe? `<p class="sheet-note">Sudah dimasukkan ke Penilaian (${KOMP_LABEL[t.dikirimKe.komp]}, ${SEMESTER.find(x=>x.key===t.dikirimKe.semester).label}) pada ${fmtDT(t.dikirimKe.waktu)}. Bila ada nilai yang berubah, klik "Masukkan ke Penilaian" lagi untuk memperbarui.</p>`:''}
+    <div class="sd-table-wrap"><table class="sd-table">
+      <thead><tr><th>No</th><th>Nama siswa</th><th>Status</th><th>Mulai</th><th>Dikumpulkan</th><th style="text-align:right">Nilai</th><th></th></tr></thead>
+      <tbody>${rows.map(({s,p},i)=>`<tr>
+        <td class="sd-no">${i+1}</td>
+        <td><strong>${esc(s.namaLengkap)}</strong><small class="sd-sub">No Induk ${esc(s.noInduk||'—')}</small></td>
+        <td>${stPill(p)}</td>
+        <td><small class="sd-sub">${p? fmtDT(p.mulai):'—'}</small></td>
+        <td><small class="sd-sub">${p&&p.selesai? fmtDT(p.selesai):'—'}</small>${p&&p.terlambat? '<small class="perlu">Terlambat</small>':''}</td>
+        <td style="text-align:right" class="hs-skor">${p&&p.status!=='mengerjakan'? fmtN(p.skor) : '—'}</td>
+        <td class="sd-act">${p&&p.status!=='mengerjakan'? `<button class="btn-outline btn-small" onclick="periksaJawaban('${p.id}')">${p.status==='dikumpulkan'?'Nilai esai':'Periksa'}</button>`:''}
+          ${p? `<button class="ib" title="Izinkan mengerjakan ulang" onclick="resetPengumpulan('${p.id}')">↺</button>`:''}</td>
+      </tr>`).join('')}</tbody></table></div>
+    ${kumpul.length? `<div class="set-h">Analisis soal</div>
+      <div class="an-grid">${analisis.map(a=>`<div class="an-item" title="${esc(String(a.s.teks).slice(0,120))}">
+        <div class="an-top"><span>Soal ${a.i+1}</span><span>${a.pct==null?'—':Math.round(a.pct)+'%'}</span></div>
+        <div class="meter-track"><div class="meter-fill ${a.pct==null?'':a.pct>=70?'H':a.pct>=40?'S':'A'}" style="width:${a.pct||0}%"></div></div>
+        <div class="an-sub">${TIPE_SOAL[a.s.tipe]}${a.s.tipe==='esai'?' · rata-rata poin':' · menjawab benar'}</div></div>`).join('')}</div>`:''}`;
+}
+function setStatusTugas(id, st){ const t=db.tugas.find(x=>x.id===id); t.status=st; renderContent(); saveToDrive(true); toast(st==='tutup'?'Tugas ditutup — siswa tidak bisa mengerjakan lagi':'Tugas dibuka kembali'); }
+function resetPengumpulan(pid){
+  const p = db.pengumpulan.find(x=>x.id===pid); const s = db.siswa.find(x=>x.id===p.siswaId);
+  if(!confirm(`Hapus jawaban ${s? s.namaLengkap:'siswa ini'} dan izinkan mengerjakan ulang?`)) return;
+  db.pengumpulan = db.pengumpulan.filter(x=>x.id!==pid); renderContent(); saveToDrive(true); toast('Siswa bisa mengerjakan ulang');
+}
+function jawabanTampil(s, j){
+  if(!dijawab(j)) return '<em class="sd-sub">Tidak dijawab</em>';
+  if(s.tipe==='pg') return `${HURUF[Number(j)]||'?'}. ${esc(s.opsi[Number(j)]||'')}`;
+  if(s.tipe==='bs') return j==='benar'? 'Benar' : 'Salah';
+  return teksBr(j);
+}
+function kunciTampil(s){
+  if(s.tipe==='pg') return `${HURUF[Number(s.kunci)]}. ${esc(s.opsi[Number(s.kunci)]||'')}`;
+  if(s.tipe==='bs') return s.kunci==='benar'? 'Benar' : 'Salah';
+  if(s.tipe==='isian') return esc(String(s.kunci).split('|').map(x=>x.trim()).join(' / '));
+  return teksBr(s.kunci);
+}
+function periksaJawaban(pid){
+  const p = db.pengumpulan.find(x=>x.id===pid); const t = db.tugas.find(x=>x.id===p.tugasId); const s = db.siswa.find(x=>x.id===p.siswaId);
+  const items = t.soal.map((q,i)=>{
+    const j = (p.jawaban||{})[q.id];
+    if(q.tipe==='esai'){
+      const m = (p.nilaiManual||{})[q.id];
+      return `<div class="pk-item"><div class="pk-h"><span>Soal ${i+1} · Esai</span><span class="pk-poin"><input type="number" id="pk_${q.id}" min="0" max="${q.poin}" step="any" value="${m!=null?m:(dijawab(j)?'':0)}"> / ${q.poin}</span></div>
+        <div class="pk-q">${teksBr(q.teks)}</div><div class="pk-a">${jawabanTampil(q,j)}</div>
+        ${q.kunci? `<div class="pk-k"><span>Pedoman:</span> ${teksBr(q.kunci)}</div>`:''}</div>`;
+    }
+    const pt = poinOtomatis(q,j), ok = pt>0;
+    return `<div class="pk-item ${ok?'pk-ok':'pk-no'}"><div class="pk-h"><span>Soal ${i+1} · ${TIPE_SOAL[q.tipe]}</span><span class="pk-poin">${ok?'✓':'✗'} ${pt} / ${q.poin}</span></div>
+      <div class="pk-q">${teksBr(q.teks)}</div><div class="pk-a">${jawabanTampil(q,j)}</div>${ok?'':`<div class="pk-k"><span>Kunci:</span> ${kunciTampil(q)}</div>`}</div>`;
+  }).join('');
+  const r = hitungSkor(t,p);
+  openModal(`<div class="sd-detail-head" style="margin-bottom:12px"><span class="sd-av lg">${esc(inisial(s?s.namaLengkap:'?'))}</span>
+      <div><h3 style="margin:0">${esc(s?s.namaLengkap:'Siswa')}</h3><div class="sd-sub">${esc(t.judul)} · dikumpulkan ${fmtDT(p.selesai)}${p.terlambat?' (terlambat)':''}</div></div>
+      <div class="pk-total"><strong>${fmtN(r.skor)}</strong><span>${r.dapat} / ${r.total} poin</span></div></div>
+    <div class="pk-list">${items}</div>
+    <div class="field" style="margin-top:12px"><label>Komentar untuk siswa</label><textarea id="pk_komentar" rows="2" style="width:100%">${esc(p.komentar||'')}</textarea></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button><button class="btn-sun btn-small" onclick="simpanPeriksa('${pid}')">Simpan penilaian</button></div>`, 'wide');
+}
+function simpanPeriksa(pid){
+  const p = db.pengumpulan.find(x=>x.id===pid); const t = db.tugas.find(x=>x.id===p.tugasId);
+  p.nilaiManual = p.nilaiManual || {};
+  for(const q of t.soal.filter(q=>q.tipe==='esai')){
+    const el = document.getElementById('pk_'+q.id); if(!el) continue;
+    const raw = el.value.trim();
+    if(raw===''){ delete p.nilaiManual[q.id]; continue; }
+    const v = Number(raw);
+    if(isNaN(v) || v<0 || v>q.poin){ el.focus(); return toast(`Poin soal esai harus 0–${q.poin}`); }
+    p.nilaiManual[q.id] = v;
+  }
+  p.komentar = (document.getElementById('pk_komentar').value||'').trim();
+  p.dinilaiOleh = currentUser.id;
+  const r = nilaiUlangPengumpulan(t, p);
+  closeModal(); renderContent(); saveToDrive(true);
+  toast(r.perluNilai? 'Disimpan — masih ada soal esai yang belum diberi poin' : 'Penilaian disimpan');
+}
+function formKirimPenilaian(id){
+  const t = db.tugas.find(x=>x.id===id);
+  const j = JENIS_TUGAS.find(x=>x.key===t.jenis);
+  const def = t.dikirimKe || {komp: j? j.komp : 'tugas', semester: semesterDariTanggal((t.tenggat||t.diterbitkan||nowIso()).slice(0,10))};
+  const ps = db.pengumpulan.filter(p=>p.tugasId===id);
+  const belum = ps.filter(p=>p.status==='dikumpulkan').length;
+  openModal(`<h3>Masukkan nilai ke Penilaian</h3>
+    <p class="subtitle" style="margin-top:0">Nilai siswa yang sudah selesai dinilai akan diisi ke lembar Penilaian kelas ini.</p>
+    <div class="grid2">
+      <div class="field"><label>Komponen nilai</label><select id="kp_komp" style="width:100%">${Object.entries(KOMP_LABEL).map(([k,l])=>`<option value="${k}" ${k===def.komp?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label>Semester</label><select id="kp_sem" style="width:100%">${SEMESTER.map(s=>`<option value="${s.key}" ${s.key===def.semester?'selected':''}>${s.label}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Nama kolom (untuk Tugas, UH, Praktek)</label><input id="kp_judul" value="${esc(t.judul)}" style="width:100%"></div>
+    <label class="chk"><input type="checkbox" id="kp_nol"> Beri nilai 0 untuk siswa yang tidak mengumpulkan</label>
+    ${belum? `<div class="ed-warn" style="margin-top:10px">${belum} jawaban masih menunggu penilaian esai dan belum ikut dimasukkan.</div>`:''}
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button><button class="btn-sun btn-small" onclick="kirimKePenilaian('${id}')">Masukkan nilai</button></div>`);
+}
+function kirimKePenilaian(id){
+  const t = db.tugas.find(x=>x.id===id);
+  const komp = document.getElementById('kp_komp').value, sem = document.getElementById('kp_sem').value;
+  const judul = val('kp_judul') || t.judul, isiNol = document.getElementById('kp_nol').checked;
+  // hapus kolom lama bila sebelumnya dikirim ke komponen/semester lain
+  if(t.dikirimKe && (t.dikirimKe.komp!==komp || t.dikirimKe.semester!==sem) && ['tugas','ulangan','praktek'].includes(t.dikirimKe.komp)){
+    const lama = getSheet(t.kelasId, t.dikirimKe.semester, false);
+    if(lama){ lama.kolom[t.dikirimKe.komp] = lama.kolom[t.dikirimKe.komp].filter(c=>c.id!=='tg_'+t.id); Object.values(lama.nilai).forEach(n=>{ if(n[t.dikirimKe.komp]) delete n[t.dikirimKe.komp]['tg_'+t.id]; }); }
+  }
+  const sh = getSheet(t.kelasId, sem, true);
+  const colId = 'tg_'+t.id;
+  if(['tugas','ulangan','praktek'].includes(komp)){
+    const ada = sh.kolom[komp].find(c=>c.id===colId);
+    if(ada) ada.judul = judul; else sh.kolom[komp].push({id:colId, judul});
+  }
+  let n = 0, timpa = 0;
+  siswaAktifDiKelas(t.kelasId).forEach(s=>{
+    const p = pengumpulanDari(t.id, s.id);
+    let v = null;
+    if(p && p.status==='dinilai') v = p.skor;
+    else if(!p && isiNol) v = 0;
+    if(v==null) return;
+    const ns = nilaiSiswa(sh, s.id);
+    if(['tugas','ulangan','praktek'].includes(komp)) ns[komp][colId] = v;
+    else { if(ns[komp]!=='' && ns[komp]!=null && Number(ns[komp])!==v) timpa++; ns[komp] = v; }
+    n++;
+  });
+  t.dikirimKe = {komp, semester:sem, waktu:nowIso()};
+  closeModal(); renderContent(); saveToDrive(true);
+  toast(`${n} nilai dimasukkan ke ${KOMP_LABEL[komp]}${timpa? ` (${timpa} nilai lama diganti)`:''}`);
+}
+
+/* ---------- Akun siswa (password login) ---------- */
+function pbAkunSiswa(k){
+  const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
+  const nPw = siswa.filter(s=>s.passwordHash).length;
+  return `<div class="pb-bar"><span class="sd-sub">Siswa masuk dengan <strong>No Induk</strong> sebagai ID. Bila password belum diatur, password awalnya adalah tanggal lahir (ddmmyyyy, misal 10012016).</span>
+      <button class="btn-sun" onclick="buatPasswordMassal()">Buat password untuk ${nPw<siswa.length?'yang belum punya':'semua siswa'}</button></div>
+    <div class="sd-table-wrap"><table class="sd-table">
+      <thead><tr><th>ID (No Induk)</th><th>Nama siswa</th><th>Password</th><th>Tugas dikumpulkan</th><th></th></tr></thead>
+      <tbody>${siswa.map(s=>{
+        const tIds = new Set(db.tugas.filter(t=>t.kelasId===k.id && t.status!=='draf').map(t=>t.id));
+        const n = db.pengumpulan.filter(p=>p.siswaId===s.id && tIds.has(p.tugasId) && p.status!=='mengerjakan').length;
+        return `<tr><td class="sd-no">${esc(s.noInduk||'—')}</td><td><strong>${esc(s.namaLengkap)}</strong></td>
+          <td>${s.passwordHash? `<span class="pill pill-ok">Sudah diatur</span>${s.passwordDiubahSiswa?'<small class="sd-sub">diganti siswa</small>':''}` : `<span class="pill pill-muted">Tanggal lahir</span>${s.tglLahir? '':'<small class="perlu">Tgl lahir kosong — atur password</small>'}`}</td>
+          <td class="sd-no">${n} / ${tIds.size}</td>
+          <td class="sd-act"><button class="btn-outline btn-small" onclick="formPasswordSiswa('${s.id}')">Atur password</button>
+            ${s.passwordHash? `<button class="ib" title="Kembalikan ke tanggal lahir" onclick="resetPasswordSiswa('${s.id}')">↺</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>
+    <p class="sheet-note">Password disimpan dalam bentuk acak (hash), jadi tidak bisa dilihat lagi. Bila siswa lupa, buat password baru.</p>`;
+}
+function hashPwSiswa(s, pw){ return sha256('siswa:'+s.id+':'+pw); }
+function pwAcak(){ const c='abcdefghjkmnpqrstuvwxyz23456789'; let o=''; const a=new Uint32Array(6); crypto.getRandomValues(a); a.forEach(x=>o+=c[x%c.length]); return o; }
+function formPasswordSiswa(id){
+  const s = db.siswa.find(x=>x.id===id);
+  if(!(isAdmin() || canAccessKelas(s.kelasId))) return toast('Anda tidak punya akses ke siswa ini');
+  openModal(`<h3>Atur password — ${esc(s.namaLengkap)}</h3>
+    <p class="subtitle" style="margin-top:0">ID login: <strong>${esc(s.noInduk)}</strong></p>
+    <div class="field"><label>Password baru</label><div class="row" style="flex-wrap:nowrap"><input id="ps_pw" value="${pwAcak()}" style="flex:1;font-family:monospace;letter-spacing:1px"><button class="btn-outline btn-small" onclick="document.getElementById('ps_pw').value=pwAcak()">Acak</button></div>
+      <div class="help">Minimal 4 karakter. Catat dan berikan ke siswa — password tidak bisa dilihat lagi setelah disimpan.</div></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button><button class="btn-sun btn-small" onclick="simpanPasswordSiswa('${id}')">Simpan password</button></div>`);
+}
+async function simpanPasswordSiswa(id){
+  const s = db.siswa.find(x=>x.id===id); const pw = val('ps_pw');
+  if(pw.length<4) return toast('Password minimal 4 karakter');
+  s.passwordHash = await hashPwSiswa(s, pw); delete s.passwordDiubahSiswa;
+  closeModal(); pbCetak = {jenis:'kartu', list:[{s, pw}]};
+  renderContent(); saveToDrive(true);
+  openModal(`<h3>Password disimpan</h3><p>ID: <strong>${esc(s.noInduk)}</strong> · Password: <strong style="font-family:monospace;font-size:16px">${esc(pw)}</strong></p>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button><button class="btn-sun btn-small" onclick="closeModal(); cetakLaporan('portrait')">Cetak kartu login</button></div>`);
+}
+function resetPasswordSiswa(id){
+  const s = db.siswa.find(x=>x.id===id);
+  if(!s.tglLahir) return toast('Tanggal lahir siswa kosong — atur password baru saja');
+  if(!confirm(`Kembalikan password ${s.namaLengkap} ke tanggal lahir (${isoToDdmmyyyy(s.tglLahir).replace(/\//g,'')})?`)) return;
+  delete s.passwordHash; delete s.passwordDiubahSiswa; renderContent(); saveToDrive(true); toast('Password dikembalikan ke tanggal lahir');
+}
+async function buatPasswordMassal(){
+  const k = db.kelas.find(x=>x.id===pbKelasId);
+  const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
+  let target = siswa.filter(s=>!s.passwordHash);
+  if(!target.length){ if(!confirm('Semua siswa sudah punya password. Buat ulang password untuk SEMUA siswa di kelas ini?')) return; target = siswa; }
+  else if(!confirm(`Buat password acak untuk ${target.length} siswa?`)) return;
+  const list = [];
+  for(const s of target){ const pw = pwAcak(); s.passwordHash = await hashPwSiswa(s, pw); delete s.passwordDiubahSiswa; list.push({s, pw}); }
+  pbCetak = {jenis:'kartu', list};
+  renderContent(); saveToDrive(true);
+  openModal(`<h3>${list.length} password dibuat</h3>
+    <p class="subtitle" style="margin-top:0">Cetak kartu login sekarang — password tidak bisa dilihat lagi setelah jendela ini ditutup.</p>
+    <div class="sd-table-wrap" style="max-height:46vh"><table class="sd-table"><thead><tr><th>Nama</th><th>ID</th><th>Password</th></tr></thead>
+    <tbody>${list.map(x=>`<tr><td>${esc(x.s.namaLengkap)}</td><td class="sd-no">${esc(x.s.noInduk)}</td><td style="font-family:monospace;font-size:14px;font-weight:700">${esc(x.pw)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button><button class="btn-sun btn-small" onclick="closeModal(); cetakLaporan('portrait')">Cetak kartu login</button></div>`, 'wide');
+}
+function dokumenKartuLogin(list, k){
+  const w = S().web;
+  return `<div class="kartu-grid">${list.map(x=>{ const kl = db.kelas.find(y=>y.id===x.s.kelasId);
+    return `<div class="kartu"><div class="kartu-h">${esc(w.judul)}</div><div class="kartu-sub">Kartu login siswa</div>
+      <table><tr><td>Nama</td><td><strong>${esc(x.s.namaLengkap)}</strong></td></tr><tr><td>Kelas</td><td>${esc(kl? kelasLabel(kl):'')}</td></tr>
+      <tr><td>ID</td><td class="kartu-code">${esc(x.s.noInduk)}</td></tr><tr><td>Password</td><td class="kartu-code">${esc(x.pw)}</td></tr></table>
+      <div class="kartu-foot">Buka website SMB → Masuk → Siswa. Simpan kartu ini baik-baik.</div></div>`; }).join('')}</div>`;
+}
+
+/* ======================= PORTAL SISWA ======================= */
+let portalTab = 'beranda';
+let kerjaTugasId = '';
+function kerjaAktif(){ return appStage==='siswa-portal' && !!kerjaTugasId; }
+function tugasUntukSiswa(s){ pbInit(); return db.tugas.filter(t=>t.kelasId===s.kelasId && t.status!=='draf'); }
+function statusTugasSiswa(t, sid){
+  const p = pengumpulanDari(t.id, sid), now = Date.now();
+  const lewat = !!(t.tenggat && new Date(t.tenggat).getTime()<now);
+  if(p && p.status!=='mengerjakan') return {kode:p.status, p};
+  if(t.status==='tutup') return {kode:'tutup', p};
+  if(t.mulai && new Date(t.mulai).getTime()>now) return {kode:'belumBuka'};
+  if(lewat && !t.terimaTerlambat) return {kode:'terlewat', p};
+  if(p) return {kode:'mengerjakan', p, lewat};
+  return {kode:'tersedia', lewat};
+}
+const STATUS_SISWA = {
+  tersedia:{txt:'Belum dikerjakan', cls:'st-buka'}, mengerjakan:{txt:'Sedang dikerjakan', cls:'st-jadwal'},
+  dikumpulkan:{txt:'Menunggu penilaian', cls:'st-lewat'}, dinilai:{txt:'Selesai', cls:'st-buka'},
+  belumBuka:{txt:'Belum dibuka', cls:'st-draf'}, terlewat:{txt:'Terlewat', cls:'st-tutup'}, tutup:{txt:'Ditutup', cls:'st-tutup'},
+};
+function nilaiTerlihat(t, p){ return p && p.status==='dinilai' && t.tampilHasil!=='tidak'; }
+function kartuTugasSiswa(t, s){
+  const st = statusTugasSiswa(t, s.id), info = STATUS_SISWA[st.kode];
+  const bisa = ['tersedia','mengerjakan'].includes(st.kode);
+  return `<button class="ts-card ${bisa?'ts-todo':''}" onclick="bukaKerja('${t.id}')">
+    <div class="ts-l"><span class="ts-jenis">${jenisLabel(t.jenis)}</span><strong>${esc(t.judul)}</strong>
+      <span class="sd-sub">${t.soal.length} soal${t.durasi>0? ' · '+t.durasi+' menit':''}${t.tenggat? ' · tenggat '+fmtDT(t.tenggat):''}${st.lewat? ' · <b class="warn-txt">lewat tenggat</b>':''}</span></div>
+    <div class="ts-r">${nilaiTerlihat(t, st.p)? `<span class="ts-skor">${fmtN(st.p.skor)}</span>` : ''}<span class="tstat ${info.cls}">${info.txt}</span></div>
+  </button>`;
+}
+function screenSiswaPortal(){
+  pbInit();
+  const s = currentSiswa;
+  if(kerjaTugasId) return screenKerjakan();
+  const k = db.kelas.find(x=>x.id===s.kelasId);
+  const ta = k? db.tahunAjaran.find(t=>t.id===k.tahunAjaranId) : null;
+  const tugas = tugasUntukSiswa(s);
+  const todo = tugas.filter(t=>['tersedia','mengerjakan'].includes(statusTugasSiswa(t,s.id).kode));
+  const tabs = [['beranda','Beranda'],['tugas','Tugas & ujian'+(todo.length? ` <span class="cnt">${todo.length}</span>`:'')],['materi','Materi'],['akun','Akun']];
+  let body='';
+  if(portalTab==='tugas'){
+    const grup = [['Perlu dikerjakan', t=>['tersedia','mengerjakan'].includes(statusTugasSiswa(t,s.id).kode)],
+      ['Sudah dikumpulkan', t=>['dikumpulkan','dinilai'].includes(statusTugasSiswa(t,s.id).kode)],
+      ['Lainnya', t=>['belumBuka','terlewat','tutup'].includes(statusTugasSiswa(t,s.id).kode)]];
+    body = tugas.length? grup.map(([judul,f])=>{ const l=tugas.filter(f).sort((a,b)=>(a.tenggat||'9').localeCompare(b.tenggat||'9'));
+        return l.length? `<h3 class="ts-grp">${judul}</h3><div class="ts-list">${l.map(t=>kartuTugasSiswa(t,s)).join('')}</div>` : ''; }).join('')
+      : `<div class="empty"><div class="display">Belum ada tugas</div>Tugas dan ujian dari guru akan muncul di sini.</div>`;
+  } else if(portalTab==='materi'){
+    const ms = db.materi.filter(m=>m.kelasId===s.kelasId && m.tampilSiswa).sort((a,b)=>(b.tanggal||'').localeCompare(a.tanggal||''));
+    body = ms.length? `<div class="mt-read">${ms.map(m=>`<article class="mt-card"><div class="mt-head"><time>${tglPanjang(new Date(m.tanggal+'T00:00:00'))}</time></div><h4>${esc(m.judul)}</h4><div class="mt-isi full">${teksParagraf(m.isi)}</div>${m.link? `<a class="btn-outline btn-small mt-link" href="${esc(m.link)}" target="_blank" rel="noopener">Buka tautan</a>`:''}</article>`).join('')}</div>`
+      : `<div class="empty"><div class="display">Belum ada materi</div>Materi dan catatan dari guru akan muncul di sini.</div>`;
+  } else if(portalTab==='akun'){
+    body = `<div class="set-card" style="max-width:460px"><div class="set-h" style="margin-top:0">Ganti password</div>
+      <p class="sd-sub" style="margin-top:0">ID login Anda: <strong>${esc(s.noInduk)}</strong></p>
+      <div class="field"><label>Password sekarang</label><input type="password" id="ak_lama" autocomplete="current-password" style="width:100%"></div>
+      <div class="field"><label>Password baru</label><input type="password" id="ak_baru" autocomplete="new-password" style="width:100%"></div>
+      <div class="field"><label>Ulangi password baru</label><input type="password" id="ak_ulang" autocomplete="new-password" style="width:100%"></div>
+      <div class="set-actions"><button class="btn-sun" onclick="gantiPasswordSiswa()">Simpan password</button></div></div>`;
+  } else {
+    const sems = SEMESTER.map(sm=>({sm, r:hitungRekap(k? getSheet(k.id, sm.key, false):null, s.id, k?k.id:'', sm.key)}));
+    const absAll = db.absensi.filter(a=>a.siswaId===s.id && a.kelasId===s.kelasId && a.status);
+    const h = absAll.filter(a=>a.status==='Hadir').length;
+    body = `<div class="sd-summary">
+        <div><strong>${todo.length}</strong><span>tugas perlu dikerjakan</span></div>
+        <div><strong>${absAll.length? Math.round(h/absAll.length*100)+'%' : '—'}</strong><span>kehadiran (${h} dari ${absAll.length} pertemuan)</span></div>
+        ${sems.map(({sm,r})=>`<div><strong>${fmtN(r.akhir!=null? r.akhir : r.mid)}</strong><span>${r.akhir!=null?'nilai akhir':'nilai MID'} ${sm.label.toLowerCase()}</span></div>`).join('')}
+      </div>
+      ${todo.length? `<h3 class="ts-grp">Perlu dikerjakan</h3><div class="ts-list">${todo.slice(0,4).map(t=>kartuTugasSiswa(t,s)).join('')}</div>`:''}
+      <h3 class="ts-grp">Nilai per semester</h3>
+      <div class="sheet-wrap"><table class="sheet rekap"><thead><tr><th>Semester</th><th class="c">Tugas</th><th class="c">UH</th><th class="c">Praktek</th><th class="c">UTS</th><th class="c">UAS</th><th class="c">% Hadir</th><th class="c">Nilai MID</th><th class="c">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
+      <tbody>${sems.map(({sm,r})=>`<tr><td class="nm">${sm.label}</td><td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td><td class="c">${fmtN(r.uts)}</td><td class="c">${fmtN(r.uas)}</td>
+        <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td><td class="c res">${fmtN(r.mid)}</td><td class="c res strong">${fmtN(r.akhir)}</td>
+        <td class="c">${(r.predAkhir||r.predMid)? `<span class="pred ${predCls(r.predAkhir||r.predMid)}">${esc(r.predAkhir||r.predMid)}</span>`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  return `<div class="portal-head"><span class="sd-av lg">${esc(inisial(s.namaLengkap))}</span>
+      <div><h2 style="margin:0">Halo, ${esc(s.namaLengkap)}</h2>
+      <p class="subtitle" style="margin:2px 0 0">No Induk ${esc(s.noInduk)} · ${k?esc(kelasLabel(k)):'—'} · Tahun ajaran ${ta?esc(ta.nama):'—'}</p></div></div>
+    <div class="seg">${tabs.map(([k2,l])=>`<button class="${portalTab===k2?'on':''}" onclick="portalTab='${k2}'; renderContent()">${l}</button>`).join('')}</div>
+    ${body}`;
+}
+async function gantiPasswordSiswa(){
+  const s = currentSiswa, lama = document.getElementById('ak_lama').value, baru = document.getElementById('ak_baru').value, ulang = document.getElementById('ak_ulang').value;
+  if(!(await cocokPasswordSiswa(s, lama))) return toast('Password sekarang salah');
+  if(baru.length<4) return toast('Password baru minimal 4 karakter');
+  if(baru!==ulang) return toast('Ulangan password baru tidak sama');
+  const rec = db.siswa.find(x=>x.id===s.id);
+  rec.passwordHash = await hashPwSiswa(rec, baru); rec.passwordDiubahSiswa = true;
+  currentSiswa = rec; renderContent(); saveToDrive(true); toast('Password berhasil diganti');
+}
+async function cocokPasswordSiswa(s, pw){
+  if(!pw) return false;
+  if(s.passwordHash) return (await hashPwSiswa(s, pw)) === s.passwordHash;
+  if(!s.tglLahir) return false;
+  return pw.replace(/\D/g,'') === isoToDdmmyyyy(s.tglLahir).replace(/\D/g,'');
+}
+
+/* ---------- Mengerjakan tugas ---------- */
+function bukaKerja(id){ kerjaTugasId = id; renderContent(); window.scrollTo(0,0); }
+function tutupKerja(){
+  const t = db.tugas.find(x=>x.id===kerjaTugasId);
+  const st = t? statusTugasSiswa(t, currentSiswa.id) : {};
+  if(st.kode==='mengerjakan' && t.durasi>0 && !confirm('Jawaban Anda tersimpan, tetapi waktu pengerjaan tetap berjalan. Kembali ke daftar tugas?')) return;
+  clearInterval(window._kjTimer); simpanJawabanSekarang();
+  kerjaTugasId = ''; portalTab = 'tugas'; renderContent(); window.scrollTo(0,0);
+}
+function batasWaktu(t, p){
+  let b = Infinity;
+  if(t.durasi>0) b = new Date(p.mulai).getTime() + t.durasi*60000;
+  if(t.tenggat && !t.terimaTerlambat) b = Math.min(b, new Date(t.tenggat).getTime());
+  return b;
+}
+function mulaiKerjakan(id){
+  const t = db.tugas.find(x=>x.id===id), s = currentSiswa;
+  const st = statusTugasSiswa(t, s.id);
+  if(st.kode!=='tersedia') return renderContent();
+  const ids = t.soal.map(q=>q.id);
+  if(t.acak) for(let i=ids.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [ids[i],ids[j]]=[ids[j],ids[i]]; }
+  db.pengumpulan.push({id:uid(), tugasId:t.id, siswaId:s.id, kelasId:t.kelasId, mulai:nowIso(), jawaban:{}, urutan:ids, status:'mengerjakan'});
+  renderContent(); window.scrollTo(0,0); saveToDrive(true);
+}
+function lsKey(pid){ return 'smb_jwb_'+pid; }
+function jawab(soalId, v){
+  const t = db.tugas.find(x=>x.id===kerjaTugasId); if(!t) return;
+  const p = pengumpulanDari(t.id, currentSiswa.id); if(!p || p.status!=='mengerjakan') return;
+  p.jawaban = p.jawaban || {};
+  p.jawaban[soalId] = v; p.diubah = nowIso();
+  try{ localStorage.setItem(lsKey(p.id), JSON.stringify({jawaban:p.jawaban, diubah:p.diubah})); }catch(e){}
+  const li = document.getElementById('kjq-'+soalId); if(li) li.classList.toggle('done', dijawab(v));
+  const n = t.soal.filter(q=>dijawab(p.jawaban[q.id])).length;
+  const pr = document.getElementById('kjProg'); if(pr) pr.textContent = `${n} dari ${t.soal.length} soal terjawab`;
+  const bar = document.getElementById('kjBar'); if(bar) bar.style.width = (n/t.soal.length*100)+'%';
+  const sv = document.getElementById('kjSave'); if(sv) sv.textContent = 'Menyimpan…';
+  clearTimeout(window._jwbT);
+  window._jwbT = setTimeout(simpanJawabanSekarang, 8000);
+}
+async function simpanJawabanSekarang(){
+  clearTimeout(window._jwbT);
+  if(!kerjaTugasId) return;
+  await saveToDrive(false);
+  const sv = document.getElementById('kjSave'); if(sv) sv.textContent = 'Jawaban tersimpan';
+}
+function konfirmasiKumpulkan(){
+  const t = db.tugas.find(x=>x.id===kerjaTugasId), p = pengumpulanDari(t.id, currentSiswa.id);
+  const kosong = t.soal.filter(q=>!dijawab((p.jawaban||{})[q.id])).length;
+  openModal(`<h3>Kumpulkan jawaban?</h3>
+    <p>${kosong? `<strong class="warn-txt">${kosong} soal belum dijawab.</strong> ` : 'Semua soal sudah dijawab. '}Setelah dikumpulkan, jawaban tidak bisa diubah lagi.</p>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Periksa lagi</button><button class="btn-sun btn-small" onclick="closeModal(); kumpulkan(false)">Kumpulkan</button></div>`);
+}
+function kumpulkan(otomatis){
+  clearInterval(window._kjTimer); clearTimeout(window._jwbT);
+  const t = db.tugas.find(x=>x.id===kerjaTugasId), p = pengumpulanDari(t.id, currentSiswa.id);
+  if(!p || p.status!=='mengerjakan') return renderContent();
+  p.selesai = nowIso();
+  p.terlambat = !!(t.tenggat && Date.now() > new Date(t.tenggat).getTime());
+  nilaiUlangPengumpulan(t, p);
+  try{ localStorage.removeItem(lsKey(p.id)); }catch(e){}
+  renderContent(); window.scrollTo(0,0); saveToDrive(true);
+  toast(otomatis? 'Waktu habis — jawaban dikumpulkan otomatis' : 'Jawaban berhasil dikumpulkan');
+}
+function startTimerKerja(){
+  clearInterval(window._kjTimer);
+  window._kjTimer = setInterval(()=>{
+    const t = db.tugas.find(x=>x.id===kerjaTugasId);
+    const p = t && currentSiswa? pengumpulanDari(t.id, currentSiswa.id) : null;
+    if(!t || !p || p.status!=='mengerjakan'){ clearInterval(window._kjTimer); return; }
+    const sisa = batasWaktu(t, p) - Date.now();
+    if(t.status==='tutup' || sisa<=0){ kumpulkan(true); return; }
+    const el = document.getElementById('kjTimer');
+    if(el && isFinite(sisa)){ el.querySelector('b').textContent = fmtSisa(sisa); el.classList.toggle('low', sisa<5*60000); }
+  }, 1000);
+}
+function inputSoalSiswa(q, j){
+  const nm = 'j_'+q.id;
+  if(q.tipe==='pg') return `<div class="kj-opts">${q.opsi.map((o,oi)=> String(o).trim()? `<label class="kj-opt"><input type="radio" name="${nm}" ${String(j)===String(oi)?'checked':''} onchange="jawab('${q.id}', ${oi})"><span class="kj-l">${HURUF[oi]}</span><span>${esc(o)}</span></label>`:'').join('')}</div>`;
+  if(q.tipe==='bs') return `<div class="kj-opts kj-bs">${['benar','salah'].map(v=>`<label class="kj-opt"><input type="radio" name="${nm}" ${j===v?'checked':''} onchange="jawab('${q.id}','${v}')"><span>${v==='benar'?'Benar':'Salah'}</span></label>`).join('')}</div>`;
+  if(q.tipe==='isian') return `<input class="kj-in" value="${esc(j||'')}" placeholder="Ketik jawaban" oninput="jawab('${q.id}', this.value)" autocomplete="off">`;
+  return `<textarea class="kj-in" rows="5" placeholder="Tulis jawaban Anda" oninput="jawab('${q.id}', this.value)">${esc(j||'')}</textarea>`;
+}
+function screenKerjakan(){
+  const t = db.tugas.find(x=>x.id===kerjaTugasId);
+  if(!t || t.status==='draf'){ kerjaTugasId=''; return screenSiswaPortal(); }
+  const s = currentSiswa, st = statusTugasSiswa(t, s.id), p = st.p;
+  const back = `<button class="btn-outline btn-small" onclick="tutupKerja()">← Daftar tugas</button>`;
+  const meta = `<div class="kj-meta"><span>${t.soal.length} soal</span>${t.durasi>0? `<span>Durasi ${t.durasi} menit</span>`:''}${t.tenggat? `<span>Tenggat ${fmtDT(t.tenggat)}</span>`:''}</div>`;
+
+  if(st.kode==='mengerjakan'){
+    if(batasWaktu(t,p) <= Date.now()){ setTimeout(()=>kumpulkan(true), 0); return `<div class="empty">Waktu habis, mengumpulkan jawaban…</div>`; }
+    try{ const b = JSON.parse(localStorage.getItem(lsKey(p.id))||'null'); if(b && (b.diubah||'') > (p.diubah||'')){ p.jawaban = b.jawaban; p.diubah = b.diubah; } }catch(e){}
+    const urut = (p.urutan||[]).map(id=>t.soal.find(q=>q.id===id)).filter(Boolean);
+    t.soal.forEach(q=>{ if(!urut.includes(q)) urut.push(q); });
+    const n = urut.filter(q=>dijawab((p.jawaban||{})[q.id])).length;
+    const batas = batasWaktu(t,p);
+    setTimeout(startTimerKerja, 0);
+    return `<div class="kj-bar">
+        <div class="kj-bar-l">${back}<div><strong>${esc(t.judul)}</strong><span id="kjProg">${n} dari ${t.soal.length} soal terjawab</span></div></div>
+        ${isFinite(batas)? `<div class="kj-timer ${batas-Date.now()<5*60000?'low':''}" id="kjTimer">Sisa waktu <b>${fmtSisa(batas-Date.now())}</b></div>`:''}
+        <div class="kj-prog"><div id="kjBar" style="width:${n/t.soal.length*100}%"></div></div>
+      </div>
+      ${t.instruksi? `<div class="kj-instr">${teksBr(t.instruksi)}</div>`:''}
+      <ol class="kj-list">${urut.map((q,i)=>{ const j=(p.jawaban||{})[q.id]; return `<li class="kj-q ${dijawab(j)?'done':''}" id="kjq-${q.id}">
+        <div class="kj-qh"><span>Soal ${i+1}</span><span>${q.poin} poin · ${TIPE_SOAL[q.tipe]}</span></div>
+        <div class="kj-teks">${teksBr(q.teks)}</div>${inputSoalSiswa(q, j)}</li>`; }).join('')}</ol>
+      <div class="kj-submit"><span class="sd-sub" id="kjSave">Jawaban tersimpan otomatis</span><button class="btn-sun" onclick="konfirmasiKumpulkan()">Kumpulkan jawaban</button></div>`;
+  }
+
+  if(p && ['dikumpulkan','dinilai'].includes(p.status)){
+    const r = hitungSkor(t, p);
+    const lihatNilai = t.tampilHasil!=='tidak', lihatKunci = t.tampilHasil==='pembahasan';
+    const hasil = !lihatNilai? `<p>Nilai akan disampaikan oleh guru.</p>`
+      : p.status==='dikumpulkan'? `<div class="kj-score"><strong>${fmtN(r.skor)}</strong><span>nilai sementara — ${r.perluNilai} soal esai masih diperiksa guru</span></div>`
+      : `<div class="kj-score"><strong>${fmtN(p.skor)}</strong><span>${r.dapat} dari ${r.total} poin</span></div>`;
+    const rinci = lihatKunci? `<ol class="kj-list">${t.soal.map((q,i)=>{ const j=(p.jawaban||{})[q.id];
+        const esai = q.tipe==='esai', m=(p.nilaiManual||{})[q.id], ok = esai? null : poinOtomatis(q,j)>0;
+        return `<li class="kj-q ${ok===true?'pk-ok':ok===false?'pk-no':''}"><div class="kj-qh"><span>Soal ${i+1}</span><span>${esai? (m!=null? m+' / '+q.poin+' poin' : 'Diperiksa guru') : (ok? '✓ Benar' : '✗ Salah')}</span></div>
+          <div class="kj-teks">${teksBr(q.teks)}</div><div class="pk-a"><span class="sd-sub">Jawaban Anda:</span> ${jawabanTampil(q,j)}</div>
+          ${!esai && !ok? `<div class="pk-k"><span>Jawaban benar:</span> ${kunciTampil(q)}</div>`:''}
+          ${q.pembahasan? `<div class="kj-pemb">${teksBr(q.pembahasan)}</div>`:''}</li>`; }).join('')}</ol>` : '';
+    return `<div class="kj-head">${back}</div>
+      <div class="kj-done"><span class="kj-check">✓</span><div><h2>${esc(t.judul)}</h2><p class="sd-sub" style="margin:0">Dikumpulkan ${fmtDT(p.selesai)}${p.terlambat?' (terlambat)':''}</p></div></div>
+      ${hasil}${p.komentar? `<div class="kj-instr"><strong>Komentar guru:</strong><br>${teksBr(p.komentar)}</div>`:''}${rinci}`;
+  }
+
+  const pesan = {belumBuka:`Tugas ini dibuka pada ${fmtDT(t.mulai)}.`, terlewat:'Tenggat tugas ini sudah lewat.', tutup:'Tugas ini sudah ditutup oleh guru.'}[st.kode];
+  return `<div class="kj-head">${back}</div>
+    <div class="kj-intro">
+      <span class="ts-jenis">${jenisLabel(t.jenis)}</span>
+      <h2>${esc(t.judul)}</h2>${meta}
+      ${t.instruksi? `<div class="kj-instr">${teksBr(t.instruksi)}</div>`:''}
+      ${pesan? `<p class="ed-warn">${pesan}</p>` : `
+        ${st.lewat? `<p class="ed-warn">Tenggat sudah lewat. Jawaban tetap diterima tetapi ditandai terlambat.</p>`:''}
+        ${t.durasi>0? `<p class="sd-sub">Waktu ${t.durasi} menit mulai berjalan saat Anda menekan tombol di bawah, dan jawaban dikumpulkan otomatis bila waktu habis.</p>`:''}
+        <button class="btn-sun" onclick="mulaiKerjakan('${t.id}')">Mulai mengerjakan</button>`}
+    </div>`;
+}
+
 /* ======================= HELPERS ======================= */
 function activeTahunAjaran(){ return db.tahunAjaran.find(t=>t.aktif) || db.tahunAjaran[0]; }
 function tingkatOf(kelas){ return db.tingkatKelas.find(t=>t.id===kelas.tingkatKelasId); }
@@ -1379,9 +2435,10 @@ function screenLogin(){
   if(loginMode==='siswa'){
     return `<div class="gate"><div class="gate-card">
       <h2>Masuk Siswa</h2>
-      <p class="subtitle">Masukkan Nomor Induk dan tanggal lahir siswa</p>
-      <div class="field"><label>Nomor Induk</label><input id="siNoInduk" placeholder="misal: 0007"></div>
-      <div class="field"><label>Tanggal Lahir</label>${dateFieldDDMMYYYY('siTgl','')}</div>
+      <p class="subtitle">Masuk dengan ID dan password dari guru</p>
+      <div class="field"><label for="siNoInduk">ID (Nomor Induk)</label><input id="siNoInduk" placeholder="misal: 0107" autocomplete="username"></div>
+      <div class="field"><label for="siPw">Password</label><input id="siPw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitLoginSiswa()">
+        <div class="help">Belum diberi password? Gunakan tanggal lahir, misal 10012016.</div></div>
       <button class="btn-sun" style="width:100%" onclick="submitLoginSiswa()">Masuk</button>
       <button class="btn-outline" style="width:100%;margin-top:8px" onclick="setLoginMode('pilih')">← Kembali</button>
     </div></div>`;
@@ -1446,12 +2503,13 @@ async function submitLogin(){
   renderTabs(); renderContent(); updateUserBadge();
   toast('Selamat datang, '+u.nama);
 }
-function submitLoginSiswa(){
+async function submitLoginSiswa(){
   const noInduk = document.getElementById('siNoInduk').value.trim();
-  const tgl = ddmmyyyyToIso(document.getElementById('siTgl').value.trim());
-  const s = db.siswa.find(x=>x.noInduk===noInduk && x.tglLahir===tgl && x.status==='aktif');
-  if(!s) return toast('Nomor Induk atau tanggal lahir tidak cocok');
-  currentSiswa = s; appStage='siswa-portal'; loginMode='pilih';
+  const pw = document.getElementById('siPw').value;
+  if(!noInduk || !pw) return toast('Isi ID dan password');
+  const s = db.siswa.find(x=>x.noInduk===noInduk && x.status==='aktif');
+  if(!s || !(await cocokPasswordSiswa(s, pw))) return toast('ID atau password salah');
+  currentSiswa = s; appStage='siswa-portal'; loginMode='pilih'; portalTab='beranda'; kerjaTugasId='';
   renderTabs(); renderContent(); updateUserBadge();
 }
 function dfShowError(msg, fieldId){
@@ -1513,7 +2571,7 @@ async function submitPendaftaran(){
   loginMode = 'daftar-selesai';
   renderContent();
 }
-function logout(){ publicPreview=false; currentUser=null; currentSiswa=null; appStage='need-login'; loginMode='pilih'; renderTabs(); renderContent(); updateUserBadge(); }
+function logout(){ closeModal(); clearInterval(window._kjTimer); clearTimeout(window._jwbT); kerjaTugasId=''; portalTab='beranda'; pbEditTugas=null; pbHasilTugasId=''; pbCetak=null; publicPreview=false; currentUser=null; currentSiswa=null; appStage='need-login'; loginMode='pilih'; renderTabs(); renderContent(); updateUserBadge(); }
 function updateUserBadge(){
   const b = document.getElementById('userBadge'), lo=document.getElementById('logoutBtn');
   if(currentUser){ b.innerHTML = `<span class="badge ${currentUser.role}">${esc(currentUser.nama)}</span>`; lo.style.display='inline-block'; }
@@ -1521,7 +2579,7 @@ function updateUserBadge(){
   else { b.innerHTML=''; lo.style.display='none'; }
 }
 
-/* ======================= PORTAL SISWA ======================= */
+
 /* ======================= PENGGUNA (admin) ======================= */
 function renderPengguna(){
   const ta = activeTahunAjaran();
@@ -2265,7 +3323,7 @@ function lihatSiswa(id){
       </dl></section>
     </div>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button>
-      ${bolehUbah? `<button class="btn-sun btn-small" onclick="formSiswa('${s.id}')">Ubah data</button>`:''}</div>`, 'wide');
+      ${bolehUbah? `<button class="btn-outline btn-small" onclick="formPasswordSiswa('${s.id}')">Atur password login</button><button class="btn-sun btn-small" onclick="formSiswa('${s.id}')">Ubah data</button>`:''}</div>`, 'wide');
 }
 
 function onSiswaSearchInput(el){
@@ -3067,27 +4125,6 @@ function simpanCatatanRapor(sid, semester, key, text){
 }
 
 /* ======================= PORTAL SISWA ======================= */
-function screenSiswaPortal(){
-  const s = currentSiswa;
-  const k = db.kelas.find(x=>x.id===s.kelasId);
-  const ta = k? db.tahunAjaran.find(t=>t.id===k.tahunAjaranId) : null;
-  const sems = SEMESTER.map(sm=>({sm, r:hitungRekap(k? getSheet(k.id, sm.key, false):null, s.id, k?k.id:'', sm.key)}));
-  const absAll = db.absensi.filter(a=>a.siswaId===s.id && a.kelasId===s.kelasId && a.status);
-  const h = absAll.filter(a=>a.status==='Hadir').length;
-  return `<div class="portal-head"><span class="sd-av lg">${esc(inisial(s.namaLengkap))}</span>
-      <div><h2 style="margin:0">Halo, ${esc(s.namaLengkap)}</h2>
-      <p class="subtitle" style="margin:2px 0 0">No Induk ${esc(s.noInduk)} — ${k?esc(kelasLabel(k)):'—'} — Tahun ajaran ${ta?esc(ta.nama):'—'}</p></div></div>
-    <div class="sd-summary">
-      <div><strong>${absAll.length? Math.round(h/absAll.length*100)+'%' : '—'}</strong><span>kehadiran (${h} dari ${absAll.length} pertemuan)</span></div>
-      ${sems.map(({sm,r})=>`<div><strong>${fmtN(r.akhir!=null? r.akhir : r.mid)}</strong><span>${r.akhir!=null?'nilai akhir':'nilai MID'} ${sm.label.toLowerCase()}${(r.predAkhir||r.predMid)? ' — '+esc(r.predAkhir||r.predMid):''}</span></div>`).join('')}
-    </div>
-    <h3>Nilai per semester</h3>
-    <div class="sheet-wrap"><table class="sheet rekap"><thead><tr><th>Semester</th><th class="c">Tugas</th><th class="c">UH</th><th class="c">Praktek</th><th class="c">UTS</th><th class="c">UAS</th><th class="c">% Hadir</th><th class="c">Nilai MID</th><th class="c">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
-    <tbody>${sems.map(({sm,r})=>`<tr><td class="nm">${sm.label}</td><td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td><td class="c">${fmtN(r.uts)}</td><td class="c">${fmtN(r.uas)}</td>
-      <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td><td class="c res">${fmtN(r.mid)}</td><td class="c res strong">${fmtN(r.akhir)}</td>
-      <td class="c">${(r.predAkhir||r.predMid)? `<span class="pred ${predCls(r.predAkhir||r.predMid)}">${esc(r.predAkhir||r.predMid)}</span>`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
-}
-
 function renderLaporanAbsensiKelas(){
   const ta = activeTahunAjaran();
   const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
@@ -3262,7 +4299,7 @@ async function loadFromDrive(){
     const data = await res.json();
     if(data.error) throw new Error(data.error);
     driveKnownVersion = data.version;
-    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[]}, data.data||{});
+    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[],rencana:[],materi:[],tugas:[],pengumpulan:[]}, data.data||{});
     if(!db.tingkatKelas || !db.tingkatKelas.length){
       seedDefaults();
       await saveToDrive(false, true);
@@ -3293,6 +4330,9 @@ function startPolling(){
       const sedangMengetik = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type!=='checkbox';
       if(driveKnownVersion && data.version && data.version !== driveKnownVersion && !modalOpen && !saveBusy && !window._savePending && !sedangMengetik){
         await mergeFromRemote();
+        if(currentSiswa) currentSiswa = db.siswa.find(x=>x.id===currentSiswa.id) || currentSiswa;
+        if(currentUser) currentUser = db.users.find(x=>x.id===currentUser.id) || currentUser;
+        if(kerjaAktif() || (activeTab==='pembelajaran' && pbEditTugas)) return; // jangan ganggu siswa/guru yang sedang mengerjakan
         renderTabs(); renderContent(); updateUserBadge();
       }
     }catch(e){ /* diamkan, cek berikutnya akan coba lagi */ }
@@ -3356,6 +4396,7 @@ async function saveToDrive(manual, forceCreate){
     if(json.conflict){
       // Ada yang menyimpan duluan — gabungkan otomatis lalu simpan ulang, tanpa mengganggu pengguna.
       await mergeFromRemote();
+      if(currentSiswa) currentSiswa = db.siswa.find(x=>x.id===currentSiswa.id) || currentSiswa;
       saveBusy = false;
       return saveToDrive(manual, forceCreate);
     }
