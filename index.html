@@ -739,6 +739,67 @@
   }
   @media print{ .kartu-grid{grid-template-columns:1fr 1fr !important;} #toast,.toast{display:none !important;} }
   .kj-q.pk-ok,.kj-q.pk-no{border-left-width:4px;}
+
+  /* ======================= STATUS ONLINE ======================= */
+  .on-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#aab4c3;flex-shrink:0;vertical-align:middle;}
+  .on-dot.on{background:#3fb36f;box-shadow:0 0 0 2px rgba(63,179,111,.22);}
+  .rt-chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600;}
+  .rt-chip:hover{background:rgba(255,255,255,.2);}
+  .dash-online{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 16px;font-size:13.5px;}
+  .dash-online strong{color:var(--heading);}
+  .dash-online > span:not(.on-dot){color:var(--ink-soft);padding-left:12px;border-left:1px solid var(--line);}
+  .dash-online .btn-small:first-of-type{margin-left:auto;}
+  .on-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:700px){.on-cols{grid-template-columns:1fr;}}
+  .on-cols h4{font-family:'Baloo 2';font-size:16px;margin:0 0 8px;color:var(--heading);}
+  .on-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .on-nm{flex:1;min-width:0;color:var(--ink);}
+  .on-scroll{max-height:46vh;overflow:auto;padding-right:4px;}
+  .rt-steps{margin:0;padding-left:20px;line-height:1.9;font-size:13.5px;}
+  .rt-steps code{background:var(--hover-bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px;}
+
+  /* ======================= CHAT ======================= */
+  .chat-fab{position:fixed;right:22px;bottom:22px;z-index:60;display:inline-flex;align-items:center;gap:8px;background:var(--sky-deep);color:#fff;border-radius:28px;padding:12px 18px;font-weight:700;font-size:14px;box-shadow:0 10px 26px rgba(31,42,60,.28);}
+  .chat-fab:hover{filter:brightness(1.08);}
+  .chat-fab .cnt{margin-left:0;}
+  .chat-panel{position:fixed;right:18px;bottom:18px;z-index:60;width:380px;height:min(620px, calc(100vh - 100px));background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(31,42,60,.28);display:flex;flex-direction:column;overflow:hidden;}
+  .cp-head{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-bottom:1px solid var(--line);}
+  .cp-head > div strong{display:block;color:var(--heading);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cp-head > div:first-child{flex:1;}
+  .cp-head small{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-soft);}
+  .cp-search{padding:10px 12px;border-bottom:1px solid var(--line);}
+  .cp-search input{width:100%;}
+  .cp-list{flex:1;overflow:auto;}
+  .cl-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;border-radius:0;padding:10px 14px;color:var(--ink);font-weight:400;border-bottom:1px solid var(--line);}
+  .cl-item:hover{background:var(--hover-bg);}
+  .cl-av{position:relative;width:40px;height:40px;border-radius:50%;background:var(--sky);color:var(--heading);display:inline-flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:700;font-size:14px;flex-shrink:0;}
+  .cl-av.grp{border-radius:12px;background:#fdf1e0;color:#a8730c;}
+  .cl-av .on-dot{position:absolute;right:0;bottom:1px;border:2px solid var(--paper);width:12px;height:12px;box-shadow:none;}
+  .cl-txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .cl-txt strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);}
+  .cl-txt small{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cl-item.unread .cl-txt strong,.cl-item.unread .cl-txt small{color:var(--heading);font-weight:700;}
+  .cl-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11.5px;color:var(--ink-soft);}
+  .cp-msgs{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:3px;background:var(--hover-bg);}
+  .cm-empty{margin:auto;color:var(--ink-soft);font-size:13px;text-align:center;padding:20px;}
+  .cm-day{align-self:center;font-size:11.5px;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:2px 10px;margin:10px 0 6px;}
+  .cm{display:flex;flex-direction:column;align-items:flex-start;max-width:82%;margin-top:3px;}
+  .cm.mine{align-self:flex-end;align-items:flex-end;}
+  .cm-n{font-size:11.5px;font-weight:700;color:var(--sun-deep);margin:6px 0 2px 4px;}
+  .cm-b{background:var(--paper);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:7px 11px 5px;font-size:14px;line-height:1.45;color:var(--ink);word-wrap:break-word;overflow-wrap:anywhere;}
+  .cm.mine .cm-b{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff;border-radius:14px 14px 4px 14px;}
+  .cm-b time{display:block;text-align:right;font-size:10.5px;opacity:.65;margin-top:2px;}
+  .cm.mine .cm-b time a{color:#fff;}
+  .cm.pending{opacity:.65;} .cm.fail .cm-b{background:#fbe2e3;border-color:#f3c1c3;color:#7a2a2d;}
+  .cp-input{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--paper);}
+  .cp-input textarea{flex:1;resize:none;min-height:40px;max-height:110px;font-size:14px;}
+  .cp-input .btn-sun{padding:10px 16px;}
+  @media(max-width:700px){
+    .chat-panel{inset:0;width:auto;height:auto;border-radius:0;right:0;bottom:0;}
+    .chat-fab{right:14px;bottom:14px;}
+    body.kerja .chat-fab{display:none;}
+  }
+  @media print{ #chatRoot,.chat-fab,.chat-panel,#rtChip{display:none !important;} }
 </style>
 </head>
 <body>
@@ -750,6 +811,7 @@
     <div><h1>Sekolah Minggu Buddhis Web</h1></div>
   </div>
   <div class="drive-status">
+    <span id="rtChip"></span>
     <span id="statusText"><span class="dot" id="statusDot"></span> Menghubungkan ke server...</span>
     <div class="theme-picker">
       <button class="btn-ghost" onclick="toggleThemeMenu()">🎨 Tema</button>
@@ -773,6 +835,7 @@
 </div>
 <div id="toast" class="toast"></div>
 <div id="modalRoot"></div>
+<div id="chatRoot"></div>
 
 <script>
 /* ======================= KONFIGURASI ======================= */
@@ -793,7 +856,7 @@ let db = {
   meta:{noIndukCounter:0},
   users:[], daerah:[], tingkatKelas:[], tahunAjaran:[], kelas:[],
   siswa:[], jadwalPertemuan:[], absensi:[], aspekPenilaian:[], nilai:[],
-  pendaftaran:[], paramita:[], kas:[], settings:{}, berita:[], penilaianKelas:[], rencana:[], materi:[], tugas:[], pengumpulan:[]
+  pendaftaran:[], paramita:[], kas:[], settings:{}, berita:[], penilaianKelas:[], rencana:[], materi:[], tugas:[], pengumpulan:[], chatGrup:[]
 };
 const DANA_PARAMITA = 20000;
 
@@ -1022,6 +1085,7 @@ function allTabs(){
     t.push({key:"pendaftaran", label:"Pendaftaran"+(pendingCount()? ` (${pendingCount()})`:'')});
     t.push({key:"kas", label:"Kas SMB"});
     t.push({key:"pengguna", label:"Pengguna"});
+    t.push({key:"aktivitas", label:"Aktivitas Online"});
     t.push({key:"pengaturan", label:"Pengaturan Website"});
   }
   t.push({key:"profil", label:"Profil Saya"});
@@ -1043,6 +1107,7 @@ function renderContent(){
   document.body.classList.toggle('mode-public', isPublic);
   document.body.classList.toggle('no-sidebar', appStage==='siswa-portal');
   document.body.classList.toggle('kerja', kerjaAktif());
+  if(!document.getElementById('chatPanel')) renderChatUI();
   if(isPublic){ renderPublic(); return; }
   document.getElementById('publicRoot').innerHTML = '';
   if(appStage==='siswa-portal'){ c.innerHTML = screenSiswaPortal(); return; }
@@ -1050,7 +1115,7 @@ function renderContent(){
     dashboard: renderDashboard, tahunajaran: renderTahunAjaran, kelas: renderKelas,
     siswa: renderSiswa, absensi: renderAbsensi, penilaian: renderPenilaian,
     kenaikan: renderKenaikan, laporan: renderLaporan, pengguna: renderPengguna,
-    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan, pembelajaran: renderPembelajaran
+    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan, pembelajaran: renderPembelajaran, aktivitas: renderAktivitas
   };
   if(!allTabs().some(t=>t.key===activeTab)) activeTab='dashboard';
   c.innerHTML = renderers[activeTab]();
@@ -2332,6 +2397,381 @@ function screenKerjakan(){
     </div>`;
 }
 
+/* ======================= STATUS ONLINE & CHAT ======================= */
+// Butuh file Realtime.gs di Apps Script. Bila server belum diperbarui, fitur ini otomatis tidak tampil.
+const RT_INTERVAL = { siswa: 60000, staf: 20000, chat: 8000 };
+let rt = { ok:false, checked:false, meId:'', online:{}, lastSeen:null, rev:0, msgs:{}, timer:null, busy:false,
+  chatOpen:false, room:'', read:{}, chatCari:'', sending:{}, lastNotif:0 };
+
+function rtMe(){
+  if(currentUser) return {id:currentUser.id, nama:currentUser.nama, role:currentUser.role};
+  if(currentSiswa) return {id:currentSiswa.id, nama:currentSiswa.namaLengkap, role:'siswa'};
+  return null;
+}
+function rtStaf(){ return db.users.filter(u=>u.role==='admin'||u.role==='guru'); }
+function rtOnline(id){ return !!rt.online[id]; }
+function rtDot(id){ return `<span class="on-dot ${rtOnline(id)?'on':''}" title="${rtOnline(id)?'Online':'Offline'}"></span>`; }
+function dmRoom(a, b){ return 'dm_'+[a,b].sort().join('_'); }
+function grupSaya(){ const me=rtMe(); return (db.chatGrup||[]).filter(g=>me && (g.anggota||[]).includes(me.id)); }
+function roomsSaya(){
+  const me = rtMe(); if(!me || me.role==='siswa') return [];
+  return rtStaf().filter(u=>u.id!==me.id).map(u=>dmRoom(me.id,u.id)).concat(grupSaya().map(g=>'g_'+g.id));
+}
+async function rtPost(body){
+  const res = await fetch(APPS_SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({secret:SECRET_KEY}, body))});
+  if(!res.ok) throw new Error('Server error '+res.status);
+  const j = await res.json(); if(j.error) throw new Error(j.error);
+  return j;
+}
+// Dipanggil setiap status login berubah (lewat updateUserBadge)
+async function rtSync(){
+  const me = rtMe();
+  if(!me){ rtStop(); return; }
+  if(rt.meId && rt.meId!==me.id) rtStop();
+  if(rt.meId===me.id && (rt.timer || !rt.checked)) { renderChatUI(); return; }
+  rt.meId = me.id;
+  try{ rt.read = JSON.parse(localStorage.getItem('smb_read_'+me.id)||'null'); }catch(e){ rt.read = null; }
+  if(!rt.checked){
+    rt.checked = true;
+    try{
+      const r = await fetch(`${APPS_SCRIPT_URL}?action=rt_hello&secret=${encodeURIComponent(SECRET_KEY)}`);
+      const j = await r.json(); rt.ok = !!(j && j.rt);
+    }catch(e){ rt.ok = false; }
+    if(!rtMe() || rtMe().id!==me.id) return;
+  }
+  if(!rt.ok){ renderChatUI(); return; }
+  rtPing();
+}
+function rtStop(){
+  clearTimeout(rt.timer); rt.timer = null;
+  if(rt.meId && rt.ok){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', secret:SECRET_KEY, id:rt.meId})); }catch(e){} }
+  Object.assign(rt, {meId:'', online:{}, lastSeen:null, rev:0, msgs:{}, chatOpen:false, room:'', read:{}, sending:{}, known:new Set()});
+  renderChatUI(); renderPresence();
+}
+// Sinyal online ikut terkirim lewat pengecekan versi data (tiap 20 detik) — tanpa permintaan tambahan.
+function rtHeartbeatParam(){
+  const me = rtMe();
+  if(!rt.ok || !me || document.hidden) return '';
+  return `&me_id=${encodeURIComponent(me.id)}&me_role=${encodeURIComponent(me.role)}&me_nama=${encodeURIComponent(String(me.nama).slice(0,60))}`;
+}
+function rtJadwal(){
+  clearTimeout(rt.timer);
+  const me = rtMe(); if(!me || !rt.ok) return;
+  if(me.role==='siswa') return; // siswa cukup lewat pengecekan versi data
+  const ms = me.role==='siswa'? RT_INTERVAL.siswa : (rt.chatOpen? RT_INTERVAL.chat : RT_INTERVAL.staf);
+  rt.timer = setTimeout(rtPing, ms);
+}
+async function rtPing(){
+  const me = rtMe(); if(!me || !rt.ok) return;
+  if(document.hidden || rt.busy){ rtJadwal(); return; }
+  rt.busy = true;
+  const staf = me.role!=='siswa';
+  const body = {action:'rt_ping', me};
+  if(staf){
+    body.ids = rtStaf().map(u=>u.id).concat(db.siswa.filter(s=>s.status==='aktif').map(s=>s.id));
+    body.rooms = roomsSaya();
+    rt.known = rt.known || new Set();
+    const adaBaru = body.rooms.some(r=>!rt.known.has(r));   // grup/percakapan baru: ambil juga pesan lamanya
+    body.since = adaBaru? 0 : rt.rev;
+  }
+  try{
+    const j = await rtPost(body);
+    if(j.online) rt.online = j.online;
+    if(Array.isArray(j.msgs) && j.msgs.length) rtTerimaPesan(j.msgs, rt.rev===0);
+    if(j.rev!=null) rt.rev = Math.max(rt.rev, Number(j.rev)||0);
+    if(body.rooms) body.rooms.forEach(r=>rt.known.add(r));
+    if(rt.read===null){ rt.read = {}; Object.keys(rt.msgs).forEach(r=>{ rt.read[r]=rtMaxSeq(r); }); rtSimpanRead(); } // pertama kali di perangkat ini: anggap pesan lama sudah dibaca
+  }catch(e){ /* coba lagi di siklus berikutnya */ }
+  rt.busy = false;
+  renderPresence(); renderChatUI(true);
+  if(activeTab==='aktivitas' && appStage==='ready') rtRefreshAktivitas();
+  rtJadwal();
+}
+function rtTerimaPesan(list, awal){
+  const me = rtMe(); let baru = null;
+  list.forEach(m=>{
+    const arr = rt.msgs[m.room] = rt.msgs[m.room] || [];
+    if(arr.some(x=>x.s===m.s)) return;
+    arr.push(m); arr.sort((a,b)=>a.s-b.s);
+    if(!awal && me && m.f!==me.id && m.t > Date.now()-120000) baru = m;
+  });
+  if(baru && !(rt.chatOpen && rt.room===baru.room && !document.hidden)){
+    toast(`💬 ${baru.n}: ${baru.x.slice(0,60)}${baru.x.length>60?'…':''}`);
+  }
+  if(rt.chatOpen && rt.room) rtTandaiDibaca(rt.room);
+}
+function rtMaxSeq(room){ const a=rt.msgs[room]||[]; return a.length? a[a.length-1].s : 0; }
+function rtSimpanRead(){ try{ localStorage.setItem('smb_read_'+rt.meId, JSON.stringify(rt.read||{})); }catch(e){} }
+function rtTandaiDibaca(room){ rt.read = rt.read||{}; const m=rtMaxSeq(room); if((rt.read[room]||0)<m){ rt.read[room]=m; rtSimpanRead(); } }
+function rtUnread(room){ const me=rtMe(); const lr=(rt.read||{})[room]||0; return (rt.msgs[room]||[]).filter(m=>m.s>lr && me && m.f!==me.id).length; }
+function rtTotalUnread(){ return roomsSaya().reduce((a,r)=>a+rtUnread(r),0); }
+
+/* ---------- Status online: chip di topbar & daftar ---------- */
+function rtHitungOnline(){
+  const stafOn = rtStaf().filter(u=>rtOnline(u.id));
+  const siswaOn = db.siswa.filter(s=>s.status==='aktif' && rtOnline(s.id));
+  return {stafOn, siswaOn};
+}
+function renderPresence(){
+  const el = document.getElementById('rtChip'); if(!el) return;
+  const me = rtMe();
+  if(!rt.ok || !me || me.role==='siswa'){ el.innerHTML=''; return; }
+  const {stafOn, siswaOn} = rtHitungOnline();
+  el.innerHTML = `<button class="rt-chip" onclick="bukaSiapaOnline()" title="Lihat siapa yang online"><span class="on-dot on"></span>${stafOn.length} guru · ${siswaOn.length} siswa online</button>`;
+  const d = document.getElementById('dashOnline');
+  if(d) d.outerHTML = dashOnlineHtml();
+  const t = (n=>n? `(${n}) `:'')(rtTotalUnread());
+  document.title = t + (document.title.replace(/^\(\d+\)\s*/,''));
+}
+function dashOnlineHtml(){
+  if(!rt.ok || !currentUser) return '<div id="dashOnline"></div>';
+  const {stafOn, siswaOn} = rtHitungOnline();
+  return `<div id="dashOnline" class="dash-online">
+    <span class="on-dot on"></span><strong>Online sekarang</strong>
+    <span>${stafOn.length} guru/admin</span><span>${siswaOn.length} siswa</span>
+    <button class="btn-outline btn-small" onclick="bukaSiapaOnline()">Lihat siapa</button>
+    ${isAdmin()? `<button class="btn-outline btn-small" onclick="switchTab('aktivitas')">Riwayat terakhir online</button>`:''}
+  </div>`;
+}
+function bukaSiapaOnline(){
+  const {stafOn, siswaOn} = rtHitungOnline();
+  const me = rtMe();
+  const kelasNm = s=>{ const k=db.kelas.find(x=>x.id===s.kelasId); return k? kelasLabel(k):''; };
+  openModal(`<h3>Siapa yang online</h3>
+    <p class="subtitle" style="margin-top:0">Diperbarui tiap ±20 detik. Seseorang dianggap online bila websitenya terbuka dalam ±1 menit terakhir.</p>
+    <div class="on-cols">
+      <section><h4>Guru & admin <span class="sd-sub" style="display:inline">(${stafOn.length})</span></h4>
+        ${stafOn.length? stafOn.map(u=>`<div class="on-row">${rtDot(u.id)}<span class="on-nm">${esc(u.nama)}${u.id===me.id?' <small class="sd-sub" style="display:inline">(Anda)</small>':''}</span><span class="badge ${u.role}">${u.role}</span>
+          ${u.id!==me.id? `<button class="btn-outline btn-small" onclick="closeModal(); bukaChat('${dmRoom(me.id,u.id)}')">Chat</button>`:''}</div>`).join('') : '<p class="sd-sub">Tidak ada.</p>'}</section>
+      <section><h4>Siswa <span class="sd-sub" style="display:inline">(${siswaOn.length})</span></h4>
+        ${siswaOn.length? `<div class="on-scroll">${siswaOn.sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap)).map(s=>`<div class="on-row">${rtDot(s.id)}<span class="on-nm">${esc(s.namaLengkap)}<small class="sd-sub">${esc(kelasNm(s))}</small></span></div>`).join('')}</div>` : '<p class="sd-sub">Tidak ada.</p>'}</section>
+    </div>
+    <div class="modal-actions">${isAdmin()? `<button class="btn-outline btn-small" onclick="closeModal(); switchTab('aktivitas')">Riwayat terakhir online</button>`:''}<button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`, 'wide');
+}
+
+/* ---------- Halaman admin: Aktivitas Online ---------- */
+let aktFilter = 'semua', aktCari = '';
+function fmtLalu(ms){
+  const d = Date.now()-ms, m = Math.floor(d/60000);
+  if(m<1) return 'baru saja'; if(m<60) return m+' menit lalu';
+  const h = Math.floor(m/60); if(h<24) return h+' jam lalu';
+  const hr = Math.floor(h/24); return hr+' hari lalu';
+}
+async function rtRefreshAktivitas(muatUlang){
+  if(!rt.ok) return;
+  if(muatUlang || !rt.lastSeen || Date.now()-(rt.lastSeenAt||0) > 60000){
+    try{ const j = await rtPost({action:'rt_lastseen'}); rt.lastSeen = j.lastSeen||{}; rt.lastSeenAt = Date.now(); }catch(e){ if(muatUlang) toast('Gagal memuat riwayat: '+e.message); }
+  }
+  const ae = document.activeElement;
+  if(activeTab==='aktivitas' && !(ae && ae.id==='aktCari')) renderContent();
+  else if(activeTab==='aktivitas'){ const t=document.getElementById('aktTabel'); if(t) t.outerHTML = aktTabelHtml(); }
+}
+function aktTabelHtml(){
+  const ls = rt.lastSeen || {};
+  const rows = [];
+  rtStaf().forEach(u=>rows.push({id:u.id, nama:u.nama, peran:u.role, ket:'', t:(ls[u.id]||{}).t||0}));
+  db.siswa.filter(s=>s.status==='aktif').forEach(s=>{ const k=db.kelas.find(x=>x.id===s.kelasId); rows.push({id:s.id, nama:s.namaLengkap, peran:'siswa', ket:k? kelasLabel(k):'', noInduk:s.noInduk, t:(ls[s.id]||{}).t||0}); });
+  rows.forEach(r=>{ if(rtOnline(r.id)) r.t = Math.max(r.t, rt.online[r.id]); });
+  const q = aktCari.trim().toLowerCase();
+  const list = rows.filter(r=> (aktFilter==='semua' || (aktFilter==='staf'? r.peran!=='siswa' : aktFilter==='siswa'? r.peran==='siswa' : aktFilter==='online'? rtOnline(r.id) : !r.t))
+      && (!q || (r.nama+' '+r.ket+' '+(r.noInduk||'')).toLowerCase().includes(q)))
+    .sort((a,b)=> (rtOnline(b.id)?1:0)-(rtOnline(a.id)?1:0) || b.t-a.t || a.nama.localeCompare(b.nama));
+  return `<div id="aktTabel"><div class="sd-table-wrap"><table class="sd-table">
+    <thead><tr><th>Nama</th><th>Peran</th><th>Kelas</th><th>Status</th><th>Terakhir online</th></tr></thead>
+    <tbody>${list.map(r=>`<tr><td><strong>${esc(r.nama)}</strong>${r.noInduk? `<small class="sd-sub">No Induk ${esc(r.noInduk)}</small>`:''}</td>
+      <td><span class="badge ${r.peran==='siswa'?'aktif':r.peran}">${r.peran}</span></td>
+      <td><small class="sd-sub">${esc(r.ket||'—')}</small></td>
+      <td>${rtOnline(r.id)? '<span class="tstat st-buka"><span class="on-dot on"></span> Online</span>' : '<span class="tstat st-draf">Offline</span>'}</td>
+      <td>${r.t? `<span class="sd-k">${new Date(r.t).toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span><small class="sd-sub">${fmtLalu(r.t)}</small>` : '<span class="sd-sub">Belum pernah tercatat</span>'}</td></tr>`).join('')
+      || `<tr><td colspan="5" class="sd-sub" style="text-align:center;padding:20px">Tidak ada yang cocok.</td></tr>`}</tbody></table></div>
+    <p class="sheet-note">Menampilkan ${list.length} orang. "Terakhir online" dicatat paling sering setiap 10 menit, jadi bisa selisih beberapa menit. Pencatatan dimulai sejak fitur ini dipasang.</p></div>`;
+}
+function renderAktivitas(){
+  if(!isAdmin()) return `<div class="empty">Menu ini khusus Admin.</div>`;
+  const head = `<div class="page-head"><div><h2>Aktivitas Online</h2><p class="subtitle">Siapa yang sedang online dan kapan terakhir kali setiap guru dan siswa membuka website.</p></div>
+    ${rt.ok? `<button class="btn-outline" onclick="rtRefreshAktivitas(true)">Muat ulang</button>`:''}</div>`;
+  if(!rt.ok) return head + rtBelumAktifHtml();
+  if(!rt.lastSeen) setTimeout(()=>rtRefreshAktivitas(true), 0);
+  const {stafOn, siswaOn} = rtHitungOnline();
+  const pernah = rt.lastSeen? Object.keys(rt.lastSeen).length : 0;
+  return head + `<div class="sd-summary">
+      <div><strong>${stafOn.length}</strong><span>guru/admin online</span></div>
+      <div><strong>${siswaOn.length}</strong><span>siswa online</span></div>
+      <div><strong>${pernah}</strong><span>orang pernah tercatat online</span></div>
+    </div>
+    <div class="sd-filters">
+      <input type="search" id="aktCari" placeholder="Cari nama, kelas, No Induk…" value="${esc(aktCari)}" oninput="aktCari=this.value; const t=document.getElementById('aktTabel'); if(t) t.outerHTML=aktTabelHtml();">
+      <select onchange="aktFilter=this.value; renderContent()" aria-label="Filter">
+        ${[['semua','Semua'],['online','Sedang online'],['staf','Guru & admin'],['siswa','Siswa'],['belum','Belum pernah online']].map(([v,l])=>`<option value="${v}" ${v===aktFilter?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    ${rt.lastSeen? aktTabelHtml() : '<div class="empty">Memuat riwayat…</div>'}`;
+}
+function rtBelumAktifHtml(){
+  return `<div class="set-card" style="max-width:760px"><div class="set-h" style="margin-top:0">Server belum diperbarui</div>
+    <p style="margin-top:0">Status online dan chat membutuhkan file <strong>Realtime.gs</strong> di proyek Apps Script Anda. Setelah dipasang, fitur ini aktif dengan sendirinya — website tidak perlu diubah.</p>
+    <ol class="rt-steps"><li>Buka proyek Apps Script SMB, klik <strong>+ › Script</strong>, beri nama <code>Realtime</code>, tempel isi file Realtime.gs.</li>
+      <li>Di file kode utama, jadikan baris ini baris pertama di dalam <code>doGet(e)</code> dan <code>doPost(e)</code>:<br><code>var rt = rtHandle_(e); if (rt) return rt;</code></li>
+      <li>Pilih fungsi <code>rtSetup</code>, klik <strong>Run</strong>, dan izinkan akses.</li>
+      <li><strong>Deploy › Manage deployments</strong> › ikon pensil › Version: <strong>New version</strong> › Deploy.</li>
+      <li>Muat ulang website ini.</li></ol></div>`;
+}
+
+/* ---------- Chat (guru & admin) ---------- */
+function renderChatUI(hanyaPerbarui){
+  const root = document.getElementById('chatRoot'); if(!root) return;
+  const me = rtMe();
+  if(!rt.ok || !me || me.role==='siswa' || appStage!=='ready'){ root.innerHTML=''; return; }
+  const n = rtTotalUnread();
+  if(!rt.chatOpen){
+    root.innerHTML = `<button class="chat-fab" onclick="bukaChat()" aria-label="Buka chat${n? ', '+n+' pesan belum dibaca':''}">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/></svg>
+      <span>Chat</span>${n? `<b class="cnt">${n}</b>`:''}</button>`;
+    return;
+  }
+  if(hanyaPerbarui && document.getElementById('chatPanel')){
+    const list = document.getElementById('chatList'); if(list) list.innerHTML = chatListHtml();
+    const msgs = document.getElementById('chatMsgs');
+    if(msgs){ const bawah = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60; msgs.innerHTML = chatMsgsHtml(rt.room); if(bawah) msgs.scrollTop = msgs.scrollHeight; }
+    const hs = document.getElementById('chatHeadSub'); if(hs) hs.innerHTML = chatHeadSub(rt.room);
+    return;
+  }
+  root.innerHTML = `<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat">${rt.room? chatRoomHtml(rt.room) : chatHomeHtml()}</div>`;
+  const msgs = document.getElementById('chatMsgs'); if(msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+function bukaChat(room){ rt.chatOpen = true; rt.room = room||''; if(room) rtTandaiDibaca(room); renderChatUI(); rtJadwal(); if(room) setTimeout(()=>{ const i=document.getElementById('chatInput'); i&&i.focus(); },30); }
+function tutupChat(){ rt.chatOpen = false; rt.room=''; renderChatUI(); renderPresence(); rtJadwal(); }
+function namaRoom(room){
+  const me = rtMe();
+  if(room.startsWith('g_')){ const g=(db.chatGrup||[]).find(x=>'g_'+x.id===room); return g? g.nama : 'Grup'; }
+  const other = room.slice(3).split('_').find(id=>id!==me.id);
+  const u = db.users.find(x=>x.id===other); return u? u.nama : 'Pengguna';
+}
+function lawanDm(room){ const me=rtMe(); return room.slice(3).split('_').find(id=>id!==me.id); }
+function chatHeadSub(room){
+  if(room.startsWith('g_')){ const g=(db.chatGrup||[]).find(x=>'g_'+x.id===room); const ang=g?g.anggota:[]; const on=ang.filter(id=>rtOnline(id)).length; return `${ang.length} anggota · ${on} online`; }
+  const id = lawanDm(room); return rtOnline(id)? '<span class="on-dot on"></span> Online' : 'Offline';
+}
+function chatListHtml(){
+  const me = rtMe(), q = rt.chatCari.trim().toLowerCase();
+  const items = [];
+  grupSaya().forEach(g=>items.push({room:'g_'+g.id, nama:g.nama, grup:true}));
+  rtStaf().filter(u=>u.id!==me.id).forEach(u=>items.push({room:dmRoom(me.id,u.id), nama:u.nama, uid:u.id, role:u.role}));
+  items.forEach(it=>{ const a=rt.msgs[it.room]||[]; it.last=a[a.length-1]; it.unread=rtUnread(it.room); });
+  const list = items.filter(it=>!q || it.nama.toLowerCase().includes(q))
+    .sort((a,b)=> ((b.last||{}).t||0)-((a.last||{}).t||0) || (b.uid&&rtOnline(b.uid)?1:0)-(a.uid&&rtOnline(a.uid)?1:0) || a.nama.localeCompare(b.nama));
+  return list.map(it=>`<button class="cl-item ${it.unread?'unread':''}" onclick="bukaChat('${it.room}')">
+      <span class="cl-av ${it.grup?'grp':''}">${it.grup? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.6c2.8.2 5 2.2 5 5.4"/></svg>' : esc(inisial(it.nama))}${it.uid? rtDot(it.uid):''}</span>
+      <span class="cl-txt"><strong>${esc(it.nama)}</strong><small>${it.last? esc((it.last.f===me.id?'Anda: ':(it.grup? it.last.n.split(' ')[0]+': ':''))+it.last.x).slice(0,60) : (it.grup? 'Grup' : (it.role==='admin'?'Admin':'Guru'))}</small></span>
+      <span class="cl-meta">${it.last? `<time>${jamPesan(it.last.t, true)}</time>`:''}${it.unread? `<b class="cnt">${it.unread}</b>`:''}</span>
+    </button>`).join('') || '<p class="sd-sub" style="padding:16px">Tidak ditemukan.</p>';
+}
+function chatHomeHtml(){
+  const {stafOn} = rtHitungOnline();
+  return `<div class="cp-head"><div><strong>Chat</strong><small>${stafOn.length} guru/admin online</small></div>
+      <button class="btn-outline btn-small" onclick="formGrupChat()">+ Grup</button>
+      <button class="ib" aria-label="Tutup chat" onclick="tutupChat()">✕</button></div>
+    <div class="cp-search"><input type="search" placeholder="Cari nama atau grup…" value="${esc(rt.chatCari)}" oninput="rt.chatCari=this.value; document.getElementById('chatList').innerHTML=chatListHtml()"></div>
+    <div class="cp-list" id="chatList">${chatListHtml()}</div>`;
+}
+function jamPesan(t, ringkas){
+  const d = new Date(t), now = new Date();
+  const hari = d.toDateString()===now.toDateString();
+  if(ringkas) return hari? d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) : d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+  return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function chatMsgsHtml(room){
+  const me = rtMe(), grup = room.startsWith('g_');
+  const all = (rt.msgs[room]||[]).concat(Object.values(rt.sending).filter(p=>p.room===room));
+  if(!all.length) return `<div class="cm-empty">Belum ada pesan. Mulai percakapan di bawah.</div>`;
+  let lastDay = '', lastFrom = '';
+  return all.map(m=>{
+    const d = new Date(m.t), day = d.toDateString();
+    let sep = '';
+    if(day!==lastDay){ sep = `<div class="cm-day">${d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'})}</div>`; lastDay = day; lastFrom=''; }
+    const mine = m.f===me.id, showName = grup && !mine && lastFrom!==m.f;
+    lastFrom = m.f;
+    return `${sep}<div class="cm ${mine?'mine':''} ${m.pending?'pending':''} ${m.gagal?'fail':''}">
+      ${showName? `<span class="cm-n">${esc(m.n)}</span>`:''}<div class="cm-b">${teksBr(m.x)}<time>${m.gagal? 'Gagal terkirim · <a href="javascript:void 0" onclick="kirimUlang(\''+m.tmp+'\')">kirim ulang</a>' : m.pending? 'Mengirim…' : jamPesan(m.t)}</time></div></div>`;
+  }).join('');
+}
+function chatRoomHtml(room){
+  const grup = room.startsWith('g_');
+  const nm = namaRoom(room);
+  return `<div class="cp-head"><button class="ib" aria-label="Kembali" onclick="rt.room=''; renderChatUI()">←</button>
+      <span class="cl-av ${grup?'grp':''}" style="width:34px;height:34px">${grup? '#' : esc(inisial(nm))}</span>
+      <div style="flex:1;min-width:0"><strong>${esc(nm)}</strong><small id="chatHeadSub">${chatHeadSub(room)}</small></div>
+      ${grup? `<button class="ib" title="Kelola grup" onclick="formGrupChat('${room.slice(2)}')">⋯</button>`:''}
+      <button class="ib" aria-label="Tutup chat" onclick="tutupChat()">✕</button></div>
+    <div class="cp-msgs" id="chatMsgs">${chatMsgsHtml(room)}</div>
+    <div class="cp-input"><textarea id="chatInput" rows="1" maxlength="500" placeholder="Tulis pesan…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault(); kirimPesan();}" oninput="this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,110)+'px'"></textarea>
+      <button class="btn-sun" onclick="kirimPesan()" aria-label="Kirim">Kirim</button></div>`;
+}
+async function kirimPesan(){
+  const inp = document.getElementById('chatInput'); if(!inp) return;
+  const text = inp.value.trim(); if(!text) return;
+  const me = rtMe(), room = rt.room;
+  const tmp = 'tmp'+Date.now();
+  rt.sending[tmp] = {tmp, room, f:me.id, n:me.nama, x:text, t:Date.now(), pending:true, s:Infinity};
+  inp.value=''; inp.style.height='auto';
+  renderChatUI(true); const box=document.getElementById('chatMsgs'); if(box) box.scrollTop=box.scrollHeight;
+  await kirimKeServer(tmp);
+}
+async function kirimKeServer(tmp){
+  const p = rt.sending[tmp]; if(!p) return;
+  p.pending = true; p.gagal = false; renderChatUI(true);
+  try{
+    const j = await rtPost({action:'rt_send', me:rtMe(), room:p.room, text:p.x});
+    delete rt.sending[tmp];
+    rtTerimaPesan([j.msg], false); rtTandaiDibaca(p.room);
+  }catch(e){ p.pending=false; p.gagal=true; }
+  renderChatUI(true); const box=document.getElementById('chatMsgs'); if(box) box.scrollTop=box.scrollHeight;
+}
+function kirimUlang(tmp){ kirimKeServer(tmp); }
+
+function formGrupChat(gid){
+  const me = rtMe();
+  const g = gid? (db.chatGrup||[]).find(x=>x.id===gid) : null;
+  const bolehUbah = !g || g.dibuatOleh===me.id || isAdmin();
+  const anggota = new Set(g? g.anggota : [me.id]);
+  openModal(`<h3>${g? 'Kelola grup' : 'Grup chat baru'}</h3>
+    <div class="field"><label>Nama grup *</label><input id="gc_nama" value="${esc(g?g.nama:'')}" ${bolehUbah?'':'disabled'} placeholder="misal: Guru SD Sei. Pancur" style="width:100%"></div>
+    <div class="field"><label>Anggota</label><div class="checkbox-grid" style="max-height:280px">
+      ${rtStaf().map(u=>`<label>${u.id===me.id? `<input type="checkbox" checked disabled>` : `<input type="checkbox" class="gc_ang" value="${u.id}" ${anggota.has(u.id)?'checked':''} ${bolehUbah?'':'disabled'}>`} ${rtDot(u.id)} ${esc(u.nama)}${u.id===me.id?' (Anda)':''}</label>`).join('')}
+    </div>${g? `<div class="help">Dibuat oleh ${esc(namaUser(g.dibuatOleh)||'—')}. ${bolehUbah? '':'Hanya pembuat grup atau Admin yang bisa mengubah anggota.'}</div>`:''}</div>
+    <div class="modal-actions">
+      ${g? `<button class="btn-outline btn-small" style="margin-right:auto" onclick="keluarGrup('${g.id}')">Keluar dari grup</button>`:''}
+      ${g && bolehUbah? `<button class="btn-danger btn-small" onclick="hapusGrup('${g.id}')">Hapus grup</button>`:''}
+      <button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
+      ${bolehUbah? `<button class="btn-sun btn-small" onclick="simpanGrupChat('${gid||''}')">${g?'Simpan':'Buat grup'}</button>`:''}</div>`);
+}
+function simpanGrupChat(gid){
+  const nama = val('gc_nama'); if(!nama) return toast('Nama grup wajib diisi');
+  const me = rtMe();
+  const ang = [me.id, ...[...document.querySelectorAll('.gc_ang:checked')].map(c=>c.value)];
+  if(ang.length<2) return toast('Pilih minimal satu anggota lain');
+  db.chatGrup = db.chatGrup || [];
+  if(gid){ const g=db.chatGrup.find(x=>x.id===gid); g.nama=nama; g.anggota=[...new Set(ang)]; }
+  else { const g={id:uid(), nama, anggota:[...new Set(ang)], dibuatOleh:me.id, dibuat:nowIso()}; db.chatGrup.push(g); gid=g.id; }
+  closeModal(); saveToDrive(true); bukaChat('g_'+gid);
+  toast('Grup disimpan — anggota lain akan melihatnya dalam ±20 detik');
+}
+function keluarGrup(gid){
+  const g = (db.chatGrup||[]).find(x=>x.id===gid); const me = rtMe();
+  if(!confirm(`Keluar dari grup "${g.nama}"?`)) return;
+  g.anggota = g.anggota.filter(id=>id!==me.id);
+  if(!g.anggota.length) db.chatGrup = db.chatGrup.filter(x=>x.id!==gid);
+  closeModal(); rt.room=''; renderChatUI(); saveToDrive(true);
+}
+function hapusGrup(gid){
+  const g = (db.chatGrup||[]).find(x=>x.id===gid);
+  if(!confirm(`Hapus grup "${g.nama}" untuk semua anggota? Riwayat pesan tetap tersimpan di spreadsheet.`)) return;
+  db.chatGrup = db.chatGrup.filter(x=>x.id!==gid);
+  closeModal(); rt.room=''; renderChatUI(); saveToDrive(true);
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && rt.ok && rtMe()){ clearTimeout(rt.timer); rtPing(); } });
+window.addEventListener('pagehide', ()=>{ if(rt.ok && rt.meId){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', secret:SECRET_KEY, id:rt.meId})); }catch(e){} } });
+
 /* ======================= HELPERS ======================= */
 function activeTahunAjaran(){ return db.tahunAjaran.find(t=>t.aktif) || db.tahunAjaran[0]; }
 function tingkatOf(kelas){ return db.tingkatKelas.find(t=>t.id===kelas.tingkatKelasId); }
@@ -2577,6 +3017,7 @@ function updateUserBadge(){
   if(currentUser){ b.innerHTML = `<span class="badge ${currentUser.role}">${esc(currentUser.nama)}</span>`; lo.style.display='inline-block'; }
   else if(currentSiswa){ b.innerHTML = `<span class="badge aktif">${esc(currentSiswa.namaLengkap)} (Siswa)</span>`; lo.style.display='inline-block'; }
   else { b.innerHTML=''; lo.style.display='none'; }
+  rtSync();
 }
 
 
@@ -2992,6 +3433,7 @@ function renderDashboard(){
   return `
     <h2>Selamat datang, ${esc(currentUser.nama)} 👋</h2>
     <p class="subtitle">Tahun ajaran aktif: <strong>${ta? esc(ta.nama):'belum ada'}</strong> · Peran: <span class="badge ${currentUser.role}">${currentUser.role}</span></p>
+    ${dashOnlineHtml()}
 
     <div class="stat-grid">
       <div class="stat"><div class="num">${aktif.length}</div><div class="lbl">Siswa aktif</div><div class="stat-note">${pct(aktif.length, semuaSiswa.length)}% dari ${semuaSiswa.length} siswa tercatat</div></div>
@@ -4299,7 +4741,7 @@ async function loadFromDrive(){
     const data = await res.json();
     if(data.error) throw new Error(data.error);
     driveKnownVersion = data.version;
-    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[],rencana:[],materi:[],tugas:[],pengumpulan:[]}, data.data||{});
+    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[],rencana:[],materi:[],tugas:[],pengumpulan:[],chatGrup:[]}, data.data||{});
     if(!db.tingkatKelas || !db.tingkatKelas.length){
       seedDefaults();
       await saveToDrive(false, true);
@@ -4322,7 +4764,7 @@ function startPolling(){
   clearInterval(window._pollTimer);
   window._pollTimer = setInterval(async ()=>{
     try{
-      const res = await fetch(`${APPS_SCRIPT_URL}?action=version&secret=${encodeURIComponent(SECRET_KEY)}`);
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=version&secret=${encodeURIComponent(SECRET_KEY)}${rtHeartbeatParam()}`);
       if(!res.ok) return;
       const data = await res.json();
       const modalOpen = document.getElementById('modalRoot') && document.getElementById('modalRoot').innerHTML.trim().length>0;
