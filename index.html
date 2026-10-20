@@ -986,6 +986,22 @@ function hapusLogoKop(){
 }
 
 /* ======================= CEK DATA GANDA PENDAFTARAN ======================= */
+// Nama siswa: huruf kapital di awal setiap kata, sisanya huruf kecil ("JAYRICH LUK" / "bryan lie" -> "Jayrich Luk" / "Bryan Lie")
+function kapitalNama(s){
+  return String(s||'').replace(/\s+/g,' ').trim().toLocaleLowerCase('id-ID')
+    .replace(/(^|[\s\-'.(\/])(\p{L})/gu, (m,a,b)=> a + b.toLocaleUpperCase('id-ID'));
+}
+// Rapikan nama siswa & pendaftar yang sudah tersimpan (dijalankan saat Admin masuk; hanya menyimpan bila ada yang berubah)
+function rapikanNamaSiswa(){
+  let n = 0;
+  (db.siswa||[]).concat(db.pendaftaran||[]).forEach(x=>{
+    if(!x || !x.namaLengkap) return;
+    const baru = kapitalNama(x.namaLengkap);
+    if(baru!==x.namaLengkap){ x.namaLengkap = baru; n++; }
+  });
+  if(n){ saveToDrive(true); toast(`${n} nama siswa dirapikan ke format huruf kapital di awal kata`); }
+  return n;
+}
 function normTeks(s){ return (s||'').toString().trim().toLowerCase().replace(/\s+/g,' '); }
 // Cocok bila Nama + Tempat Lahir + Tanggal Lahir sama (tidak peka huruf besar/kecil & spasi berlebih)
 function cariDuplikatPendaftar(nama, tempatLahir, tglLahir){
@@ -2898,7 +2914,7 @@ function screenLogin(){
     <h2>Pendaftaran Siswa Baru</h2>
     <p class="subtitle">Isi data berikut dengan lengkap dan benar (kolom bertanda * wajib diisi)</p>
     <div id="dfError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
-    <div class="field"><label>Nama Lengkap *</label><input id="dfNama"></div>
+    <div class="field"><label>Nama Lengkap *</label><input id="dfNama" onblur="this.value=kapitalNama(this.value)" autocapitalize="words"></div>
     <div class="grid2">
       <div class="field"><label>Tempat Lahir *</label><input id="dfTempat"></div>
       <div class="field"><label>Tanggal Lahir *</label>${dateFieldDDMMYYYY('dfTgl','')}</div>
@@ -2943,6 +2959,7 @@ async function submitLogin(){
   const u = db.users.find(x=>x.username===username && x.passwordHash===hash);
   if(!u) return toast('ID atau password salah');
   currentUser = u; appStage='ready'; activeTab='dashboard'; loginMode='pilih';
+  if(u.role==='admin') setTimeout(rapikanNamaSiswa, 600);
   renderTabs(); renderContent(); updateUserBadge();
   toast('Selamat datang, '+u.nama);
 }
@@ -2962,7 +2979,7 @@ function dfShowError(msg, fieldId){
   if(fieldId){ const f=document.getElementById(fieldId); if(f) f.style.borderColor='var(--coral)'; }
 }
 async function submitPendaftaran(){
-  const nama = document.getElementById('dfNama').value.trim();
+  const nama = kapitalNama(document.getElementById('dfNama').value);
   const tempatLahir = document.getElementById('dfTempat').value.trim();
   const tglLahir = ddmmyyyyToIso(document.getElementById('dfTgl').value.trim());
   const teleponSiswa = document.getElementById('dfTeleponSiswa').value.trim();
@@ -3333,7 +3350,7 @@ function prosesApprove(id){
   if(sudahAda && !confirm(`Sudah ada siswa "${sudahAda.namaLengkap}" dengan tempat & tanggal lahir yang sama (No Induk ${sudahAda.noInduk}). Tetap setujui sebagai siswa baru?`)) return;
   const siswaBaru = {
     id:uid(), noInduk: nextNoInduk(), status:'aktif',
-    namaLengkap: p.namaLengkap, tempatLahir: p.tempatLahir, tglLahir: p.tglLahir, teleponSiswa: p.teleponSiswa,
+    namaLengkap: kapitalNama(p.namaLengkap), tempatLahir: p.tempatLahir, tglLahir: p.tglLahir, teleponSiswa: p.teleponSiswa,
     kelasId, alamatTinggal: p.alamatTinggal, asalSekolah: p.asalSekolah,
     namaAyah: p.namaAyah, teleponAyah: p.teleponAyah, namaIbu: p.namaIbu, teleponIbu: p.teleponIbu,
     namaWali: p.namaWali, teleponWali: p.teleponWali, statusKetuhanan: p.statusKetuhanan, namaVihara: p.namaVihara,
@@ -3875,7 +3892,7 @@ function formSiswa(id){
   window._fsKelasList = kelasList;
   openModal(`<h3>${s?'Ubah Data Siswa':'Tambah Siswa'}</h3>
     <div id="fSError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
-    <div class="field"><label>Nama Lengkap *</label><input id="fSNama" value="${s?esc(s.namaLengkap):''}"></div>
+    <div class="field"><label>Nama Lengkap *</label><input id="fSNama" value="${s?esc(s.namaLengkap):''}" onblur="this.value=kapitalNama(this.value)" autocapitalize="words"></div>
     <div class="grid2">
       <div class="field"><label>Tempat Lahir *</label><input id="fSTempat" value="${s?esc(s.tempatLahir||''):''}"></div>
       <div class="field"><label>Tanggal Lahir *</label>${dateFieldDDMMYYYY('fSTgl', s?s.tglLahir:'')}</div>
@@ -3935,7 +3952,7 @@ function fsShowError(msg, fieldId){
   if(fieldId){ const f=document.getElementById(fieldId); if(f) f.style.borderColor='var(--coral)'; }
 }
 function simpanSiswa(id){
-  const namaLengkap = document.getElementById('fSNama').value.trim();
+  const namaLengkap = kapitalNama(document.getElementById('fSNama').value);
   const tempatLahir = document.getElementById('fSTempat').value.trim();
   const tglLahirStr = document.getElementById('fSTgl').value.trim();
   const teleponSiswa = document.getElementById('fSTeleponSiswa').value.trim();
@@ -4004,7 +4021,7 @@ function importExcel(input){
       if(!ta){ toast('Buat tahun ajaran aktif terlebih dahulu'); return; }
       let created=0, skipped=0;
       rows.forEach(r=>{
-        const nama = (r["Nama Lengkap"]||'').toString().trim();
+        const nama = kapitalNama(r["Nama Lengkap"]);
         if(!nama){ skipped++; return; }
         const daerahNama = (r["Daerah"]||'').toString().trim() || (db.daerah[0]?db.daerah[0].nama:'Pusat');
         let daerah = db.daerah.find(d=>d.nama.toLowerCase()===daerahNama.toLowerCase());
