@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sekolah Minggu Buddhis Web</title>
+<link rel="icon" id="favicon" href="data:,">
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -50,7 +51,8 @@
   a{color:inherit;}
   .topbar{background:var(--sky-deep);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;}
   .brand{display:flex;align-items:center;gap:10px;}
-  .brand-badge{width:38px;height:38px;border-radius:10px;background:var(--sun);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:800;color:var(--sky-deep);font-size:18px;transform:rotate(-6deg);}
+    .brand-badge{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+  .brand-badge img{width:100%;height:100%;object-fit:contain;}
   .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px;}
   .brand span{display:block;font-size:11px;font-weight:400;opacity:.75;font-family:'Inter';}
   .drive-status{display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;}
@@ -283,7 +285,7 @@
   body.theme-dark .pub-nav{background:rgba(27,36,50,.96);}
   .pub-nav-in{display:flex;align-items:center;gap:20px;height:66px;}
   .pub-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--heading);}
-  .pub-brand-mark{width:40px;height:40px;border-radius:10px;background:var(--sky);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--sun-deep);}
+  .pub-brand-mark{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--sun-deep);}
   .pub-brand-mark img{max-width:100%;max-height:100%;object-fit:contain;}
   .pub-logo-lotus{width:30px;height:30px;}
   .pub-brand-txt{font-family:'Baloo 2';font-weight:700;font-size:17px;line-height:1.1;max-width:240px;}
@@ -556,7 +558,12 @@
   .rp-note-print{border:0.75pt solid #333;min-height:70px;padding:8px;font-size:10.5pt;}
   .ttd3{display:grid;grid-template-columns:1fr 1fr;gap:10px 40px;margin-top:28px;font-size:10.5pt;text-align:center;line-height:1.5;color:#000;break-inside:avoid;page-break-inside:avoid;}
   .ttd3 .ttd-full{grid-column:1 / -1;}
-  .ttd3 .ttd-space{height:58px;}
+    .ttd3 .ttd-space{height:58px;}
+  .ttd-sig{height:66px;display:flex;align-items:flex-end;justify-content:center;margin:4px 0 2px;}
+  .ttd-sig img{max-height:66px;max-width:190px;object-fit:contain;}
+  .sig-box{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border:1.5px dashed var(--line);border-radius:12px;padding:14px 16px;max-width:620px;}
+  .sig-prev{width:220px;height:90px;border-radius:8px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;color:#999;font-size:12px;}
+  .sig-prev img{max-width:100%;max-height:100%;object-fit:contain;}
   .ttd3 .ttd-nama{font-weight:700;text-decoration:underline;}
   @media(max-width:860px){ .paper{padding:24px 18px;} .rp-ident,.rp-cols{grid-template-columns:1fr;} }
   .portal-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
@@ -807,7 +814,7 @@
 <div id="publicRoot"></div>
 <div class="topbar">
   <div class="brand">
-    <div class="brand-badge">SM</div>
+    <div class="brand-badge"><img id="brandLogo" alt="Logo SMB"></div>
     <div><h1>Sekolah Minggu Buddhis Web</h1></div>
   </div>
   <div class="drive-status">
@@ -859,6 +866,10 @@ let db = {
   pendaftaran:[], paramita:[], kas:[], settings:{}, berita:[], penilaianKelas:[], rencana:[], materi:[], tugas:[], pengumpulan:[], chatGrup:[]
 };
 const DANA_PARAMITA = 20000;
+
+/* ======================= LOGO SMB ======================= */
+const LOGO_SMB = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEBAQFBQQFBwsHBwYGBw4KCggLEA4RERAOEA8SFBoWEhMYEw8QFh8XGBsbHR0dERYgIh8cIhocHRz/2wBDAQUFBQcGBw0HBw0cEhASHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBz/wAARCAEAAQADASIAAhEBAxEB/8QAHQAAAgMBAQEBAQAAAAAAAAAAAAEFBgcIBAIDCf/EAEoQAAEDAwEGAwQIAgcFBwUAAAECAwQABREGBxIhMUFRE2FxCBQigRUyQlJikaGxI8EkM0NygpLwFkRT0eEYJmOTssLSNDZFVYP/xAAcAQEAAgMBAQEAAAAAAAAAAAAABAUCAwYBBwj/xAA0EQABAwIEAwUIAgIDAAAAAAABAAIDBBEFEiExE0FRBhQiYXEygZGhscHR8CPhB/EVJEL/2gAMAwEAAhEDEQA/AO/M0s0qYoiOlGeFBFFERyp8aXnRnNERmjNGKBzoiDRmjFHL1oiCeNGaQp440RHCnS4UZFER+9GeNA70c6Iin0r5ooieadLhR0oiDR0oPOgnhRE6RNBpc6InnvTr5p9KIjJo40YoPCiI506Qp0RFIijjToiQ4CnzopGiI40Zo9aXCiJ9KONAFHGiIFBFHKgURMUiadBoiRFGOFHGjnREY4UYp0iaIjjQOFOjFESzRnNGKMURGONGKOZp0RfNMUDFGeNERmjjRijlREYzRyozSNETAoNAoIoifKlzp0utERyozTpEURHOnypDhTNES5ij96ByowaIgUZozRzoieaKXmKOdETzSPCjFGDREYoozjnVL1xtR0/oRopuEkuziMohR8KdV6j7I8zisHyNjbmebBbYIJah4ihaXOPIK6EgHnUPfdWWPTLXiXe7Q4ScZw+6EqPonmfkK5U1jt+1ZqMuNW1wWaCcgJjHLyh5uH/2gVk76Xpb6n5Djjz6+KnHVFSlepPGqabHI26RC67fD+w08oDqyQM8hqfjsPmuurv7Suh7cpSYzs64rHD+ixyEn/EsiqrI9rK3IJEbS85xPQuyUI/QA1zX7rnpR7sTUB2NTHawXSw9jMJjHjDnep/Fl0a37WscnDmk5AH4JiSf1TU5bfan0vIUEzbXdoeftBCHQPyVn9K5XETHSn7r5ViMZnHP5LZJ2PwhwsGEejj97ruewbXdF6kUhELUEQPr5MyCWV+mF4/SrqlxKwFJUCkjII5Gv5w+654EZ9at2ldoGqNGrR9FXZ9EdJ4xnT4jKv8AArl8sVMix0bSt+CoK7sILF1HL7nfkfhd4njRxrD9De0XbLwtuJqOOLXKVgCQglUdR8+qPnkedbay+3JaQ6ytLjaxvJWkghQ7gjnV1BUxVAzRG64auw6poX8OpYWn5H0OxX6UUUVvUJLNGKQp4oiMUA4oPMUGiI50YpiiiIpYp0URAoNL0oPKiJ8qOdLrRREqfSlRREUUU6IjHCkpQQnJIAHMmmTgE1zzta2muXhb9hsrxTb0kokyEHBfPVKT93v39OcGvr4qGLiSH0HVWGG4dLiEwii955AL1bTduSmVO2nSziS4MpduIGQnuG+5/Fy7d656kIdlvuPvuLdfdVvLccUVKUe5J5mpcxPKgRfKuBq8VkqnZnn3dF9XwygpsOjyQDXmeZ/eihPdPKn7qOWKmzF6Y41+MtLcFbSX1bhd4DPT17VGbK5xs3VSqjFKemLRO8NzbXO6ivdvKgRBnlU37r5Ue6+VYd4Unj9FC+646UCNkcqmjFz0o91x0p3hecZQnuvlQY3lU4IeeOMDvXjmqTFa3uHDiSeVboy+Q2aFTV3aegoX8OV/i6DW3qo8RfKr7s+2m3nQbyGULVLtBPxwnFcB5oP2T+hqpW5xFwjB5CSOJSR2NeoxfKvW1ktNJdps4KY91NidMMwDmOF/3oV2hpjVVt1ba0XC2Phxo8FoPBbauqVDoamh3rjTSGprjoy7InwF8D8LzKj8Dyfun+R6V1lpjUsLVdoZuMFZKF8FoV9ZpQ5pPmK7fCcXZXNynR43H3C+Y43gj8OfmZrGdj08j+6qZxR1o6Us1dKhT6UCgmjmKInmljJo5UxREs8KdL0o9aIgUUA0ZzRE6RpZp86Ij9qVPlSoifMUCgVHX67tWK0yp731WU5Cc/WVyA+ZrCSRsTDI82A1Kya0vcGt3Kzva9rVdtimx253dmSUZfcSeLTZ+z5FX7etYIImOlWS4OP3OdImSVb8h9ZWtXmf5dK84i+VfHsVxp1dUGS/h5DyX0/CqVlBAI27nUnqf3ZQZi8eVHunlU37r5UjF8qre9Ky4yiWIwS4knpxqtaxjuLS1JbT/CbylZ6gnGD6Ve/djxOK8EuCEjdWneaWMEK/Y1ZYbWtZIDzXA9r6OaR7axurGixHTX7ql6XuYfV7i6rKwMtqPXumrV7r5VntxjLsN+T4JO62tLrZP3c8v3Facq4QUf7w2f7vGpeLwlr2ywi4cOXVWHZvG2mlMVS8As2JO4/peQROHKmIgzk9Olfsq5xBndK1eia8s65pjwJElIyptBIT59BUKnhlc7xtsscf7Ssjg4VHIC52hI5D8qGvl4bgq8BoBUjr2QPP/lUXCtk27guLJDR+25yPoKiLdGcmzC9IVvJ3t9zf+0an5mpX4raksPJ3hwCUoBArpJIpImiOnAzcyeS4ih7mJM1bmI6Dn6m6m7bZ0W6MGUkqOSpSj1Nev3Xyr0aekLu9ojzHEBLi8g4GASDjI9akjG8q5CoqXtlcJD4gdfVfX6OWIQM4Asywt6KFEXHSrds+1U9o68B0lSre/hElodR0UPMftkVF+7eVMReuKU+Ivp5GyxmxCyqRHUxGKQXBXWLLzcllt5laVtuJCkqSeCgeRr9MGsw2R6iU9EcssheVxxvsZ6o6p+R/Q+VahmvsWG17K+mbUM5/I8wvllbSupZ3Qu5fTkkeNKmeFKp6ip8qVBooieKMcKM0GiJUxRwpURPNLNMCjHGiIo60UEURMVle1W6Kfei2pB+BA8Z3Hc8Ej8sn51qSiEg5OBzrCr28q6XWXLVkh1wlP93kP0FcR26xPulCIGnWQ29w1P2CusDhD6jiHZv1VY938qBH8ql/dvKgx8DlXx3vS7TjKJ92FfPu3lUwI/D6tP3fyNO9JxlSbxIdbK22llARwO7wOarrEtxEgKccUtI+8qrVqKx3BTi1QmVvNOcSEfWB9KpZ0pennChFslceq07oH513OGS0ppwS9o06i6+aYi2umqXiQOOptva3K3JRF8dZn3sPhwFptCUjzIJJ/evr6QZRxAUfICi82GRbnYpd3Qs7zboSQoJxy4jn1/KrHpjTNjvy1J+kZK5Lad5cfcDZx3HPI9KuJ6unp4BK4ktA5C6hU9I+ofwmWv5myrhvCkj4GgP7xr4Sm43lXhsNPPn7jSTgflWvRNEWWEoKbgIWofaeJWf14V+l4mt2mP4TIQl5Q+FIAASO+Koh2likkEdJFcnmVcnABTxmaqkAA6LLG9PSIcCe3OCW31NEpa3gSkgZ445V96BsVvvrMh2Whxb0ZYHh73wFJHAn8jX4z58vUs/6NtqFvOOk7yxzX3OeifOrxaLbG0Daiw4febjIIcc3OAyBgD0H61OxGqlip+CHfzPtYDpzPkFowqOITmplbaJvXX09SpxuGhptLbaEobQMJSkYAHbFfXu2elVIbR0xpzLM2GhLTqwneaUcoBOMkHnWi+7Y6VxdbDUURHeBbNtzuu5o8TgqmkwHb3KH91o924VMe7+VL3c9qg96U3jL8LHMXZbrFnt5yysFQ7p5EflmuiWXUvtIcbVvIWApJ7g8q59EYmth0LNMvT7DajlcYlo+g5foa+if4/xbNNJROOhGYeo3+X0XNdoYs7WzjcaH7Ky5FKnjjSxX1VcsmBRigUURLNGaeM0EcKIlin+9HnRREelHKnQRREdaR5UedB5URc0bUfaiTp++z7DYLUzNEUqYfmPuqCCvkoISnng8Mk8xyr40Jq1jWtpVKEYxZTKgh5gq3t0nkQeoP8qxbVuzedpnXVzi3WM8WfeHHmHiDuSEKUVJUD158R3rZNlelnrVBlzX2VM++FIbbUMEpTk7xHnnhXNf5JwfDxgff5XAStIDNdTci4t6a7aWVL2ex+tdjHcmtJYb5tNBYaa+v1Vu938qPd/KvVcJMO1RVy50lmNFRxU68sJSPmaxfVm2pVwkKtOjkFTquCri8nASOpQk/wDqV8hXxHAezmJY7MIqKMkc3f8Akep+26+g4ljtLh0ZkqH2ty5/Ba2ltKlrQlSSpGApIPFORkZ7cK+/dz2qqabKNFaKiyJSXpM+etUhYWrLjqldVKPkB+eKhJm1xbHjodtzTaVIIStLpKgcdBjjWyfs7U97lgpf5GscW5tACRoSPK91pgx+J0DJZRlc4Xt0vqAfNebaBqh9l1NvgLe8Z5XhtoZOCtWcE8OOM8AKtUNqVprSUZqdIW/cdzdKlq3iFq44z1CQcfKo/QGnoK3k3+4zYT92cTlllt9KkxEHkOfFfHienGjV1xEq5rbQrLMcboKTkE8yf9dqs3thmljw6Bvhj1c6256Dyv8AH3KudUywQvqpHeN+gF9gVnGsbmmPHREaOZDh3yfup7+pq07HtLuoafv8lKk+OksxwftJz8SvQkYHoazSM43d757xPS6uIpzfdDRAUUD7IJ5cMCt4sGu7Tf2VWq2pMG5IaKI0Z4AJVgcN0jhw7Ve9ojUU9CKanYSHe27kB+/AKHg7Ymy8SQ6jYdSpudKjW5pbkh1tBSMhClAKV5AVkr7N02hXV2NbQUREq/pMtX9Wn8IPX0HP0r6vFsle9SGZjbrMpYO9v5KuPXPWqza7pcdG6gjKjle4CN9tJ+B9vPEEf6wajYTg/dYHy0zw6UjQkae5Z1eJ99maydtmA7c/etgjWm16CtXhxm/ElOjBcX/WPK7nskdhwrO9R38R1LKiHZrvHB6eZ/kKk9WakWph64rwSrCWUdBn6o/maqGkm7VLuCp+oXJDkZtW94Tbe8X1dicjCR+vKpGF0DoInVlVd7zvzJPQfvyUarqe9yCJnhjGw5epUjo/Qdw1XLauEoFq3JcClPLHF3B+qgde2eQreyxxJxUbYtXafvS24sGY2h7G6iM4nwlYHRIPA+gqy+7+VcTj+KVVXOBUMyBuzbWsF1OGQw00f8Tr33KixH8qRjceVeDWkOYi1Jm299UeXDcDiVjlg8CFDqnlkVCaZ2lwLmREu6U264BW6Ss/wlnyP2fQ/nWUGAVlVh//ACNKOI0EhwG7SOo5i2twrLjWVp93PapW16uj6MiTHZKFueLjwmkc1rHn0GDzoSyFJBBBBGQR1qr64tch+EzIYbW4I5VvoQMnBxxx8ql9ip2MxynErsouR8QRb3nRa5sk7OG/YqSsvtIQH9SsWe8WswUSHA0mU29vpbUThO+CBgHhxHKtyFcBwdJ3TX+t0w7Ww44p51AdcAO5HQMAqUegAHzPCu+207jaUjJAGONfo2RoB0XMV0UcT7Roop4pYrWoKeaeaVGfyoiB+tHOlTz+dEVa1mxqVdu8fS8yK1cWMqEeWyFtSB90nIKT2IOO9YFI9pjWGnZrsK+aPhuSI53XUsPOMqSfNKgr/lXUXOqdrnZrZNexd2ez4U1Aw1MZADqPLP2h5GplLJADlnbcdRuPyqrEaescOJRSWcOR2P4Kxhj2xLaR/SdKTmz18OUhX7gV6x7YGnik/wDdy7g9itr/AOVZvrzYretKFx6TCTcbaDwmR0Z3R+Mc0/t51l8vT0ZQ3mXFtj/MKum4TBK3PCcw9VyUnaasp38KqaWO8wFuuovavt9zZQ3F0tKyhW8DIlIAPDyBrPbv7RGppwUmDEgW9J+0lJeWPmrh+lZwqwvLWUsutLT3JIqXgaOA3VzH97/w2+H5mqiTsPhtbVd5npg9/VxJGnkTb5LObtbJHHbj2HQCx+l1Gy59+1tO3502TOdSf6x9ZKGx5DkPkK1XZfs9TcbmhncK4jOHJT5GCodEfPt2ya+dIaNl6jmot1qjpbaRxccxhDKfvKPU+XM101p3S8TTNragQ0HcRxWtX1nFdVH/AFwqN2rxaDs7QGioAOO4WFhYMB52HPp8dlqwGgqO0FSKioBEDTc33cRy8/PlyVO2gWOVKgR34TCnjGyFNNjjukDiB1xjlWA3iKH5hUtlQeHw7u4c59K7F938qjbxdrXYmg/cZTLGfq73FavQDia+G4U+ahZwwy6+n1dFHI/i5rLlhuwOoYSop3HyMlC04P8A0NSEOSpmOWHAQEgp41Z9RXuLerzNnsBSI7ispK+BIAAye2cZrObxffeX1pindbHAODmrz8qvYeJUmzh/SoHDxEDUBeNaWbO0tAwtw8gOZ9e1eLTapb2p7SqJvGYZbXh7vMHfH8s19RLVOu8xESDGelSnjhLTSSpR/wBd63vQOy+Ns/jK1LqJxs3FpB3GkHeTHyMcD9pZ5cOAzw71Y1MrIIXZvE4gi3VSqeJz3A7Ac1dtTW62OWx9VzKUR28lLn2kHpu+fl1rEZMWLNTgpO+kncURgpqa1Tqp/UElT7x8GG1nw2c8EDue586otxv+AUwxk/8AEUOHyFcxg+GSU7MrD+AssQqm1Ml2DQc+qV6abdhCNIdSkIcCkkngcZH86ikPNBpLbYOBwzjnUc865IWVvLKld1GtD0fsk1DqVlMpTSYEJXFLsoEKWO6UcyPM4FdQWNgj8blojic/Rous6nl6O8hwEt5+JC0niCOo7EV1tpCQ9d9LWadIO8/JituLV95RTxPz5/OqBK2Hwozkdd61FGZhN8VDdDal9wCpWB68a0VjV+kLey1FavdtaaZSG0IS78KUgYAB9BXM4/CzEoo2MbctvrZXOHZqcuMhtfzUi/AbkMOMuJCmnElKh3BrAdZ6PMK4uRzweQMtukcHEdM/t5V0Vb58C7NlcCZGlIHMsOpXj8jXh1JpePqKCWV4Q+jJZexkoP8AMHqK3dkKp+B1DmSD+J/teR5H8+Su4qpvPUFcx2jU1+0u54MaY80gHiy58bZ9AeH5VfLTtplx3WlzbWy6UKCt9hwoJx5HIqMv1get0tcG5RsOo4g44KHdJ7VXH9PqAKo68j7q+f519Pq+zuE4iRUSQtcTqHDQ/EWU10IcNNQVvEL2h7AnO/ZZ7BVxV4fhqBP5ipH/ALQemiOEK6f+Uj/5Vy5cpKLMlBfGSskBKeJ4VHK1AtST4LQTnkVHNW5jYFXuw+nB1v8AFdWPe0PZE58G1XFzzUUJ/mahHvaRM2a1b7Np1cu4vq3Go4e31LV2wkY/XhWIaN2e6p2kSEiE0tFvCsOTXwUMI9PvnyGflXV+zvZVY9nUU+5t+83J1O69PeA8RfkkfZT5D5k1g7I3YKFUNpYdGi59VZNOKvTttQ9fkRGZ7nxGPEyUMj7u8T8R7ngO3epfOaBRwrSqsm5unSxin1oovEjSFHSmBREKAKSDyIrh32h71Z1a8ft9ghx4wgJ8OY6wMB588SMDh8IwOHUntXWG1LXLOz7RdyvClJ96Snworav7R9XBA9BzPkDX8/YEV++3JapDi3CtZdfdJ4qJOSSe5JNXOEQvc8ub6LlO09VEyMRPAPM+Q/te/T7EmQXJBSQzjCSeG8c9KnhcS2sBxCsA8QDg46488VLxLPMlQZb0GG67FgthTymk5DKCcAnsKr8hGfjHH0rsmt4TMjXajdfLJZOPLxHtsDt7vqu2NJ2e026xQ02VpKID7aXkKHFTm8kHeUepqbEesx9n3UH0xon6PcVl+0uljn/Zq+JH/uHyrUZ0uPbYj0uW6lmOyneW4rkBXw3FMNMdXKJjcgnU8/NfesKqo5aKKSIANIGg2HUfFfHgDtwrmLaHKkN326uTt4yW3VJCTyCQfhA7DGK1Q7edNt3hqC+xNYjOr8MTFhO4CepTnIHn0q56i0JYNVqQ5dLeh91IwHUqKF47byTxHrVWaBsgDoyttR/2G2YdlxgHrje3m4MVl15x04THjoKlKPoOJ/atW0d7PNyn7krUj/uDB4+6skKfV/eV9VH6n0rWb/Ft+zDTRVpy1xYj8hwNBwI3iCQTvKJ4q5cicVm+zDale5e0hVgvVwVJhzELbb8UD4HgN5OCAMAgEY9KkNY1r+C3fdRmRxseGP1K2bT2jrPpWL7taYLUZsjClAZW5/eUeJqN1/pKVqezJYguoRKYc8RCHDhDhxjBPTnwNXbc8qjdQynLdYrlLaB8ViO4tOO4ScVjJQsILnBWD8pYWnZceX+BcF3FiyNNLkXdbqgY7HxlRTkYTjnyJ+VXTT/s/ahuKUOXR+NbGTglBPiuj/CngD6mqLqB2da7zbrzBeW3MjEFLyebawcg/PJ5860pO3HUNxs4ZLcOFKSn+JKZScqHcBWQn9flUaB0bYQ5VUXCAu9XSFoXQmy9lE25OtOzBxS/NIW5nuhscB64+daHZ7hDv1si3KA6XYcpHiNOKSU7w5cjx6VyXp/f2i7QbRZ57zr0OTI3n1rUSp5KAVqBPPB3cfOuy2WEMNIabQltptIShCBhKQOQA6CpDaXjDM8KwppSQbCwXJ+sYb671MTcg6qeHFb5cJyOPDHljl5VV37QVAlDnH7qh/Ouwr9pO06la3LjDQ4sDCXU/C4j0UOP8qyPU+xefASuRZXjOZHEsOYS8PQ8lfoajPop4RdmoUGWme03GqwMLnWiUl5lx6K+k5S60opPyUK1bRW3uTBcahaoQZUb6vvzaf4rfmpI4LHmMH1qtSIZR4saUypKk/CtpxOCk+YPKqPf7eLe6lTBKml5580ntWEMjJ3ZJG6rCKd8Z8Jsu0bnbbNqixpeeU1It62/HbkNq5JxneSr0/61zyrcbK1gkNAkgr57vc/KpHZvqSWzsiusNbiiFXAxY5PJKFIStYHlz/zVnOtr6W8W1heFqwXiO3RP8zXb4HAYIHOvodguywuQmAyu2Oyh9Yf011mVGyuOhJCiBwTxqy7CE6ema8i2/UUFqW1LSURfGUfDQ+OIBTyVvDI49cd6/TTFrk/QrMqZDcbjzAoNLcQQh5I4EjuKpN4tb+mbuhbC1JSlYejPDmkg5HHuDj9KtntJGZbaiIyMzNO6/oqww1HaQ0y2htpAwlCE7qUjsAOVffWqls11o1r3R1uvCCkSFp8OS2n+zeTwWPz4jyIq2VEXLuaWkgp4FB5UGjmKLxYT7P8AtFnTDK0LqWWqRfLU2HYcx0/FPh5wFHutB+FXyPet3xXBsfUEx21WfXFmb3NQ2BwvFg5G9u/C/HV1wpOeHpWsaV9qS4lmLc9Wadjx9MzAlaLpan1PiMDy8ZtQ3sA8CpPLHKo0E4c0B++ykzwFrrs1G66apcq88CfFukJibCfbkRJCA4080oKQ4kjIUCOYNZlt62kDQGj3G4bmL5dMx4gT9ZHD43P8IPDzIqZHG6RwY3cqBUTMgjMrzoFzx7ROv1641qmyW1fi2yzrUwjcPB5/k4v0GN0eh71GaI0VNu82PZrY14kp07zrh+qgdVKPRI/1xNefZts6ueo7iliHHK5i+Ljq/qR0HqpXf9TyrszQmhLboW1+6xE+JJcwZEpQ+N1X8kjoK6p9RHhUIY3WQjQdPMr5zFRT9oaoyP0hB1PXyHp1X66R0Zb9H2BFsiICwRvPuqAy8sjiT+2Og4Vgm2TZF9Bl6/WJk/RajmTFQP8A6Y/eT+D9vTl1Bjge1fg40h5taHEJWhYKVJUMgg8wRXNwYhPTVHHBvffzXa1+CUtZSCly5Q32SOX7z6rlH2dr0bbrl61rUA1coykgZ5rR8Sf03q13bROWzardCSohMh1Ti8dQgDH6q/Ss31XoZWzDaXp2+W9Ck2N+e3ukf2BUcKbJ7YUSPLh0rRNt8ZXulokAfAhxxon1AI/9JqD2yDJITVQ7OaPqAVWdnxNT0ktHN7Ubvkdb+h1XLOthi6pQBhBaBx6k5rsDZDqlOr9B2qWpYVLjo91kjs4gAZPqN0/OuRNcoxPiufeaIz6H/rWmezFqB+HqqfYySqLcI5fAH2XG8cfmlRHyFcvhTrxsaeav6Z+UjzXQWv7Gu+aWnMMpKpDYD7QHMqTxx8xkVxzqVuTbLtEvcFamn21oWHE80OJOUq/QflXeOK5+2ubOFQHJN4hMeJapGTIaSM+Co8zj7pP5Gt2I0j43iqjF7aH0WdQwkh4WnbOtdQdoGnWLjHUhEtICJcYHiy7jiMdjzB6j0NWt2Oh9pbTiQptxJSpJ5EHgRXDdouN70DdxdbJKW0B8J+0lafurT1H+uBroLSHtF2O6tts39hdql4wXUguMKPfI+JPzB9akU9TDM0XK2x1AcLFVfX2yu5WFx6VbWXJtpVlXwjecZHZSeZHmPnWMXhlTkZTaFbiUnJSDjPka7mtWoLRfG0uW25RJaTxBZeSo/kDkV+c7SdiuT3jzLLb5D2c77sZKifU441pODtzZ4XW+i1OpwTdpWUezto63wtIs6gUwHLrNcdSH3E8W2wrdCUdgcZJHPNXjaTfrnprTnvtrS145dCCt1G8lAIOOHmcD51cmWWozSGWW0NtIG6lCAAlI7ADlX5XG3R7tBfhymg5HfSULSeoqfJSOMRYw2Nt/NSLEMyt0Wd7KNqMXX1uEeWtljUUYESYqRu74H20A8x3HQ/KtI3Aa5b2gbMp2kLt7/EdcSlasxpjZKTkdFEfVV5jnX5WrbjrGzseBIfjTijhmWzlYx3UkjPzqujrWtJjnbZwWptTl8L910PqfQ9n1Y1icxuSQMIktfC4n59R5HNZPcfZwcnL3E6hSlgqzlUXKgP8ANjNeO2e0vLbdSLpYmFs/aVFeKVD5KyD+YrctK6otusrKxdrS8XIr2U/EN1SFA4KVDoRUlkFLUuztGvzXv8UpuuftosS27PbdCscALXGtbHirUsjeffdPEqx1OB6D0qv7HNjzuu5f+0WoW1fQXiFTbZyDNXnj/wDzHU9eQ61apejndre1S6IfKxpy1yf6W4DjxVgYSyk990ZJ6A9yK6Liw2YUdmNHZQzHZSENtoGEoSBgADoBV888ONsTOSuZ6jgxNgj5D6qJ1HpKBqGx/RbjaWW20j3dTaQPAIGBujt0x2rlvW+kH47kiz3FvwpLJ323MfCeyknqk/65V2J51W9Y6Mhawt/gv/wpLeSxISPibPbzB6itsUmXR2y10NbwDkk1afkuXvZ81q5ovWTlguSvCg3ZYaIUeDUgcEK9FfVz5prsXnXGG0PZ3cbdKKH2SzcWv6p1Jwh9I5bqu/bqOtdFbGdf/wC3Wk2zLXi9W0iNOQrgoqA4Lx+IDPqDSVttQs8RpwCJmagrRcVWdf63t2zvSdw1BciSzER8DST8bzh4IbT5qUQPzPSqHr7b9b9OXaRp/Tltd1JqKPwkMsOhuPDPZ105AV+EAnvisLu+0S87aNQxWrxbo9vt2l3VqXHjPl5p+YeCVbxAyEJzw7nzqLJK1gJJ2UCKF0jgBzUPPdb0dqBN9SpK9N3soEso4oYeP1Hv7qhwNfjbEf7FahcskxIOnbw4py3LVxQ04r67CumDzHQ1+3u7WhXXLHd0ePoy5Etxn3viENSubDh+4T9VXSvwcgt2lv8A2O1GVyNPzjuWu6LPFlXNLS1dFp+yrryqrABFv3/YVqTY3H+v6K0fZfrRWyHUEfT1xfUNE3qRuQnHDkWqUo/1ZPRpZ5fdPzq8XPYxetoOtn9RarmNxYaD4USDHV4i2WUngM/VClcVE8eJ8q5zhazsj9uuelNWXJiV4AMf6SRlbUpHRW8Ad1xPXzHrXRHs5bV29SQX9H3O7R7herKge7zW1hQuETkhz++kYSoc+R6mragq5Yb29oc/wqTFcPgqwA/Vp5X+vktk0/pu2aXgIg2qKiPHTxIHEqPdR5k+ZqVNHKmONbHOLiXONyVjHG2NoYwWA5BBpYFPjSrxZqJ1Fp+Hqe0yLbORvMPAHI5oUDlKh5ggGozX+n16h0rLiNJ35TYDzIxzWnp8xkfOrUKOda5oxNEYXbG/zWBjaSXW1Oi4R1lGL8RtSUkLYWQQeBweY/MVuHsv6WYi6cuGoHY/9MmvqjtOqHHwUYyB5FefXHlWo3vZnpXUM0zLjZ2XpCjvKUFKQFnuoJIB+dWaFCj26KzFisNsRmUhDbTaQlKAOgAqpw3DH0hs83A2WuKHIdV+2BXypCXEKQtIKVDBBGQR2NfZFAq5sFvWN632IMz1OTNPLRHdOSqG4cNqP4T9n0PD0rBL9pCZY5SmblAegvA8N9OEq9DyPyrt8Gvxlwo09lTMphp9lXNDqApJ+RqnqcGikOaI5T8vgtD4AdRouDPclMr30KwociOBqWiamv8AbwBGvVyaA5BEpYH5Zrp+8bFNJ3ZSltxHYLivtRHCkf5TkfpVKuHs3gqJgagIzyTIj5/VJH7VWPwysjPh19CtPBkCydG0bVyB/wDcdzx5vk/vSc2iaqdThzUdz3TzAkEftV5lezvqRvPgz7Y95Fa0fuk1GObANYhWAi3qHlK/5prWaat2Id81jkk81Sl6kmynkrm3CXISno88pf6E1FXSc1JeLqEEZAyT9o960lv2fNYun4jbG/NUkn9k1OW72ZLg6sG43+MynqmMypZ/NRA/SsW4ZO9+YtN/NBC4m9lzzNedWrA4IPAY5muyNg+kp+kdBtNXJCmpc19Ussq5tJUAEgjocJBI869Wj9i2ltHym5rcdydcG+KZExQXuHulIG6k+eM+daLXQUVEYfE/dSYosupUXYbBE05b0woaMI31urWfrOOLJUpaj1JJ/YdKk6Zo51Zea3kkm5SxTHOjrRReLyXC1w7tGVGnRmpDCuaHUgj18q502pT7boW+HTegEKh6zvUXdlzUuqUi3Q8/1igTjxDghGeI4ntWw7VNosLZlpGVeZKA/LUQxCib2DKkK+ogeXUnoATXIMfW1j0xEu91vN9iXfVlxWZU/wB0X4inHTyaSRkBCfqjjgAE1pmlcxtm7lSae7vCXWbzXqvBY0RZo1k0+z4l9uBKIyCcrccP15DiuuOJJPWo+TAXZrXb9C2d4rvE9JcmTBzZbUf4ryvNX1U1+cCf9Ex0Xta2L5rLUY3IbEVYW2ygcmwR9VtH2j1Ir3Eu6ObMGKU3fXl9PiOLPIfjV91pHQdcVW5SP3n+ArDNfy/H5K1CdbI1yiPRJbDb8V9JQ404MpUD0NY3r223zR+krrZ2G3LppZ9rdjvL+N+3EKBCVZ+sjmArmmt1RuPtIdaWlbTiQpK0nIUDyIPUUlMBSSFJCkkYIIyCOxFa2PLCtsjA8Kuaabtj1gtyrWhn6PcjoLSUJG7jHIjvnOfPNeG4aDt71xZu1rU5Y79GJUxcrbhpxB/EBwWDyII4iol6xXDZrIfn2GO9P00+suy7Uji5EJ5uMdx3R/oXay3e36htzVwtkpuTEd5LQeR6gjmCOoPGvTmaczTovBle3I8aq8bMts7k64saR1t4MHVJGI0pI3I11SPtNnklzuj8u1bSK5cv2m7dqa3qg3OMHmCQpJzurbUOS0KHFKh3FevTm0zWOzRCId+jytWaZb4IuEYA3GKjs4jk8B94ce9WENU1+jtCq6elLDdmoXS5o6VS9JbWdF64bBsuoIT7/AKiuOeE+g9i2vCgflV0FS1DRwNLhTJB60dKIlyp5oIooiMij0o6UCiJcKf7UhT5URB50eRozxo60RA50E0cqD3oiVMUYxR+1ER6U6+afTjREGlT4GvBdr3bLDGVKulwiwYyRkuynktJHzURRFIVTdom0qybNrQmddHVOSnz4cOAwN6RMc6IbT18zyHWs51L7RLd0W5btnFtXfpv1VXN4Kat0c9ys4LhHZPPvVHtWl3xdndQX+4O3rU8gYXOfGEsp/4bKOTaPTjWiWobGOpW+GndKfJRN4s122oXSPfdflLgZ3jCsTKsRoSFdFEcXFnA3jy4Y5cKnolkt0BrwotviMNYxuNMJSPyAqY8PAqgXDUM/WM1+x6Rc3I7avDnXzGWo/dDP33PMcBVW5z5TclWrWshbYBUaFJctW0bVULRtnjyJklLLQdKAmPDXgl5alDknJHwjmR5Vpul9HMadRIkuvrnXmad+ZPeHxunsPuoHRIqX01pW36UtTVutzRS2n4luL4uPK6rWrqTUv4WK9kfm0C8jjy6n/SgLzYZGxG/NWuWtbmgbm9u2uc4c/Rrqjn3V1X3CfqKPpVqLfHlW4X+wW3VFnmWi7w2plumNlp5h0ZStJ/Y9QRxB41zPcYNx2JXJiz3992bouQ4GrXfXOKopP1Y8k9Mckr5Ec/KZUU9/G1Qqept4HK0+H2qh3vQUmFcHb7pGQ3bbwv4n4yx/RJ3k4gfVV+MVo4QFJCgcgjIIOQRS8LNQ23GynOs7dUbS+tY98lOWqdFctWoo4y9bZB+Ij7zauTiPMVa9zPIVH6p0Ta9XRG2p7a0SGDvR5jCtx+Mr7yFjiPTkaqI1HqDZ8tMfV7S7lYgd1vUERslTY6e8NjiP744VlkDtWrASFujvirFetE6f1Gd+6WaHKd6Orbw4P8AGMK/WoyPs7Ztqs2fUOp7QByTDuzu4PRKiRVyt0yHdobU2BKZlRHRlDzKwpCvQivUGvKvA97dAV6WRu3CqrUbX1vObftOvXDkmfEjyR88pBr3x9b7XbSc/SGlr62PsSIjkRxX+JCikH5VNeDR4JrYKiUc1qNPEeS+4HtFP2oAa00XdbQ0OCp8BQnRR5kowtI+RrWtL6ysGtbcLhp+7w7lEPArjOBW4eyhzSfIgGsiDRwccOlVK57PYirj9NWGVI09qJHFNxtp3Cs9nG/quJ7gipDKvk8LRJSc2FdS9aDzrEdC7apsW6xdL7Q2GLfeJB3IV1Y4QrkewJ/qnPwngenQVt2c1MBBFwoRBBsUUdaKOVerxHCjnRRwoiMUYFFZ9tK2tWvZ6mPBQw7ddTTxiDZ4hy89+JR+w2Oqj8s0vZFfJMpiGw4/IebZYaTvLccUEpQO5J4AVkV69o/S7Eh2HpqJctVz0ZBTaGd5hJ/E+rCB8s1nU3TN82hvouG0O4e9o3t9mwQ1FECN2CgOLyh3Vwq1xbezCjojRWW2I6BhLTSAhCfQDhUSSqA0aLqZHSE6uNl45O1jaleCo2/TmnbGyfqm4SlynR6pbATmo9dz2pzgRK2gRYgV9m22dsY+bhJqxBjFPwajGpkKkCliHJUyRpnUNxBFz2i6ulIPNDMpMZJ+TaRXki7KtLtSRKk29dxlpOQ/c31ylZ7/ABkj9Kv3h+VHh54Aca1ule7cra2KNuzVHtx0NNpbbQlDaOCUISEpSPIDgK8N8vNu05bXbhdJTcWI1zWs8z0SBzJPQDjUHfNobDU9dl03EVftQDgpiOr+BG/E87ySPLn6V92LZ469cWr7q2Wi8XxHFlsJxEheTTZ5n8R40EdtXL0yX0aq+mDfdphDk5Mmx6SVxTEB3Jk9Pdw/2aD90cTWhW21xbTBYgwYzUaIwndbaaTupSPSpgs+VfPhYrxxJ05L1oA1O68e53FVjU99mRpUKw2CKJ+q7rlMKJ9lA+084fstpHEk88V6NS6odgzothscNV11ZcOEW3Nn6o6uun7DY5knn0rV9lOytrQUeVcbnJF01bdAFXC5EYB7NND7LSeg68z0A3wU+c5nbKPUVOQZW7rSMV47taYN8tsm23KKzLgSkFt5h5IUhxJ6EGvZTNWSrFzRftDah2MqXIsrMvUOgU5UuEMuTrSnmS31daH3eYH51N2K92zU9rZuVomNTITvJxs8j2I5pPkeNb3kGsh1psMjT7o/qPRlwOmdTOfE6plG9Dm+T7PI5+8nB68ajy04fqN1JiqCzQ7Ly+FSUwFJKVAFJGCDxBHY1Tla6n6Qlt23aLaFWCQpW41dGsu22Se6XR/Vn8K6vcdbUtht+O628w4ModbUFJUO4I4GoTo3NNiFNbK140Wa3HZeIMx256NuK9PXJZ3nGW078KSezjPIeqcGvxZ2jyNOvIh66tK7K4VbqLmxl6A8f744tnyV+daqWK+HYTchpbLzaHGnBhaFpCkqHYg8DWW/tLy1tWmyjYjzE6O3JivNPx3BlDrSwtCh5EcDX7eEKirDs9sWlblLnWaGqEqWnddjtOqEfOc7wazupV5irH4JrAt6LMO01Xg8KjwulSAjntT8DFeZEzBVy/abt+pbVItl1jIkwnxhSFcweiknoodCKNmGu7no6+xNA6ulrlsSQU2K9PHjJA/3Z0/8VI5H7Q88VY/AqA1ho6JrKxSLXLKm9/C2JDfBcd5PFDiT0KTx/MVuheWHyWmaMSDTdbx14UVmWxXXs3VlkmWm/gI1bp50QrkgcnTj4H0/hcTx9c1p1WN7qtRRRUJrDVNv0Tpm56gurvhwLeyp5wjmrHJI7qJwB5kURU/a1tPVoeLDtlnjIuOr7yS3bYGeAx9Z5zs2jmT15d8ZvpPRX0CuVc7lMVddT3I+JPujw+N1X3EfdbHIJHajQljuVylTtcalR/3mv4C/BPKBF5tR09sDBV3J41eDHPaoM8hcco2U+niDRmO68HhU/CFe/wAAnpTDGKjZVJzLweFmn4RPIZNe7wTUXqDTUfU1petkp+Yww8Ula4b5ZcIBzu7w44PIjqK9DOqFyqWpNo1ksEsW5tTtzvi+DdstqPGfJ/FjggeaiKhTpfVuusK1NM+gbKr/APEWt3L7o7PP9PNKK0HTui7JpGJ7rZLZHhNn65bT8bh7qWfiUfU1NBms9B7K16u9oqvWPTVs01ARAtMFiHER/ZtJxk9yeaj5nJqTDde7ws8McTVR1LtBsmmZSLcXHrjfXuDNptqPHlOHoNxP1fVWKxyFxWReGBWAo3Rx4VRHNS3bW92e09s+jtzpbStyZe3RmDbv8X9q52SnPnU5a9lmr9pOH9cPnT2nFHI0/bnsyJCe0h8ch3Qj8xW52HT9r0xao1qs8CPBt8dO63HjoCUJ+XfzPE1JipgNXqLLVE6MVW2bbK7Rs4iSFsuOz75PIXPu8rjIlL8z9lI6JHAefOr36UfvR1qYoaByoPKjhQKIjpQKDR0oi882BFucV2LNjMyYrw3XGXkBaFjsUngax+6ez5Dtj7s3QF8m6TlLO8qI0PeLe4fxR1nCf8JHpW0CgivCAd0BI1C52kXPaJo47up9Fm8Q0c7nphfjcO6o68LHyzX72Xaxou/PGMxfY8aaDgxLgDFeSexQ5jj6V0FjPrUHqHRendWslm+2O3XJGMf0uOlwj0JGR8q1OgadlubO4bqoNth5AW3haDxCkcQfmKfhCop/2atChwuWpF4sSj/+puj7Kf8AKVFP6V5ZOw2+21re03tN1Kw+jilu6+HOZUeygUg49DWs056rYKgdFYPC8qfg1W9Cakulzm3vTmpIjEbVFgW2mV7qSWJLTgy2+3niEqAOQeRFXb3fI41rMdtFtDwdVG+D5UvAqUEegx+PKvMiZllmoHzoLaZpXWLX8OBc3E2G744JKHDmO4f7rgxnsa6IzwrFNr+nzfNmWqIqR/HRCXJZI5pda/iII88orTtFXr/aXR1gvGQTcILElR81oBP6k1Ki9mxUWX2rqdFYTtcdOuNo+mNDD47TbUfT92R0c3VbsdpXkV5UR5Ct2PI451gmz5Kr7rnafqRz4i/efotlX/gxW0pwP8SiaykJDdFjGLuCuYZINHg+VSfgdMUeB5VDyKZnUb4HCjwKkjHPaobVl9haO03c79cSoQreyXnAgZUroEpHckgD1pkKZ16C0BSDBVyBPoKp1p0NtJ1xFZud41WNIxJKQ43abRFQ5IbQeIDj7mfjxzAGBUkfZ4iTiPpjXWtrk3jBaVc/BQfUNpH71sFOVqNQF+981HY9Msl683aBb2x1lPpQfkCcn8qpzW1IajcLGh9MXrU7pOBJZYMaEk9y+5gY9Aa03T2wrZ7pl9MiHpeC7MT/AL1NBlPZ777hUc1oKWkNIShCQlCeASkYA9BWxsDRusDO47LCImyvX2ssL1fqVqwWxf1rVpzPiqT91cpXH/KK0/RWzfS+z6IpjT1njw1Of1sjBW+8e63FZUr5mrUONHKtwaBstJcTujFPpSHGivV4jnQKBig8KIjFHKnRREUiM06ROKIlin0o8qB2oiORo50yKXWiIPKgcqMd6+Hnm47LjrqghptJUpR5ADiT+VEWMabT9Lbcdpc5vBYgxbdbN4ci4ELdV8xvgVpQjDtWeez5FcuekLpqp9O6/qy7y7qM8/CK9xof5ED861r3bHnWBbcrYHWCiPdvKl7t5VM+7Cl7sO1eZUzKr3+KlVhuyVAbphvg/wDlqqH9n1xbuxTQqlc/otkcfIY/lVg108m2aI1LNVwTHtslwn0aVUdsXhKt+yTREdQ3VItEYkerYP8AOsmiyxcbq9Ecqw7YOyXtLX95Y/iO6kuilevjkfyrcqx7YU14cLXUFXByHqy5JI7Ba0rH6Ko4XXjTYrQPdRnlT918qlvd8dqfu9Y5VszqH92Has32+29x7ZBqlbIyuIw3MxjOQ06hwj8kmtf92qPvthav1juVrfA8GfGdjL9FoKf50DV4Xr32ya3crfEmskKaktIeQRyKVJBH716+NZf7Pd4eumyexR5ZUbhZw5aZQVzS5HWW+PySk/OtQrYtaKWONOjrREhmnSx2p0RFLrTooiWaM8KMcKPKiL//2Q==';
+(function(){ try{ document.getElementById('favicon').href = LOGO_SMB; const b=document.getElementById('brandLogo'); if(b) b.src = LOGO_SMB; }catch(e){} })();
 
 /* ======================= PENGATURAN (default + akses) ======================= */
 const DEFAULT_SETTINGS = {
@@ -923,7 +934,7 @@ function scheduleSave(){
 
 /* ======================= KOP SURAT (untuk cetakan) ======================= */
 function kopSuratHtml(){
-  const logo = db.meta && db.meta.kopLogo, kp = S().kop;
+    const logo = db.meta && db.meta.kopLogo, kp = S().kop;
   return `<div class="kop">
       <div class="kop-logo">${logo? `<img src="${logo}" alt="Logo SMB">` : '<div class="kop-logo-ph"></div>'}</div>
       <div class="kop-text">
@@ -1136,10 +1147,7 @@ function beritaPublik(){
   return (db.berita||[]).filter(b=>b.tampil!==false)
     .sort((a,b)=> (b.sematkan?1:0)-(a.sematkan?1:0) || (b.tanggal||'').localeCompare(a.tanggal||''));
 }
-function pubLogoHtml(){
-  const logo = db.meta && db.meta.kopLogo;
-  return logo? `<img src="${logo}" alt="">` : lotusSvg('pub-logo-lotus');
-}
+function pubLogoHtml(){ return `<img src="${LOGO_SMB}" alt="Logo SMB">`; }
 function publicNav(){
   const w = S().web;
   const kanan = publicPreview
@@ -1364,7 +1372,7 @@ function setKop(){
     <h3 class="set-h">Logo</h3>
     <div class="kop-setting">
       <div class="kop-thumb">${logo? `<img src="${logo}" alt="Logo">` : '<span style="font-size:11px;color:#999">Logo</span>'}</div>
-      <div class="info"><strong>Logo kop surat</strong><div>Dipakai di kop setiap cetakan dan di halaman awal. Disarankan PNG berlatar transparan.</div></div>
+      <div class="info"><strong>Logo kop surat</strong><div>Dipakai di kop setiap cetakan. Logo website diatur terpisah.</div></div>
       <label class="btn-outline btn-small" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">${logo?'Ganti logo':'Unggah logo'}
         <input type="file" accept="image/*" style="display:none" onchange="uploadLogoKop(this)"></label>
       ${logo? `<button class="btn-danger btn-small" onclick="hapusLogoKop()">Hapus</button>`:''}
@@ -1377,7 +1385,7 @@ function setKop(){
     ${fieldRow('Baris 5 — nomor statistik', 'kpNsl', kp.nsl)}
     <div class="grid2">
       ${fieldRow('Kota (untuk tanggal tanda tangan)', 'kpKota', kp.kota)}
-      ${fieldRow('Nama Koordinator Umum SMB', 'kpKoord', st.ttd.koordinatorNama, {ph:'Kosongkan bila ingin diisi tangan', help:'Tercetak di kolom tanda tangan "Koordinator Umum SMB".'})}
+      ${fieldRow('Nama Koordinator Umum SMB', 'kpKoord', st.ttd.koordinatorNama, {ph:'Kosongkan bila ingin diisi tangan', help:'Tercetak di tanda tangan "Mengetahui" pada Rencana Pembelajaran (RPP). Laporan siswa hanya ditandatangani Guru SMB.'})}
     </div>
     <div class="set-preview"><div class="set-preview-lbl">Pratinjau kop</div>${kopSuratHtml()}</div>
     <div class="set-actions"><button class="btn-sun" onclick="simpanSetKop()">Simpan kop & tanda tangan</button></div>
@@ -1408,11 +1416,6 @@ function setPenilaian(){
       <div class="field"><label>Rata Praktek</label>${num('bM_praktek',m.praktek)}</div>
       <div class="field"><label>UTS</label>${num('bM_uts',m.uts)}</div>
     </div>
-    <h3 class="set-h">Kehadiran</h3>
-    <div class="grid2">
-      <div class="field"><label>Batas minimal kehadiran (%)</label><input id="pBatas" type="number" min="0" max="100" value="${p.batasHadir}"></div>
-      <div class="field"><label>Potongan nilai bila di bawah batas (poin)</label><input id="pPot" type="number" min="0" max="100" value="${p.potongan}"></div>
-    </div>
     <h3 class="set-h">Predikat</h3>
     <div class="grid3">
       ${p.predikat.map((r,i)=>`<div class="field"><label>Predikat ${i+1}</label><div class="pred-row"><input id="prL${i}" value="${esc(r.label)}"><span>mulai</span><input id="prM${i}" type="number" min="0" max="100" value="${r.min}" ${i===p.predikat.length-1?'readonly title="Predikat terakhir berlaku untuk nilai di bawahnya"':''}></div></div>`).join('')}
@@ -1437,12 +1440,12 @@ function simpanSetPenilaian(){
   simpanBagianSetting('penilaian', {
     bobotAkhir:{tugas:g('bA_tugas'), ulangan:g('bA_ulangan'), praktek:g('bA_praktek'), uts:g('bA_uts'), uas:g('bA_uas')},
     bobotMid:{tugas:g('bM_tugas'), ulangan:g('bM_ulangan'), praktek:g('bM_praktek'), uts:g('bM_uts')},
-    batasHadir:g('pBatas'), potongan:g('pPot'), predikat:pred,
+        predikat:pred,
   });
   saveToDrive(true); toast('Aturan penilaian disimpan');
 }
 function resetSetPenilaian(){
-  if(!confirm('Kembalikan bobot, batas kehadiran, dan predikat ke default?')) return;
+    if(!confirm('Kembalikan bobot dan predikat ke default?')) return;
   if(db.settings) delete db.settings.penilaian;
   renderContent(); saveToDrive(true); toast('Aturan penilaian dikembalikan ke default');
 }
@@ -1710,7 +1713,7 @@ function dokumenRencana(r){
     ${blok('F. Refleksi', r.refleksi)}
     <div class="ttd3" style="margin-top:30px">
       <div>Mengetahui,<br>Koordinator Umum SMB<div class="ttd-space"></div>${st.ttd.koordinatorNama? `<span class="ttd-nama">${esc(st.ttd.koordinatorNama)}</span>`:'(...................................)'}</div>
-      <div>${esc(st.kop.kota)}, ${tglPanjang()}<br>Guru Pengajar<div class="ttd-space"></div>${guru? `<span class="ttd-nama">${esc(guru)}</span>`:'(...................................)'}</div>
+            ${ttdGuruHtml(r.dibuatOleh || (k? k.guruId:''), 'Guru Pengajar')}
     </div>`;
 }
 
@@ -3158,6 +3161,19 @@ function renderProfil(){
     <button class="btn-sun" onclick="simpanProfil()">Simpan Perubahan</button>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:26px 0">
+    <h3>Tanda Tangan Digital</h3>
+    <p class="subtitle" style="margin-top:0">Dipakai otomatis di laporan siswa (rapor dan daftar hadir) untuk kelas yang Anda pegang sebagai Guru SMB.</p>
+    <div class="sig-box">
+      <div class="sig-prev">${u.ttdGambar? `<img src="${u.ttdGambar}" alt="Tanda tangan Anda">` : 'Belum ada tanda tangan'}</div>
+      <div style="flex:1;min-width:220px">
+        <label class="btn-sun btn-small" style="display:inline-flex;cursor:pointer;margin:0 6px 6px 0">${u.ttdGambar? 'Ganti tanda tangan':'Unggah tanda tangan'}
+          <input type="file" accept="image/*" style="display:none" onchange="uploadTtdGuru(this)"></label>
+        ${u.ttdGambar? `<button class="btn-danger btn-small" onclick="hapusTtdGuru()">Hapus</button>`:''}
+        <div class="help">Tanda tangani kertas putih polos dengan pulpen hitam/biru, lalu foto atau scan. Latar putih dihapus otomatis.</div>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:26px 0">
     <h3>Ubah Password</h3>
     <div id="pfPassError" style="display:none;background:#fdeceb;border:1px solid #f6cccd;color:var(--coral);font-size:13px;font-weight:600;border-radius:8px;padding:9px 12px;margin-bottom:14px"></div>
     <div class="grid3">
@@ -3167,6 +3183,47 @@ function renderProfil(){
     </div>
     <button class="btn-sun" onclick="submitUbahPassword()">Ubah Password</button>
   `;
+}
+// Tanda tangan digital: perkecil, hapus latar terang, potong ke area tinta, simpan sebagai PNG transparan
+function uploadTtdGuru(input){
+  const f = input.files[0]; input.value='';
+  if(!f) return;
+  if(!/^image\//.test(f.type)) return toast('File harus berupa gambar (JPG/PNG)');
+  const r = new FileReader();
+  r.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const sc = Math.min(1, 900/img.width, 400/img.height);
+      const w = Math.max(1, Math.round(img.width*sc)), h = Math.max(1, Math.round(img.height*sc));
+      const c = document.createElement('canvas'); c.width=w; c.height=h;
+      const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+      const d = ctx.getImageData(0,0,w,h), px = d.data;
+      let x0=w, y0=h, x1=-1, y1=-1;
+      for(let i=0;i<px.length;i+=4){
+        const lum = 0.299*px[i]+0.587*px[i+1]+0.114*px[i+2];
+        const a = px[i+3]===0? 0 : Math.max(0, Math.min(255, (205-lum)*3.2)); // makin gelap makin pekat
+        px[i+3] = Math.min(px[i+3], a);
+        if(px[i+3]>40){ const p=i/4, x=p%w, y=(p-x)/w; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+      }
+      if(x1<0) return toast('Tanda tangan tidak terbaca — gunakan tinta gelap di kertas putih');
+      ctx.putImageData(d,0,0);
+      const pad=6; x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
+      const cw=x1-x0+1, ch=y1-y0+1, sc2=Math.min(1, 420/cw, 160/ch);
+      const o = document.createElement('canvas'); o.width=Math.round(cw*sc2); o.height=Math.round(ch*sc2);
+      o.getContext('2d').drawImage(c, x0,y0,cw,ch, 0,0,o.width,o.height);
+      const u = db.users.find(x=>x.id===currentUser.id);
+      u.ttdGambar = o.toDataURL('image/png'); currentUser = u;
+      renderContent(); saveToDrive(true); toast('Tanda tangan disimpan');
+    };
+    img.onerror = ()=> toast('Gambar tidak bisa dibaca');
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function hapusTtdGuru(){
+  if(!confirm('Hapus tanda tangan digital Anda?')) return;
+  const u = db.users.find(x=>x.id===currentUser.id); delete u.ttdGambar; currentUser = u;
+  renderContent(); saveToDrive(true); toast('Tanda tangan dihapus');
 }
 function pfShowError(msg){ const b=document.getElementById('pfError'); b.textContent='⚠ '+msg; b.style.display='block'; }
 async function simpanProfil(){
@@ -4170,7 +4227,7 @@ function hitungRekap(sh, sid, kelasId, semester){
   const t = rataKomponen(sh, sid,'tugas'), u = rataKomponen(sh, sid,'ulangan'), p = rataKomponen(sh, sid,'praktek');
   const uts = angka(n.uts), uas = angka(n.uas);
   const abs = absensiSemester(sid, kelasId, semester);
-  const pot = abs.pct!=null && abs.pct < st.batasHadir ? st.potongan : 0;
+    const pot = 0; // potongan kehadiran tidak dipakai lagi
   const bm = st.bobotMid, ba = st.bobotAkhir;
   const mid = [t,u,p,uts].every(v=>v!=null) ? Math.max(0, (t*bm.tugas + u*bm.ulangan + p*bm.praktek + uts*bm.uts)/100 - pot) : null;
   const akhir = [t,u,p,uts,uas].every(v=>v!=null) ? Math.max(0, (t*ba.tugas + u*ba.ulangan + p*ba.praktek + uts*ba.uts + uas*ba.uas)/100 - pot) : null;
@@ -4209,9 +4266,8 @@ function renderPenilaian(){
   else body = sheetKomponen(sh, k, siswa, KOMPONEN.find(c=>c.key===penilaianSheetTab));
 
   const rumus = `<div class="pn-formula">
-    <div><strong>Nilai MID</strong> = Tugas ${st.bobotMid.tugas}% + UH ${st.bobotMid.ulangan}% + Praktek ${st.bobotMid.praktek}% + UTS ${st.bobotMid.uts}% − potongan</div>
-    <div><strong>Nilai Akhir</strong> = Tugas ${ba.tugas}% + UH ${ba.ulangan}% + Praktek ${ba.praktek}% + UTS ${ba.uts}% + UAS ${ba.uas}% − potongan</div>
-    <div><strong>Potongan</strong> ${st.potongan} poin bila kehadiran di bawah ${st.batasHadir}%${isAdmin()? ` — <a href="javascript:void 0" onclick="activeTab='pengaturan'; setTab='penilaian'; renderTabs(); renderContent()">ubah aturan</a>`:''}</div>
+    <div><strong>Nilai MID</strong> = Tugas ${st.bobotMid.tugas}% + UH ${st.bobotMid.ulangan}% + Praktek ${st.bobotMid.praktek}% + UTS ${st.bobotMid.uts}%</div>
+    <div><strong>Nilai Akhir</strong> = Tugas ${ba.tugas}% + UH ${ba.ulangan}% + Praktek ${ba.praktek}% + UTS ${ba.uts}% + UAS ${ba.uas}%${isAdmin()? ` — <a href="javascript:void 0" onclick="activeTab='pengaturan'; setTab='penilaian'; renderTabs(); renderContent()">ubah bobot</a>`:''}</div>
   </div>`;
   return head + controls + body + rumus;
 }
@@ -4252,17 +4308,16 @@ function sheetAbsensi(k, siswa){
   const st = S().penilaian;
   const rows = siswa.map((s,ri)=>{
     const a = absensiSemester(s.id, k.id, penilaianSemester);
-    const low = a.pct!=null && a.pct < st.batasHadir;
+    
     return `<tr><td class="c">${ri+1}</td><td class="c mono">${esc(s.noInduk||'')}</td><td class="nm">${esc(s.namaLengkap)}</td>
       <td class="c">${a.Hadir}</td><td class="c">${a.Sakit}</td><td class="c">${a.Izin}</td><td class="c">${a.Alpa}</td><td class="c">${a.total}</td>
-      <td class="c ${low?'warn-txt':''}"><strong>${a.pct==null?'—':fmtN(r1(a.pct))+'%'}</strong></td>
-      <td class="c">${low? '−'+st.potongan : '0'}</td></tr>`;
+      <td class="c"><strong>${a.pct==null?'—':fmtN(r1(a.pct))+'%'}</strong></td></tr>`;
   }).join('');
   const sem = SEMESTER.find(s=>s.key===penilaianSemester).label;
   return `${sheetTitle('Rekapitulasi Presensi / Kehadiran Siswa')}
     <p class="sheet-note">Diambil otomatis dari menu <a href="javascript:void 0" onclick="switchTab('absensi')">Absensi</a> untuk ${sem.toLowerCase()} (${penilaianSemester==='GANJIL'?'Juli–Desember':'Januari–Juni'}). % kehadiran = Hadir ÷ pertemuan tercatat.</p>
     <div class="sheet-wrap"><table class="sheet narrow"><thead><tr><th class="c" style="width:44px">No</th><th class="c" style="width:80px">NIS</th><th>Nama siswa</th>
-      <th class="c">Hadir (H)</th><th class="c">Sakit (S)</th><th class="c">Izin (I)</th><th class="c">Alpa (A)</th><th class="c">Tercatat</th><th class="c">% Kehadiran</th><th class="c">Potongan</th></tr></thead>
+      <th class="c">Hadir (H)</th><th class="c">Sakit (S)</th><th class="c">Izin (I)</th><th class="c">Alpa (A)</th><th class="c">Tercatat</th><th class="c">% Kehadiran</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
 function sheetRekap(sh, k, siswa){
@@ -4273,8 +4328,7 @@ function sheetRekap(sh, k, siswa){
     <td class="c">${ri+1}</td><td class="c mono">${esc(s.noInduk||'')}</td><td class="nm">${esc(s.namaLengkap)}</td>
     <td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td>
     <td class="c">${fmtN(r.uts)}</td><td class="c">${fmtN(r.uas)}</td>
-    <td class="c ${r.potongan?'warn-txt':''}">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td>
-    <td class="c">${r.potongan? '−'+r.potongan : '0'}</td>
+    <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td>
     <td class="c res" title="${r.mid==null?'Lengkapi Tugas, UH, Praktek, dan UTS':''}">${fmtN(r.mid)}</td>
     <td class="c res strong" title="${r.akhir==null?'Lengkapi semua komponen termasuk UAS':''}">${fmtN(r.akhir)}</td>
     <td class="c">${r.predAkhir? `<span class="pred ${predCls(r.predAkhir)}">${esc(r.predAkhir)}</span>` : (r.predMid? `<span class="pred ${predCls(r.predMid)} soft" title="Berdasarkan Nilai MID">${esc(r.predMid)}</span>`:'—')}</td>
@@ -4284,10 +4338,10 @@ function sheetRekap(sh, k, siswa){
       <thead><tr><th class="c" style="width:44px">No</th><th class="c" style="width:80px">NIS</th><th>Nama siswa</th>
         <th class="c">Rata Tugas<small>${ba.tugas}%</small></th><th class="c">Rata UH<small>${ba.ulangan}%</small></th><th class="c">Rata Praktek<small>${ba.praktek}%</small></th>
         <th class="c">Nilai UTS<small>${ba.uts}% / ${bm.uts}%</small></th><th class="c">Nilai UAS<small>${ba.uas}%</small></th>
-        <th class="c">% Hadir</th><th class="c">Potongan absen</th><th class="c res-h">Nilai MID</th><th class="c res-h">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
+        <th class="c">% Hadir</th><th class="c res-h">Nilai MID</th><th class="c res-h">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
       <tbody>${rows}</tbody>
       <tfoot><tr><td colspan="3">Rata-rata kelas</td><td class="c">${fmtN(avg('tugas'))}</td><td class="c">${fmtN(avg('ulangan'))}</td><td class="c">${fmtN(avg('praktek'))}</td>
-        <td class="c">${fmtN(avg('uts'))}</td><td class="c">${fmtN(avg('uas'))}</td><td></td><td></td><td class="c">${fmtN(avg('mid'))}</td><td class="c">${fmtN(avg('akhir'))}</td><td></td></tr></tfoot>
+        <td class="c">${fmtN(avg('uts'))}</td><td class="c">${fmtN(avg('uas'))}</td><td></td><td class="c">${fmtN(avg('mid'))}</td><td class="c">${fmtN(avg('akhir'))}</td><td></td></tr></tfoot>
     </table></div>
     <p class="sheet-note">Nilai MID tampil setelah Tugas, UH, Praktek, dan UTS terisi. Nilai Akhir tampil setelah UAS juga terisi. Predikat bertanda pudar masih berdasarkan Nilai MID.</p>`;
 }
@@ -4363,9 +4417,9 @@ function exportPenilaianExcel(){
   };
   const nv = v=> v==null? '' : v;
   addSheet('Rekap Nilai Utama', 'REKAPITULASI NILAI UTAMA PAB-BP (KURIKULUM MERDEKA)',
-    ['No','NIS','Nama Siswa',`Rata Tugas (${ba.tugas}%)`,`Rata UH (${ba.ulangan}%)`,`Rata Praktek (${ba.praktek}%)`,`Nilai UTS (${ba.uts}%/${bm.uts}%)`,`Nilai UAS (${ba.uas}%)`,'% Hadir','Potongan Absen','Nilai MID','Nilai Akhir','Predikat'],
+    ['No','NIS','Nama Siswa',`Rata Tugas (${ba.tugas}%)`,`Rata UH (${ba.ulangan}%)`,`Rata Praktek (${ba.praktek}%)`,`Nilai UTS (${ba.uts}%/${bm.uts}%)`,`Nilai UAS (${ba.uas}%)`,'% Hadir','Nilai MID','Nilai Akhir','Predikat'],
     siswa.map((s,i)=>{ const r=hitungRekap(sh, s.id, k.id, penilaianSemester);
-      return [i+1, s.noInduk, s.namaLengkap, nv(r.tugas), nv(r.ulangan), nv(r.praktek), nv(r.uts), nv(r.uas), r.abs.pct==null?'':r1(r.abs.pct)/100, r.potongan, nv(r.mid), nv(r.akhir), r.predAkhir||r.predMid]; }));
+      return [i+1, s.noInduk, s.namaLengkap, nv(r.tugas), nv(r.ulangan), nv(r.praktek), nv(r.uts), nv(r.uas), r.abs.pct==null?'':r1(r.abs.pct)/100, nv(r.mid), nv(r.akhir), r.predAkhir||r.predMid]; }));
   KOMPONEN.forEach(c=>{
     const kol = sh? sh.kolom[c.key] : kolomDefault();
     addSheet(c.sheet, c.judul.toUpperCase(), ['No','NIS','Nama Siswa', ...kol.map(x=>x.judul), 'Rata-rata'],
@@ -4469,14 +4523,13 @@ function renderLaporan(){
     </div>`;
   return toggle + (laporanMode==='kelas'? renderLaporanAbsensiKelas() : renderLaporanSiswa());
 }
-function ttdBlok(kiri, tengah){
-  const st = S();
-  const garis = '(...................................)';
-  return `<div class="ttd3">
-    <div>${kiri? '&nbsp;<br>'+kiri.judul : ''}${kiri? `<div class="ttd-space"></div>${kiri.nama? `<span class="ttd-nama">${esc(kiri.nama)}</span>` : garis}`:''}</div>
-    <div>${esc(st.kop.kota)}, ${tglPanjang()}<br>Wali Kelas<div class="ttd-space"></div>${tengah? `<span class="ttd-nama">${esc(tengah)}</span>` : garis}</div>
-    <div class="ttd-full">Mengetahui,<br>Koordinator Umum SMB<div class="ttd-space"></div>${st.ttd.koordinatorNama? `<span class="ttd-nama">${esc(st.ttd.koordinatorNama)}</span>` : garis}</div>
-  </div>`;
+// Blok tanda tangan Guru SMB (dengan tanda tangan digital dari Profil bila ada)
+function ttdGuruHtml(guruId, judul){
+  const st = S(), u = db.users.find(x=>x.id===guruId);
+  const nama = u? u.nama : '';
+  return `<div>${esc(st.kop.kota)}, ${tglPanjang()}<br>${judul||'Guru SMB'}
+    <div class="ttd-sig">${u && u.ttdGambar? `<img src="${u.ttdGambar}" alt="Tanda tangan ${esc(nama)}">` : ''}</div>
+    ${nama? `<span class="ttd-nama">${esc(nama)}</span>` : '(...................................)'}</div>`;
 }
 function renderLaporanSiswa(){
   const ta = activeTahunAjaran();
@@ -4533,18 +4586,17 @@ function dokumenRapor(sid, semester, jenis, editable){
     <div class="doc-title">LAPORAN HASIL BELAJAR ${jenis==='mid'?'TENGAH':'AKHIR'} SEMESTER</div>
     <div class="doc-sub">${semLabel} Tahun Ajaran ${esc(taS?taS.nama:'—')}</div>
     <div class="rp-ident">
-      <table>${ident('Nama siswa', `<strong>${esc(s.namaLengkap)}</strong>`)}${ident('No Induk', esc(s.noInduk))}${ident('Tempat, tgl lahir', esc((s.tempatLahir||'')+(s.tglLahir? ', '+tglPanjang(new Date(s.tglLahir+'T00:00:00')):'')))}${ident('Asal sekolah', esc(s.asalSekolah))}</table>
-      <table>${ident('Kelas', esc(t? t.nama+(k.namaRombel?' - '+k.namaRombel:''):''))}${ident('Daerah belajar', esc(d?d.nama:''))}${ident('Wali kelas', esc(waliNama))}${ident('Vihara', esc(s.namaVihara))}</table>
+      <table>${ident('Nama siswa', `<strong>${esc(s.namaLengkap)}</strong>`)}${ident('NISMB', esc(s.noInduk))}${ident('Asal sekolah', esc(s.asalSekolah))}</table>
+      <table>${ident('Kelas', esc(t? t.nama+(k.namaRombel?' - '+k.namaRombel:''):''))}${ident('Daerah belajar', esc(d?d.nama:''))}${ident('Guru SMB', esc(waliNama))}</table>
     </div>
 
     <div class="rp-h">A. Nilai</div>
     <table class="rp-t">
-      <thead><tr><th style="width:34px">No</th><th>Komponen penilaian</th><th style="width:60px">Bobot</th><th style="width:60px">Nilai</th><th style="width:78px">Nilai × bobot</th></tr></thead>
+      <thead><tr><th style="width:34px">No</th><th>Komponen penilaian</th><th style="width:90px">Nilai</th></tr></thead>
       <tbody>
-        ${komp.map((c,i)=>`<tr><td class="c">${i+1}</td><td>${c.nama}${c.rinci? `<div class="rp-rinci">${c.rinci}</div>`:''}</td><td class="c">${c.bobot}%</td><td class="c">${fmtN(c.nilai)}</td><td class="c">${c.nilai==null?'—':fmtN(r1(c.nilai*c.bobot/100))}</td></tr>`).join('')}
-        <tr><td></td><td>Potongan kehadiran <span class="rp-rinci-inline">(kehadiran di bawah ${st.batasHadir}%)</span></td><td></td><td></td><td class="c">${r.potongan? '−'+r.potongan : '0'}</td></tr>
+        ${komp.map((c,i)=>`<tr><td class="c">${i+1}</td><td>${c.nama}${c.rinci? `<div class="rp-rinci">${c.rinci}</div>`:''}</td><td class="c">${fmtN(c.nilai)}</td></tr>`).join('')}
       </tbody>
-      <tfoot><tr><td colspan="4">Nilai ${jenis==='mid'?'tengah semester':'akhir semester'}</td><td class="c rp-big">${fmtN(nilaiAkhir)}</td></tr></tfoot>
+      <tfoot><tr><td colspan="2">Nilai ${jenis==='mid'?'tengah semester':'akhir semester'}</td><td class="c rp-big">${fmtN(nilaiAkhir)}</td></tr></tfoot>
     </table>
     <div class="rp-pred"><span>Predikat</span><strong>${pred? esc(pred) : '—'}</strong>${nilaiAkhir==null? `<em>Nilai belum lengkap — ${jenis==='mid'?'Tugas, UH, Praktek, dan UTS':'semua komponen termasuk UAS'} perlu diisi di menu Penilaian.</em>`:''}</div>
 
@@ -4552,11 +4604,11 @@ function dokumenRapor(sid, semester, jenis, editable){
       <div><div class="rp-h">B. Kehadiran ${semLabel.toLowerCase()}</div>
         <table class="rp-t"><thead><tr><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Kehadiran</th></tr></thead>
         <tbody><tr><td class="c">${r.abs.Hadir}</td><td class="c">${r.abs.Izin}</td><td class="c">${r.abs.Sakit}</td><td class="c">${r.abs.Alpa}</td><td class="c"><strong>${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</strong></td></tr></tbody></table></div>
-      <div><div class="rp-h">C. Catatan wali kelas</div>
+            <div><div class="rp-h">C. Catatan Guru SMB</div>
         ${editable? `<textarea class="rp-note no-print" placeholder="Tulis catatan perkembangan siswa…" onchange="simpanCatatanRapor('${s.id}','${semester}','${catKey}', this.value)">${esc(catatan)}</textarea>`:''}
         <div class="rp-note-print ${editable?'print-only':''}">${catatan? esc(catatan).replace(/\n/g,'<br>') : '&nbsp;'}</div></div>
     </div>
-    ${ttdBlok({judul:'Orang Tua / Wali'}, waliNama)}
+        <div class="ttd3"><div></div>${ttdGuruHtml(k? k.guruId:'', 'Guru SMB')}</div>
   `;
 }
 function simpanCatatanRapor(sid, semester, key, text){
@@ -4654,7 +4706,7 @@ function renderLaporanAbsensiKelas(){
       <div class="doc-title">DAFTAR HADIR SISWA</div>
       <div class="doc-sub">Tahun Ajaran ${esc(ta?ta.nama:'—')}</div>
       <table class="doc-info"><tbody>
-        <tr><td>Kelas</td><td>: ${esc(kelasTeks)}</td><td style="padding-left:40px">Wali Kelas</td><td>: ${esc(waliNama||'—')}</td></tr>
+        <tr><td>Kelas</td><td>: ${esc(kelasTeks)}</td><td style="padding-left:40px">Guru SMB</td><td>: ${esc(waliNama||'—')}</td></tr>
         <tr><td>Daerah</td><td>: ${esc(daerah?daerah.nama:'—')}</td><td style="padding-left:40px">Jumlah Siswa</td><td>: ${siswaList.length} siswa</td></tr>
       </tbody></table>
     </div>
@@ -4687,10 +4739,7 @@ function renderLaporanAbsensiKelas(){
     <!-- Kaki dokumen (cetak) -->
     <div class="print-only">
       <div class="doc-legend">Keterangan: H = Hadir · I = Izin · S = Sakit · A = Alpa · % = persentase kehadiran dari ${nTer} pertemuan terlaksana</div>
-      <div class="ttd">
-        <div>Mengetahui,<br>Koordinator Umum SMB<div class="ttd-space"></div>${S().ttd.koordinatorNama? `<span class="ttd-nama">${esc(S().ttd.koordinatorNama)}</span>` : '(...................................)'}</div>
-        <div>${esc(S().kop.kota)}, ${tglPanjang()}<br>Wali Kelas<div class="ttd-space"></div>${waliNama? `<span class="ttd-nama">${esc(waliNama)}</span>` : '(...................................)'}</div>
-      </div>
+      <div class="ttd"><div></div>${ttdGuruHtml(k? k.guruId:'', 'Guru SMB')}</div>
     </div>
   `;
 }
