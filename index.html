@@ -524,6 +524,10 @@
   .pred{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;}
   .pred.pr-a{background:#e3f3ea;color:#2f7a52;} .pred.pr-b{background:#e6eefb;color:#2C4770;} .pred.pr-c{background:#fdf1e0;color:#a8730c;}
   .pred.soft{opacity:.55;}
+  .sheet th.grp-h{border-bottom:1px solid var(--line);color:var(--heading);}
+  .sheet.rekap thead tr:nth-child(2) th{top:33px;}
+  .bobot-t td.inp input{width:62px;}
+  .lap-controls .seg.mini{flex-wrap:wrap;}
   .pn-formula{margin-top:18px;padding:12px 16px;border-left:3px solid var(--sun);background:var(--hover-bg);border-radius:0 10px 10px 0;font-size:12.5px;color:var(--ink-soft);line-height:1.8;}
   .pn-formula strong{color:var(--ink);} .pn-formula a{color:var(--heading);font-weight:600;}
 
@@ -897,8 +901,13 @@ const DEFAULT_SETTINGS = {
   },
   ttd: { koordinatorNama: "" },
   penilaian: {
-    bobotAkhir: { tugas:20, ulangan:20, praktek:30, uts:15, uas:15 },
-    bobotMid:   { tugas:25, ulangan:25, praktek:25, uts:25 },
+    // Bobot tiap rapor (%). Komponen: rata tugas, rata UH, rata praktek, dan 4 ujian.
+    bobotRapor: {
+      mid1: { tugas:25, ulangan:25, praktek:25, mid1:25, uts:0,  mid2:0,  uas:0  },
+      uts:  { tugas:25, ulangan:25, praktek:25, mid1:0,  uts:25, mid2:0,  uas:0  },
+      mid2: { tugas:25, ulangan:25, praktek:25, mid1:0,  uts:0,  mid2:25, uas:0  },
+      uas:  { tugas:20, ulangan:20, praktek:30, mid1:0,  uts:15, mid2:0,  uas:15 },
+    },
     batasHadir: 90, potongan: 5,
     predikat: [ {min:85, label:'Sangat Baik'}, {min:75, label:'Baik'}, {min:0, label:'Cukup'} ],
   },
@@ -913,8 +922,13 @@ function S(){
     kop:    Object.assign({}, DEFAULT_SETTINGS.kop, s.kop||{}),
     ttd:    Object.assign({}, DEFAULT_SETTINGS.ttd, s.ttd||{}),
     penilaian: {
-      bobotAkhir: Object.assign({}, DEFAULT_SETTINGS.penilaian.bobotAkhir, p.bobotAkhir||{}),
-      bobotMid:   Object.assign({}, DEFAULT_SETTINGS.penilaian.bobotMid, p.bobotMid||{}),
+      bobotRapor: (()=>{
+        const d = DEFAULT_SETTINGS.penilaian.bobotRapor, out = {};
+        const lama = {uts: p.bobotMid? Object.assign({mid1:0,mid2:0,uas:0}, p.bobotMid) : null,     // pengaturan versi lama
+                      uas: p.bobotAkhir? Object.assign({mid1:0,mid2:0}, p.bobotAkhir) : null};
+        Object.keys(d).forEach(k=>{ out[k] = Object.assign({}, d[k], lama[k]||{}, (p.bobotRapor||{})[k]||{}); });
+        return out;
+      })(),
       batasHadir: p.batasHadir!=null? p.batasHadir : DEFAULT_SETTINGS.penilaian.batasHadir,
       potongan:   p.potongan!=null? p.potongan : DEFAULT_SETTINGS.penilaian.potongan,
       predikat:   (p.predikat && p.predikat.length)? p.predikat : DEFAULT_SETTINGS.penilaian.predikat,
@@ -1413,25 +1427,15 @@ function simpanSetKop(){
   renderContent(); saveToDrive(true); toast('Kop surat disimpan');
 }
 function setPenilaian(){
-  const p = S().penilaian, a = p.bobotAkhir, m = p.bobotMid;
-  const num = (id,v)=>`<input id="${id}" type="number" min="0" max="100" value="${v}" style="width:100%" oninput="cekTotalBobot()">`;
+  const p = S().penilaian;
   return `<div class="set-card">
-    <p class="subtitle" style="margin-top:0">Mengikuti format Excel "Sistem Penilaian PAB-BP Terintegrasi". Perubahan berlaku untuk semua kelas.</p>
-    <h3 class="set-h">Bobot Nilai Akhir (%) <span id="totA" class="tot"></span></h3>
-    <div class="grid5">
-      <div class="field"><label>Rata Tugas</label>${num('bA_tugas',a.tugas)}</div>
-      <div class="field"><label>Rata Ulangan Harian</label>${num('bA_ulangan',a.ulangan)}</div>
-      <div class="field"><label>Rata Praktek</label>${num('bA_praktek',a.praktek)}</div>
-      <div class="field"><label>UTS</label>${num('bA_uts',a.uts)}</div>
-      <div class="field"><label>UAS</label>${num('bA_uas',a.uas)}</div>
-    </div>
-    <h3 class="set-h">Bobot Nilai MID / Tengah Semester (%) <span id="totM" class="tot"></span></h3>
-    <div class="grid5">
-      <div class="field"><label>Rata Tugas</label>${num('bM_tugas',m.tugas)}</div>
-      <div class="field"><label>Rata Ulangan Harian</label>${num('bM_ulangan',m.ulangan)}</div>
-      <div class="field"><label>Rata Praktek</label>${num('bM_praktek',m.praktek)}</div>
-      <div class="field"><label>UTS</label>${num('bM_uts',m.uts)}</div>
-    </div>
+    <p class="subtitle" style="margin-top:0">Setiap semester ada empat ujian dan empat rapor. Atur bobot (%) komponen untuk tiap rapor — isi 0 bila komponen tidak dipakai. Setiap baris harus berjumlah 100%. Berlaku untuk semua kelas.</p>
+    <div class="sheet-wrap" style="max-height:none"><table class="sheet bobot-t">
+      <thead><tr><th>Rapor</th>${KOMP_BOBOT.map(c=>`<th class="c">${c.label}</th>`).join('')}<th class="c">Total</th></tr></thead>
+      <tbody>${UJIAN.map(u=>{ const b=p.bobotRapor[u.key]; return `<tr><td class="nm">Nilai ${u.label}</td>
+        ${KOMP_BOBOT.map(c=>`<td class="inp"><input id="bR_${u.key}_${c.key}" type="number" min="0" max="100" value="${Number(b[c.key])||0}" oninput="cekTotalBobot()" aria-label="Bobot ${c.label} untuk ${u.label}"></td>`).join('')}
+        <td class="c"><span id="tot_${u.key}" class="tot"></span></td></tr>`; }).join('')}</tbody>
+    </table></div>
     <h3 class="set-h">Predikat</h3>
     <div class="grid3">
       ${p.predikat.map((r,i)=>`<div class="field"><label>Predikat ${i+1}</label><div class="pred-row"><input id="prL${i}" value="${esc(r.label)}"><span>mulai</span><input id="prM${i}" type="number" min="0" max="100" value="${r.min}" ${i===p.predikat.length-1?'readonly title="Predikat terakhir berlaku untuk nilai di bawahnya"':''}></div></div>`).join('')}
@@ -1440,24 +1444,27 @@ function setPenilaian(){
   </div>`;
 }
 function cekTotalBobot(){
-  const sum = (pre, keys)=> keys.reduce((t,k)=>t+(Number((document.getElementById(pre+k)||{}).value)||0),0);
-  const tA = sum('bA_',['tugas','ulangan','praktek','uts','uas']), tM = sum('bM_',['tugas','ulangan','praktek','uts']);
-  const a=document.getElementById('totA'), m=document.getElementById('totM');
-  if(a){ a.textContent='Total '+tA+'%'; a.className='tot '+(tA===100?'ok':'bad'); }
-  if(m){ m.textContent='Total '+tM+'%'; m.className='tot '+(tM===100?'ok':'bad'); }
-  return {tA, tM};
+  const tot = {};
+  UJIAN.forEach(u=>{
+    tot[u.key] = KOMP_BOBOT.reduce((a,c)=>a+(Number((document.getElementById(`bR_${u.key}_${c.key}`)||{}).value)||0),0);
+    const el = document.getElementById('tot_'+u.key);
+    if(el){ el.textContent = tot[u.key]+'%'; el.className = 'tot '+(tot[u.key]===100?'ok':'bad'); }
+  });
+  return tot;
 }
 function simpanSetPenilaian(){
-  const {tA, tM} = cekTotalBobot();
-  if(tA!==100 || tM!==100) return toast('Total bobot harus tepat 100%');
+  const tot = cekTotalBobot();
+  const salah = UJIAN.filter(u=>tot[u.key]!==100);
+  if(salah.length) return toast(`Total bobot Nilai ${salah.map(u=>u.label).join(', ')} harus tepat 100%`);
   const g = id=> Number(document.getElementById(id).value)||0;
   const pred = [0,1,2].map(i=>({label:val('prL'+i)||'—', min: i===2? 0 : g('prM'+i)}));
   if(!(pred[0].min>pred[1].min)) return toast('Batas predikat 1 harus lebih tinggi dari predikat 2');
-  simpanBagianSetting('penilaian', {
-    bobotAkhir:{tugas:g('bA_tugas'), ulangan:g('bA_ulangan'), praktek:g('bA_praktek'), uts:g('bA_uts'), uas:g('bA_uas')},
-    bobotMid:{tugas:g('bM_tugas'), ulangan:g('bM_ulangan'), praktek:g('bM_praktek'), uts:g('bM_uts')},
-        predikat:pred,
-  });
+  const bobotRapor = {};
+  UJIAN.forEach(u=>{ bobotRapor[u.key] = {}; KOMP_BOBOT.forEach(c=>{ bobotRapor[u.key][c.key] = g(`bR_${u.key}_${c.key}`); }); });
+  db.settings = db.settings || {};
+  const lama = db.settings.penilaian || {};
+  db.settings.penilaian = {bobotRapor, predikat:pred};   // bobot versi lama (MID/Akhir) tidak dipakai lagi
+  if(lama.batasHadir!=null) db.settings.penilaian.batasHadir = lama.batasHadir;
   saveToDrive(true); toast('Aturan penilaian disimpan');
 }
 function resetSetPenilaian(){
@@ -1543,12 +1550,14 @@ const JENIS_TUGAS = [
   {key:'latihan', label:'Latihan',        komp:'tugas'},
   {key:'ulangan', label:'Ulangan Harian', komp:'ulangan'},
   {key:'praktek', label:'Praktek',        komp:'praktek'},
+  {key:'mid1',    label:'Mid Semester',   komp:'mid1'},
   {key:'uts',     label:'UTS',            komp:'uts'},
+  {key:'mid2',    label:'Mid Semester 2', komp:'mid2'},
   {key:'uas',     label:'UAS',            komp:'uas'},
 ];
 const TIPE_SOAL = {pg:'Pilihan ganda', bs:'Benar / salah', isian:'Isian singkat', esai:'Esai / uraian'};
 const HURUF = ['A','B','C','D','E','F'];
-const KOMP_LABEL = {tugas:'Tugas Harian', ulangan:'Ulangan Harian', praktek:'Praktek', uts:'UTS', uas:'UAS'};
+const KOMP_LABEL = {tugas:'Tugas Harian', ulangan:'Ulangan Harian', praktek:'Praktek', mid1:'Mid Semester', uts:'UTS', mid2:'Mid Semester 2', uas:'UAS'};
 let pbKelasId = '', pbTab = 'tugas';
 let pbEditTugas = null, pbEditAsli = '';      // editor tugas (salinan kerja)
 let pbHasilTugasId = '';                       // halaman hasil tugas
@@ -2246,14 +2255,16 @@ function screenSiswaPortal(){
     body = `<div class="sd-summary">
         <div><strong>${todo.length}</strong><span>tugas perlu dikerjakan</span></div>
         <div><strong>${absAll.length? Math.round(h/absAll.length*100)+'%' : '—'}</strong><span>kehadiran (${h} dari ${absAll.length} pertemuan)</span></div>
-        ${sems.map(({sm,r})=>`<div><strong>${fmtN(r.akhir!=null? r.akhir : r.mid)}</strong><span>${r.akhir!=null?'nilai akhir':'nilai MID'} ${sm.label.toLowerCase()}</span></div>`).join('')}
+        ${sems.map(({sm,r})=>`<div><strong>${fmtN(r.terakhir? r.nilai[r.terakhir] : null)}</strong><span>${r.terakhir? 'nilai '+ujianLabel(r.terakhir) : 'nilai'} ${sm.label.toLowerCase()}</span></div>`).join('')}
       </div>
       ${todo.length? `<h3 class="ts-grp">Perlu dikerjakan</h3><div class="ts-list">${todo.slice(0,4).map(t=>kartuTugasSiswa(t,s)).join('')}</div>`:''}
       <h3 class="ts-grp">Nilai per semester</h3>
-      <div class="sheet-wrap"><table class="sheet rekap"><thead><tr><th>Semester</th><th class="c">Tugas</th><th class="c">UH</th><th class="c">Praktek</th><th class="c">UTS</th><th class="c">UAS</th><th class="c">% Hadir</th><th class="c">Nilai MID</th><th class="c">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
-      <tbody>${sems.map(({sm,r})=>`<tr><td class="nm">${sm.label}</td><td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td><td class="c">${fmtN(r.uts)}</td><td class="c">${fmtN(r.uas)}</td>
-        <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td><td class="c res">${fmtN(r.mid)}</td><td class="c res strong">${fmtN(r.akhir)}</td>
-        <td class="c">${(r.predAkhir||r.predMid)? `<span class="pred ${predCls(r.predAkhir||r.predMid)}">${esc(r.predAkhir||r.predMid)}</span>`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
+      <div class="sheet-wrap"><table class="sheet rekap"><thead><tr><th>Semester</th><th class="c">Tugas</th><th class="c">UH</th><th class="c">Praktek</th>
+        ${UJIAN.map(u=>`<th class="c">${u.label}</th>`).join('')}<th class="c">% Hadir</th>${UJIAN.map(u=>`<th class="c res-h">Rapor ${u.label}</th>`).join('')}<th class="c">Predikat</th></tr></thead>
+      <tbody>${sems.map(({sm,r})=>`<tr><td class="nm">${sm.label}</td><td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td>
+        ${UJIAN.map(u=>`<td class="c">${fmtN(r[u.key])}</td>`).join('')}
+        <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td>${UJIAN.map(u=>`<td class="c res">${fmtN(r.nilai[u.key])}</td>`).join('')}
+        <td class="c">${r.terakhir? `<span class="pred ${predCls(r.pred[r.terakhir])}">${esc(r.pred[r.terakhir])}</span>`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
   }
   return `<div class="portal-head"><span class="sd-av lg">${esc(inisial(s.namaLengkap))}</span>
       <div><h2 style="margin:0">Halo, ${esc(s.namaLengkap)}</h2>
@@ -4200,6 +4211,20 @@ const KOMPONEN = [
   {key:'praktek', label:'Praktek',        judul:'Nilai Praktek Keagamaan (Meditasi & Puja Bakti)', sheet:'Tugas Praktek'},
 ];
 const SEMESTER = [{key:'GANJIL', label:'Semester Ganjil'}, {key:'GENAP', label:'Semester Genap'}];
+// Empat ujian dalam satu semester — sekaligus empat jenis rapor
+const UJIAN = [
+  {key:'mid1', label:'Mid Semester',   nama:'Mid Semester',                judul:'MID SEMESTER'},
+  {key:'uts',  label:'UTS',            nama:'Ujian Tengah Semester (UTS)', judul:'UJIAN TENGAH SEMESTER'},
+  {key:'mid2', label:'Mid Semester 2', nama:'Mid Semester 2',              judul:'MID SEMESTER 2'},
+  {key:'uas',  label:'UAS',            nama:'Ujian Akhir Semester (UAS)',  judul:'UJIAN AKHIR SEMESTER'},
+];
+const KOMP_BOBOT = [
+  {key:'tugas', label:'Rata Tugas', nama:'Tugas Harian & Hafalan'},
+  {key:'ulangan', label:'Rata UH', nama:'Ulangan Harian'},
+  {key:'praktek', label:'Rata Praktek', nama:'Praktek Keagamaan (Meditasi & Puja Bakti)'},
+  ...UJIAN.map(u=>({key:u.key, label:u.label, nama:u.nama})),
+];
+function ujianLabel(k){ const u=UJIAN.find(x=>x.key===k); return u? u.label : k; }
 let penilaianFilterKelas = '';
 let penilaianSemester = semesterDariTanggal(new Date().toISOString().slice(0,10));
 let penilaianSheetTab = 'rekap';
@@ -4216,7 +4241,7 @@ function getSheet(kelasId, semester, buat){
   }
   return sh;
 }
-function nilaiSiswa(sh, sid){ sh.nilai[sid] = sh.nilai[sid] || {tugas:{}, ulangan:{}, praktek:{}, uts:'', uas:''}; return sh.nilai[sid]; }
+function nilaiSiswa(sh, sid){ sh.nilai[sid] = sh.nilai[sid] || {tugas:{}, ulangan:{}, praktek:{}, mid1:'', uts:'', mid2:'', uas:''}; return sh.nilai[sid]; }
 function angka(v){ if(v===''||v==null) return null; const n=Number(v); return isNaN(n)? null : n; }
 function r1(n){ return n==null? null : Math.round(n*10)/10; }
 function fmtN(n){ return n==null? '—' : (Number.isInteger(n)? String(n) : n.toFixed(1)); }
@@ -4241,15 +4266,21 @@ function predikatDari(n){
 function hitungRekap(sh, sid, kelasId, semester){
   const st = S().penilaian;
   const n = sh? (sh.nilai[sid]||{}) : {};
-  const t = rataKomponen(sh, sid,'tugas'), u = rataKomponen(sh, sid,'ulangan'), p = rataKomponen(sh, sid,'praktek');
-  const uts = angka(n.uts), uas = angka(n.uas);
+  const v = {tugas:rataKomponen(sh, sid,'tugas'), ulangan:rataKomponen(sh, sid,'ulangan'), praktek:rataKomponen(sh, sid,'praktek')};
+  UJIAN.forEach(u=>{ v[u.key] = angka(n[u.key]); });
   const abs = absensiSemester(sid, kelasId, semester);
-    const pot = 0; // potongan kehadiran tidak dipakai lagi
-  const bm = st.bobotMid, ba = st.bobotAkhir;
-  const mid = [t,u,p,uts].every(v=>v!=null) ? Math.max(0, (t*bm.tugas + u*bm.ulangan + p*bm.praktek + uts*bm.uts)/100 - pot) : null;
-  const akhir = [t,u,p,uts,uas].every(v=>v!=null) ? Math.max(0, (t*ba.tugas + u*ba.ulangan + p*ba.praktek + uts*ba.uts + uas*ba.uas)/100 - pot) : null;
-  return {tugas:r1(t), ulangan:r1(u), praktek:r1(p), uts, uas, abs, potongan:pot, mid:r1(mid), akhir:r1(akhir),
-    predMid:predikatDari(r1(mid)), predAkhir:predikatDari(r1(akhir))};
+  const nilai = {}, pred = {}, kurang = {};
+  UJIAN.forEach(u=>{
+    const b = st.bobotRapor[u.key];
+    const pakai = KOMP_BOBOT.filter(c=>Number(b[c.key])>0);
+    const total = pakai.reduce((a,c)=>a+Number(b[c.key]),0);
+    kurang[u.key] = pakai.filter(c=>v[c.key]==null).map(c=>c.label);
+    nilai[u.key] = (total && !kurang[u.key].length)? r1(pakai.reduce((a,c)=>a+v[c.key]*Number(b[c.key]),0)/total) : null;
+    pred[u.key] = predikatDari(nilai[u.key]);
+  });
+  const terakhir = [...UJIAN].reverse().map(u=>u.key).find(k=>nilai[k]!=null) || null;
+  return {tugas:r1(v.tugas), ulangan:r1(v.ulangan), praktek:r1(v.praktek), mid1:v.mid1, uts:v.uts, mid2:v.mid2, uas:v.uas,
+    abs, nilai, pred, kurang, terakhir, potongan:0};
 }
 function predCls(p){ const pr=[...S().penilaian.predikat].sort((a,b)=>b.min-a.min); const i=pr.findIndex(x=>x.label===p); return i===0?'pr-a':i===1?'pr-b':'pr-c'; }
 
@@ -4257,7 +4288,7 @@ function renderPenilaian(){
   const ta = activeTahunAjaran();
   const kelasList = (ta? kelasOfTahun(ta.id):[]).filter(k=>canAccessKelas(k.id));
   if((!penilaianFilterKelas || !kelasList.some(k=>k.id===penilaianFilterKelas)) && kelasList.length) penilaianFilterKelas = kelasList[0].id;
-  const head = `<div class="page-head"><div><h2>Penilaian</h2><p class="subtitle">Kurikulum Merdeka PAB-BP — tugas harian, ulangan harian, praktek, UTS, dan UAS, terhubung dengan absensi.</p></div>
+  const head = `<div class="page-head"><div><h2>Penilaian</h2><p class="subtitle">Kurikulum Merdeka PAB-BP — tugas harian, ulangan harian, praktek, serta ujian Mid Semester, UTS, Mid Semester 2, dan UAS, terhubung dengan absensi.</p></div>
     ${kelasList.length? `<button class="btn-outline" onclick="exportPenilaianExcel()">Export Excel</button>`:''}</div>`;
   if(!kelasList.length) return head + `<div class="empty"><div class="display">Belum ada kelas</div>Kelas yang bisa Anda akses akan muncul di sini.</div>`;
   const k = db.kelas.find(x=>x.id===penilaianFilterKelas);
@@ -4265,7 +4296,7 @@ function renderPenilaian(){
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
   const st = S().penilaian, ba = st.bobotAkhir;
 
-  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'UTS & UAS'}, {key:'absensi',label:'Data absensi'}];
+  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'Nilai ujian'}, {key:'absensi',label:'Data absensi'}];
   const controls = `<div class="pn-controls">
       <div class="field"><label>Kelas</label><select onchange="penilaianFilterKelas=this.value; renderContent()">
         ${kelasList.map(x=>`<option value="${x.id}" ${x.id===k.id?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}</select></div>
@@ -4283,8 +4314,7 @@ function renderPenilaian(){
   else body = sheetKomponen(sh, k, siswa, KOMPONEN.find(c=>c.key===penilaianSheetTab));
 
   const rumus = `<div class="pn-formula">
-    <div><strong>Nilai MID</strong> = Tugas ${st.bobotMid.tugas}% + UH ${st.bobotMid.ulangan}% + Praktek ${st.bobotMid.praktek}% + UTS ${st.bobotMid.uts}%</div>
-    <div><strong>Nilai Akhir</strong> = Tugas ${ba.tugas}% + UH ${ba.ulangan}% + Praktek ${ba.praktek}% + UTS ${ba.uts}% + UAS ${ba.uas}%${isAdmin()? ` — <a href="javascript:void 0" onclick="activeTab='pengaturan'; setTab='penilaian'; renderTabs(); renderContent()">ubah bobot</a>`:''}</div>
+    ${UJIAN.map((u,i)=>{ const b=st.bobotRapor[u.key]; return `<div><strong>Nilai ${u.label}</strong> = ${KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>`${c.label.replace('Rata ','')} ${b[c.key]}%`).join(' + ')}${i===UJIAN.length-1 && isAdmin()? ` — <a href="javascript:void 0" onclick="activeTab='pengaturan'; setTab='penilaian'; renderTabs(); renderContent()">ubah bobot</a>`:''}</div>`; }).join('')}
   </div>`;
   return head + controls + body + rumus;
 }
@@ -4315,11 +4345,13 @@ function sheetUjian(sh, k, siswa){
   const rows = siswa.map((s,ri)=>{
     const n = sh? (sh.nilai[s.id]||{}) : {};
     return `<tr><td class="c">${ri+1}</td><td class="c mono">${esc(s.noInduk||'')}</td><td class="nm">${esc(s.namaLengkap)}</td>
-      ${['uts','uas'].map((f,ci)=>`<td class="inp"><input type="number" min="0" max="100" step="any" inputmode="decimal" value="${n[f]!=null?esc(n[f]):''}" data-r="${ri}" data-c="${ci}" onkeydown="gridKey(event)" onchange="setNilaiUjian('${k.id}','${s.id}','${f}', this)"></td>`).join('')}</tr>`;
+      ${UJIAN.map((u,ci)=>`<td class="inp"><input type="number" min="0" max="100" step="any" inputmode="decimal" value="${n[u.key]!=null?esc(n[u.key]):''}" data-r="${ri}" data-c="${ci}" onkeydown="gridKey(event)" onchange="setNilaiUjian('${k.id}','${s.id}','${u.key}', this)" aria-label="Nilai ${u.label} ${esc(s.namaLengkap)}"></td>`).join('')}</tr>`;
   }).join('');
-  return `${sheetTitle('Nilai Ujian Tengah Semester (UTS) & Ujian Akhir Semester (UAS)')}
-    <div class="sheet-wrap"><table class="sheet narrow"><thead><tr><th class="c" style="width:44px">No</th><th class="c" style="width:80px">NIS</th><th>Nama siswa</th><th class="c">Nilai UTS</th><th class="c">Nilai UAS</th></tr></thead>
-    <tbody>${rows}</tbody></table></div>`;
+  return `${sheetTitle('Nilai Ujian — Mid Semester, UTS, Mid Semester 2, UAS')}
+    <div class="sheet-wrap"><table class="sheet narrow"><thead><tr><th class="c" style="width:44px">No</th><th class="c" style="width:80px">NIS</th><th>Nama siswa</th>
+      ${UJIAN.map(u=>`<th class="c">Nilai ${u.label}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <p class="sheet-note">Tekan Enter untuk pindah ke siswa berikutnya. Nilai bisa juga diisi otomatis dari Pembelajaran › Tugas & ujian › Masukkan ke Penilaian.</p>`;
 }
 function sheetAbsensi(k, siswa){
   const st = S().penilaian;
@@ -4338,29 +4370,33 @@ function sheetAbsensi(k, siswa){
     <tbody>${rows}</tbody></table></div>`;
 }
 function sheetRekap(sh, k, siswa){
-  const ba = S().penilaian.bobotAkhir, bm = S().penilaian.bobotMid;
   const data = siswa.map(s=>({s, r:hitungRekap(sh, s.id, k.id, penilaianSemester)}));
-  const avg = f=>{ const v=data.map(d=>d.r[f]).filter(x=>x!=null); return v.length? r1(v.reduce((a,b)=>a+b,0)/v.length) : null; };
-  const rows = data.map(({s,r},ri)=>`<tr>
+  const avg = f=>{ const v=data.map(d=>f(d.r)).filter(x=>x!=null); return v.length? r1(v.reduce((a,b)=>a+b,0)/v.length) : null; };
+  const rows = data.map(({s,r},ri)=>{
+    const pk = r.terakhir;
+    return `<tr>
     <td class="c">${ri+1}</td><td class="c mono">${esc(s.noInduk||'')}</td><td class="nm">${esc(s.namaLengkap)}</td>
     <td class="c">${fmtN(r.tugas)}</td><td class="c">${fmtN(r.ulangan)}</td><td class="c">${fmtN(r.praktek)}</td>
-    <td class="c">${fmtN(r.uts)}</td><td class="c">${fmtN(r.uas)}</td>
+    ${UJIAN.map(u=>`<td class="c">${fmtN(r[u.key])}</td>`).join('')}
     <td class="c">${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</td>
-    <td class="c res" title="${r.mid==null?'Lengkapi Tugas, UH, Praktek, dan UTS':''}">${fmtN(r.mid)}</td>
-    <td class="c res strong" title="${r.akhir==null?'Lengkapi semua komponen termasuk UAS':''}">${fmtN(r.akhir)}</td>
-    <td class="c">${r.predAkhir? `<span class="pred ${predCls(r.predAkhir)}">${esc(r.predAkhir)}</span>` : (r.predMid? `<span class="pred ${predCls(r.predMid)} soft" title="Berdasarkan Nilai MID">${esc(r.predMid)}</span>`:'—')}</td>
-  </tr>`).join('');
+    ${UJIAN.map((u,i)=>`<td class="c res ${i===UJIAN.length-1?'strong':''}" title="${r.nilai[u.key]==null && r.kurang[u.key].length? 'Belum lengkap: '+r.kurang[u.key].join(', '):''}">${fmtN(r.nilai[u.key])}</td>`).join('')}
+    <td class="c">${pk? `<span class="pred ${predCls(r.pred[pk])}" title="Berdasarkan Nilai ${ujianLabel(pk)}">${esc(r.pred[pk])}</span>` : '—'}</td>
+  </tr>`; }).join('');
   return `${sheetTitle('Rekapitulasi Nilai Utama PAB-BP (Kurikulum Merdeka)')}
     <div class="sheet-wrap"><table class="sheet rekap">
-      <thead><tr><th class="c" style="width:44px">No</th><th class="c" style="width:80px">NIS</th><th>Nama siswa</th>
-        <th class="c">Rata Tugas<small>${ba.tugas}%</small></th><th class="c">Rata UH<small>${ba.ulangan}%</small></th><th class="c">Rata Praktek<small>${ba.praktek}%</small></th>
-        <th class="c">Nilai UTS<small>${ba.uts}% / ${bm.uts}%</small></th><th class="c">Nilai UAS<small>${ba.uas}%</small></th>
-        <th class="c">% Hadir</th><th class="c res-h">Nilai MID</th><th class="c res-h">Nilai Akhir</th><th class="c">Predikat</th></tr></thead>
+      <thead>
+        <tr><th rowspan="2" class="c" style="width:44px">No</th><th rowspan="2" class="c" style="width:70px">NIS</th><th rowspan="2">Nama siswa</th>
+          <th colspan="3" class="c grp-h">Rata-rata</th><th colspan="4" class="c grp-h">Nilai ujian</th><th rowspan="2" class="c">% Hadir</th>
+          <th colspan="4" class="c grp-h res-h">Nilai rapor</th><th rowspan="2" class="c">Predikat</th></tr>
+        <tr><th class="c">Tugas</th><th class="c">UH</th><th class="c">Praktek</th>
+          ${UJIAN.map(u=>`<th class="c">${u.label}</th>`).join('')}
+          ${UJIAN.map(u=>`<th class="c res-h">${u.label}</th>`).join('')}</tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot><tr><td colspan="3">Rata-rata kelas</td><td class="c">${fmtN(avg('tugas'))}</td><td class="c">${fmtN(avg('ulangan'))}</td><td class="c">${fmtN(avg('praktek'))}</td>
-        <td class="c">${fmtN(avg('uts'))}</td><td class="c">${fmtN(avg('uas'))}</td><td></td><td class="c">${fmtN(avg('mid'))}</td><td class="c">${fmtN(avg('akhir'))}</td><td></td></tr></tfoot>
+      <tfoot><tr><td colspan="3">Rata-rata kelas</td><td class="c">${fmtN(avg(r=>r.tugas))}</td><td class="c">${fmtN(avg(r=>r.ulangan))}</td><td class="c">${fmtN(avg(r=>r.praktek))}</td>
+        ${UJIAN.map(u=>`<td class="c">${fmtN(avg(r=>r[u.key]))}</td>`).join('')}<td></td>
+        ${UJIAN.map(u=>`<td class="c">${fmtN(avg(r=>r.nilai[u.key]))}</td>`).join('')}<td></td></tr></tfoot>
     </table></div>
-    <p class="sheet-note">Nilai MID tampil setelah Tugas, UH, Praktek, dan UTS terisi. Nilai Akhir tampil setelah UAS juga terisi. Predikat bertanda pudar masih berdasarkan Nilai MID.</p>`;
+    <p class="sheet-note">Nilai rapor tampil setelah semua komponennya terisi (arahkan kursor ke tanda — untuk melihat yang kurang). Predikat mengikuti nilai rapor terakhir yang sudah lengkap.</p>`;
 }
 function bacaNilaiInput(el){
   const raw = el.value.trim();
@@ -4421,7 +4457,6 @@ function exportPenilaianExcel(){
   const k = db.kelas.find(x=>x.id===penilaianFilterKelas); if(!k) return;
   const sh = getSheet(k.id, penilaianSemester, false);
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
-  const st = S().penilaian, ba = st.bobotAkhir, bm = st.bobotMid;
   const sem = SEMESTER.find(s=>s.key===penilaianSemester).label;
   const info = `${kelasLabel(k)} — ${sem} ${ta?ta.nama:''}`;
   const wb = XLSX.utils.book_new();
@@ -4434,17 +4469,17 @@ function exportPenilaianExcel(){
   };
   const nv = v=> v==null? '' : v;
   addSheet('Rekap Nilai Utama', 'REKAPITULASI NILAI UTAMA PAB-BP (KURIKULUM MERDEKA)',
-    ['No','NIS','Nama Siswa',`Rata Tugas (${ba.tugas}%)`,`Rata UH (${ba.ulangan}%)`,`Rata Praktek (${ba.praktek}%)`,`Nilai UTS (${ba.uts}%/${bm.uts}%)`,`Nilai UAS (${ba.uas}%)`,'% Hadir','Nilai MID','Nilai Akhir','Predikat'],
+    ['No','NIS','Nama Siswa','Rata Tugas','Rata UH','Rata Praktek', ...UJIAN.map(u=>'Ujian '+u.label), '% Hadir', ...UJIAN.map(u=>'Nilai Rapor '+u.label), 'Predikat'],
     siswa.map((s,i)=>{ const r=hitungRekap(sh, s.id, k.id, penilaianSemester);
-      return [i+1, s.noInduk, s.namaLengkap, nv(r.tugas), nv(r.ulangan), nv(r.praktek), nv(r.uts), nv(r.uas), r.abs.pct==null?'':r1(r.abs.pct)/100, nv(r.mid), nv(r.akhir), r.predAkhir||r.predMid]; }));
+      return [i+1, s.noInduk, s.namaLengkap, nv(r.tugas), nv(r.ulangan), nv(r.praktek), ...UJIAN.map(u=>nv(r[u.key])), r.abs.pct==null?'':r1(r.abs.pct)/100, ...UJIAN.map(u=>nv(r.nilai[u.key])), r.terakhir? r.pred[r.terakhir] : '']; }));
   KOMPONEN.forEach(c=>{
     const kol = sh? sh.kolom[c.key] : kolomDefault();
     addSheet(c.sheet, c.judul.toUpperCase(), ['No','NIS','Nama Siswa', ...kol.map(x=>x.judul), 'Rata-rata'],
       siswa.map((s,i)=>{ const n = sh? ((sh.nilai[s.id]||{})[c.key]||{}) : {};
         return [i+1, s.noInduk, s.namaLengkap, ...kol.map(x=>nv(n[x.id])), nv(r1(rataKomponen(sh, s.id, c.key)))]; }));
   });
-  addSheet('UTS & UAS', 'NILAI UJIAN TENGAH & AKHIR SEMESTER', ['No','NIS','Nama Siswa','Nilai UTS','Nilai UAS'],
-    siswa.map((s,i)=>{ const n = sh? (sh.nilai[s.id]||{}) : {}; return [i+1, s.noInduk, s.namaLengkap, nv(angka(n.uts)), nv(angka(n.uas))]; }));
+  addSheet('Nilai Ujian', 'NILAI UJIAN: MID SEMESTER, UTS, MID SEMESTER 2, UAS', ['No','NIS','Nama Siswa', ...UJIAN.map(u=>'Nilai '+u.label)],
+    siswa.map((s,i)=>{ const n = sh? (sh.nilai[s.id]||{}) : {}; return [i+1, s.noInduk, s.namaLengkap, ...UJIAN.map(u=>nv(angka(n[u.key])))]; }));
   addSheet('Data Absensi', 'REKAPITULASI PRESENSI / KEHADIRAN SISWA', ['No','NIS','Nama Siswa','Sakit (S)','Izin (I)','Alpa (A)','Hadir (H)','% Kehadiran'],
     siswa.map((s,i)=>{ const a=absensiSemester(s.id, k.id, penilaianSemester); return [i+1, s.noInduk, s.namaLengkap, a.Sakit, a.Izin, a.Alpa, a.Hadir, a.pct==null?'':r1(a.pct)/100]; }));
   const safe = (kelasLabel(k)+'-'+penilaianSemester+'-'+(ta?ta.nama:'')).replace(/[^\w-]+/g,'-');
@@ -4528,7 +4563,7 @@ function prosesKenaikan(){
 /* ======================= LAPORAN ======================= */
 /* ======================= LAPORAN PER SISWA ======================= */
 let laporanSiswaId = '';
-let laporanJenis = 'mid'; // mid | akhir
+let laporanJenis = 'mid1'; // mid1 | uts | mid2 | uas
 let laporanSemester = semesterDariTanggal(new Date().toISOString().slice(0,10));
 let laporanMode = 'siswa'; // siswa | kelas
 let laporanKelasId = '';
@@ -4566,10 +4601,10 @@ function renderLaporanSiswa(){
       <div class="field"><label>Semester</label><select onchange="laporanSemester=this.value; renderContent()">
         ${SEMESTER.map(s=>`<option value="${s.key}" ${s.key===laporanSemester?'selected':''}>${s.label}</option>`).join('')}</select></div>
       <div class="field"><label>Jenis laporan</label><div class="seg mini">
-        <button class="${laporanJenis==='mid'?'on':''}" onclick="laporanJenis='mid'; renderContent()">Tengah semester</button>
-        <button class="${laporanJenis==='akhir'?'on':''}" onclick="laporanJenis='akhir'; renderContent()">Akhir semester</button></div></div>
+        ${UJIAN.map(u=>`<button class="${laporanJenis===u.key?'on':''}" onclick="laporanJenis='${u.key}'; renderContent()">${u.label}</button>`).join('')}</div></div>
       <button class="btn-sun" ${laporanSiswaId?'':'disabled'} onclick="cetakLaporan('portrait')">Cetak laporan</button>
     </div>`;
+  if(!UJIAN.some(u=>u.key===laporanJenis)) laporanJenis = 'mid1';
   if(!kelasList.length) return controls + `<div class="empty">Belum ada kelas yang bisa diakses.</div>`;
   if(!laporanSiswaId) return controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
   return controls + `<div class="paper-stage"><div class="paper">${dokumenRapor(laporanSiswaId, laporanSemester, laporanJenis, true)}</div></div>`;
@@ -4581,26 +4616,22 @@ function dokumenRapor(sid, semester, jenis, editable){
   const sh = k? getSheet(k.id, semester, false) : null;
   const r = hitungRekap(sh, s.id, k?k.id:'', semester);
   const st = S().penilaian;
-  const b = jenis==='mid'? st.bobotMid : st.bobotAkhir;
+  if(!UJIAN.some(u=>u.key===jenis)) jenis = 'mid1';
+  const uj = UJIAN.find(u=>u.key===jenis), b = st.bobotRapor[jenis];
   const semLabel = SEMESTER.find(x=>x.key===semester).label;
-  const rincian = key=> sh? sh.kolom[key].map(c=>{ const v=angka(((sh.nilai[s.id]||{})[key]||{})[c.id]); return v==null? null : `${esc(c.judul)}: ${fmtN(v)}`; }).filter(Boolean).join(' · ') : '';
-  const komp = [
-    {nama:'Tugas Harian & Hafalan', bobot:b.tugas, nilai:r.tugas, rinci:rincian('tugas')},
-    {nama:'Ulangan Harian', bobot:b.ulangan, nilai:r.ulangan, rinci:rincian('ulangan')},
-    {nama:'Praktek Keagamaan (Meditasi & Puja Bakti)', bobot:b.praktek, nilai:r.praktek, rinci:rincian('praktek')},
-    {nama:'Ujian Tengah Semester (UTS)', bobot:b.uts, nilai:r.uts, rinci:''},
-  ];
-  if(jenis==='akhir') komp.push({nama:'Ujian Akhir Semester (UAS)', bobot:b.uas, nilai:r.uas, rinci:''});
-  const nilaiAkhir = jenis==='mid'? r.mid : r.akhir;
-  const pred = jenis==='mid'? r.predMid : r.predAkhir;
-  const catKey = jenis==='mid'? 'catatanMid' : 'catatanAkhir';
-  const catatan = sh && sh.nilai[s.id] ? (sh.nilai[s.id][catKey]||'') : '';
+  const rincian = key=> sh && sh.kolom[key]? sh.kolom[key].map(c=>{ const v=angka(((sh.nilai[s.id]||{})[key]||{})[c.id]); return v==null? null : `${esc(c.judul)}: ${fmtN(v)}`; }).filter(Boolean).join(' · ') : '';
+  const komp = KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>({nama:c.nama, nilai:r[c.key], rinci:['tugas','ulangan','praktek'].includes(c.key)? rincian(c.key):''}));
+  const nilaiAkhir = r.nilai[jenis];
+  const pred = r.pred[jenis];
+  const catKey = 'catatan_'+jenis;
+  const nCat = sh && sh.nilai[s.id] ? sh.nilai[s.id] : {};
+  const catatan = nCat[catKey]!=null? nCat[catKey] : (jenis==='uts'? nCat.catatanMid : jenis==='uas'? nCat.catatanAkhir : '') || '';
   const waliNama = k && k.guruId? guruNama(k.guruId) : '';
   const t = k? tingkatOf(k):null, d = k? daerahOf(k):null;
   const ident = (l,v)=>`<tr><td class="id-l">${l}</td><td class="id-s">:</td><td>${v||'—'}</td></tr>`;
   return `
     ${kopSuratHtml()}
-    <div class="doc-title">LAPORAN HASIL BELAJAR ${jenis==='mid'?'TENGAH':'AKHIR'} SEMESTER</div>
+    <div class="doc-title">LAPORAN HASIL BELAJAR ${uj.judul}</div>
     <div class="doc-sub">${semLabel} Tahun Ajaran ${esc(taS?taS.nama:'—')}</div>
     <div class="rp-ident">
       <table>${ident('Nama siswa', `<strong>${esc(s.namaLengkap)}</strong>`)}${ident('NISMB', esc(s.noInduk))}${ident('Asal sekolah', esc(s.asalSekolah))}</table>
@@ -4613,9 +4644,9 @@ function dokumenRapor(sid, semester, jenis, editable){
       <tbody>
         ${komp.map((c,i)=>`<tr><td class="c">${i+1}</td><td>${c.nama}${c.rinci? `<div class="rp-rinci">${c.rinci}</div>`:''}</td><td class="c">${fmtN(c.nilai)}</td></tr>`).join('')}
       </tbody>
-      <tfoot><tr><td colspan="2">Nilai ${jenis==='mid'?'tengah semester':'akhir semester'}</td><td class="c rp-big">${fmtN(nilaiAkhir)}</td></tr></tfoot>
+      <tfoot><tr><td colspan="2">Nilai ${uj.label}</td><td class="c rp-big">${fmtN(nilaiAkhir)}</td></tr></tfoot>
     </table>
-    <div class="rp-pred"><span>Predikat</span><strong>${pred? esc(pred) : '—'}</strong>${nilaiAkhir==null? `<em>Nilai belum lengkap — ${jenis==='mid'?'Tugas, UH, Praktek, dan UTS':'semua komponen termasuk UAS'} perlu diisi di menu Penilaian.</em>`:''}</div>
+    <div class="rp-pred"><span>Predikat</span><strong>${pred? esc(pred) : '—'}</strong>${nilaiAkhir==null? `<em>Nilai belum lengkap — ${esc(r.kurang[jenis].join(', '))} perlu diisi di menu Penilaian.</em>`:''}</div>
 
     <div class="rp-cols">
       <div><div class="rp-h">B. Kehadiran ${semLabel.toLowerCase()}</div>
