@@ -524,6 +524,28 @@
   .pred{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;}
   .pred.pr-a{background:#e3f3ea;color:#2f7a52;} .pred.pr-b{background:#e6eefb;color:#2C4770;} .pred.pr-c{background:#fdf1e0;color:#a8730c;}
   .pred.soft{opacity:.55;}
+  .tp-seg .n{display:inline-block;min-width:18px;padding:0 6px;border-radius:10px;background:var(--hover-bg);border:1px solid var(--line);font-size:11px;margin-left:6px;color:var(--ink-soft);}
+  .tp-seg button.on .n{background:var(--sky-deep);color:#fff;border-color:var(--sky-deep);}
+  .tp-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;}
+  @media(max-width:1000px){.tp-grid{grid-template-columns:1fr;}}
+  .tp-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .tp-row{display:flex;gap:14px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--line);}
+  .tp-code{flex-shrink:0;font-weight:700;font-size:12px;color:#fff;background:var(--sky-deep);border-radius:7px;padding:3px 8px;margin-top:1px;white-space:nowrap;}
+  .tp-txt{flex:1;font-size:14px;line-height:1.5;color:var(--ink);}
+  .tp-empty{padding:16px;color:var(--ink-soft);font-size:13.5px;border-bottom:1px solid var(--line);}
+  .tp-add{display:flex;gap:8px;padding:12px 14px;background:var(--hover-bg);}
+  .tp-add input{flex:1;min-width:0;}
+  .tp-side{border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;}
+  .tp-side h4{margin:0 0 6px;font-family:'Baloo 2';font-size:15px;color:var(--heading);}
+  .cap-t td.cap{text-align:center;padding:4px;}
+  .chip{display:inline-flex;align-items:center;justify-content:center;width:32px;height:30px;padding:0;border-radius:8px;font-weight:700;font-size:13px;border:1.5px solid var(--line);color:var(--ink-soft);background:var(--paper);cursor:pointer;}
+  span.chip{cursor:default;}
+  .chip.ok{background:#e3f3ea;border-color:#9fd1b3;color:#2f7a52;}
+  .chip.bb{background:#fdf1e0;border-color:#efcf95;color:#a8730c;}
+  .legend-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;}
+  .legend-row > span{display:inline-flex;align-items:center;gap:6px;}
+  .legend-row .chip{width:24px;height:22px;font-size:11px;}
+  .rp-tp td{font-size:10pt;}
   .sheet th.grp-h{border-bottom:1px solid var(--line);color:var(--heading);}
   .sheet.rekap thead tr:nth-child(2) th{top:33px;}
   .bobot-t td.inp input{width:62px;}
@@ -4296,7 +4318,7 @@ function renderPenilaian(){
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
   const st = S().penilaian, ba = st.bobotAkhir;
 
-  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'Nilai ujian'}, {key:'absensi',label:'Data absensi'}];
+  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'Nilai ujian'}, {key:'tp',label:'Tujuan pembelajaran'}, {key:'absensi',label:'Data absensi'}];
   const controls = `<div class="pn-controls">
       <div class="field"><label>Kelas</label><select onchange="penilaianFilterKelas=this.value; renderContent()">
         ${kelasList.map(x=>`<option value="${x.id}" ${x.id===k.id?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}</select></div>
@@ -4305,11 +4327,12 @@ function renderPenilaian(){
       <div class="pn-meta"><span>Wali kelas <strong>${esc(k.guruId? guruNama(k.guruId):'—')}</strong></span><span><strong>${siswa.length}</strong> siswa aktif</span></div>
     </div>
     <div class="sheet-tabs">${tabs.map(t=>`<button class="${t.key===penilaianSheetTab?'on':''}" onclick="penilaianSheetTab='${t.key}'; renderContent()">${t.label}</button>`).join('')}</div>`;
-  if(!siswa.length) return head + controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
+  if(!siswa.length && penilaianSheetTab!=='tp') return head + controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
 
   let body = '';
   if(penilaianSheetTab==='rekap') body = sheetRekap(sh, k, siswa);
   else if(penilaianSheetTab==='ujian') body = sheetUjian(sh, k, siswa);
+  else if(penilaianSheetTab==='tp') body = sheetTP(sh, k, siswa);
   else if(penilaianSheetTab==='absensi') body = sheetAbsensi(k, siswa);
   else body = sheetKomponen(sh, k, siswa, KOMPONEN.find(c=>c.key===penilaianSheetTab));
 
@@ -4340,6 +4363,113 @@ function sheetKomponen(sh, k, siswa, komp){
     </table></div>
     <div class="sheet-actions"><button class="btn-outline btn-small" onclick="tambahKolom('${k.id}','${komp.key}')">+ Tambah kolom nilai</button>
       <span class="sd-sub">${nk} kolom. Klik judul kolom untuk mengganti nama (misal "Hafalan Paritta"). Tekan Enter untuk pindah ke siswa berikutnya.</span></div>`;
+}
+/* ---------- Tujuan Pembelajaran (TP) per ujian ---------- */
+let penilaianTpUjian = 'mid1';
+const CAPAIAN = {ok:{txt:'Tercapai', sym:'✓', cls:'ok'}, bb:{txt:'Perlu bimbingan', sym:'!', cls:'bb'}};
+function tpList(sh, uj){ if(!sh) return []; sh.tp = sh.tp||{}; sh.tp[uj] = sh.tp[uj]||[]; return sh.tp[uj]; }
+function capMap(sh, uj){ sh.capaian = sh.capaian||{}; sh.capaian[uj] = sh.capaian[uj]||{}; return sh.capaian[uj]; }
+function capaianSiswa(sh, uj, sid){ return (sh && sh.capaian && sh.capaian[uj] && sh.capaian[uj][sid]) || {}; }
+function sheetTP(sh, k, siswa){
+  const uj = penilaianTpUjian, ujn = UJIAN.find(u=>u.key===uj);
+  const list = tpList(sh, uj);
+  const seg = `<div class="seg tp-seg">${UJIAN.map(u=>`<button class="${u.key===uj?'on':''}" onclick="penilaianTpUjian='${u.key}'; renderContent()">${u.label}<span class="n">${tpList(sh,u.key).length} TP</span></button>`).join('')}</div>`;
+  // sumber salinan: kelas lain di tahun ajaran yang sama, semester sama, yang sudah punya TP
+  const sumber = [];
+  (db.penilaianKelas||[]).filter(x=>x.semester===sh.semester && x.tahunAjaranId===sh.tahunAjaranId && x.tp).forEach(x=>{
+    const kx = db.kelas.find(y=>y.id===x.kelasId); if(!kx) return;
+    UJIAN.forEach(u=>{ const n=(x.tp[u.key]||[]).length; if(n && !(x.kelasId===k.id && u.key===uj)) sumber.push({v:x.kelasId+'|'+u.key, l:`${kelasLabel(kx)} — ${u.label} (${n} TP)`}); });
+  });
+  const daftar = `<div class="tp-list">
+      ${list.length? list.map((t,i)=>`<div class="tp-row"><span class="tp-code">TP ${i+1}</span><div class="tp-txt">${esc(t.teks)}</div>
+        <span class="sd-act"><button class="ib" title="Naikkan" ${i===0?'disabled':''} onclick="geserTP('${k.id}',${i},-1)">↑</button><button class="ib" title="Turunkan" ${i===list.length-1?'disabled':''} onclick="geserTP('${k.id}',${i},1)">↓</button>
+        <button class="ib" title="Ubah" onclick="ubahTP('${k.id}','${t.id}')">${ICON.edit}</button><button class="ib ib-danger" title="Hapus" onclick="hapusTP('${k.id}','${t.id}')">${ICON.trash}</button></span></div>`).join('')
+        : `<div class="tp-empty">Belum ada tujuan pembelajaran untuk ${ujn.label}. Tulis TP pertama di bawah.</div>`}
+      <div class="tp-add"><input id="tpBaru" placeholder="Peserta didik mampu…" onkeydown="if(event.key==='Enter'){event.preventDefault(); tambahTP('${k.id}');}" aria-label="Tujuan pembelajaran baru"><button class="btn-sun btn-small" onclick="tambahTP('${k.id}')">+ Tambah TP</button></div>
+    </div>`;
+  const side = `<aside class="tp-side"><h4>Salin TP</h4>
+      <p class="sd-sub" style="margin:0 0 8px">TP biasanya sama untuk satu tingkat. Salin dari kelas lain agar tidak mengetik ulang.</p>
+      ${sumber.length? `<select id="tpSumber" style="width:100%;margin-bottom:8px">${sumber.map(x=>`<option value="${x.v}">${esc(x.l)}</option>`).join('')}</select>
+        <button class="btn-outline btn-small" onclick="salinTP('${k.id}')">Salin ke ${esc(ujn.label)} kelas ini</button>`
+      : `<p class="sd-sub" style="margin:0">Belum ada kelas lain dengan TP di ${SEMESTER.find(x=>x.key===sh.semester).label.toLowerCase()} ini.</p>`}
+    </aside>`;
+  let cap = '';
+  if(list.length && !siswa.length) cap = `<p class="sheet-note" style="margin-top:16px">Capaian siswa bisa diisi setelah ada siswa aktif di kelas ini.</p>`;
+  else if(list.length){
+    const rows = siswa.map((s,ri)=>{
+      const c = capaianSiswa(sh, uj, s.id);
+      const r = hitungRekap(sh, s.id, k.id, sh.semester);
+      return `<tr><td class="c">${ri+1}</td><td class="nm">${esc(s.namaLengkap)}</td><td class="c res">${fmtN(r.nilai[uj])}</td>
+        ${list.map((t,i)=>{ const st=CAPAIAN[c[t.id]]; return `<td class="cap"><button class="chip ${st?st.cls:''}" id="cp_${s.id}_${t.id}" title="TP ${i+1}: ${esc(t.teks)} — ${st?st.txt:'belum dinilai'}" aria-label="TP ${i+1} ${esc(s.namaLengkap)}: ${st?st.txt:'belum dinilai'}" onclick="gantiCapaian('${k.id}','${s.id}','${t.id}')">${st?st.sym:'–'}</button></td>`; }).join('')}
+        <td class="c"><button class="btn-outline btn-small" onclick="capaianBaris('${k.id}','${s.id}')">Semua ✓</button></td></tr>`;
+    }).join('');
+    cap = `<div class="page-head" style="margin:22px 0 10px"><div class="sheet-title" style="margin:0">2. Capaian siswa — ${esc(ujn.label)}</div>
+        <div class="row"><button class="btn-outline btn-small" onclick="capaianSemua('${k.id}','ok')">Semua tercapai</button><button class="btn-outline btn-small" onclick="capaianSemua('${k.id}','')">Kosongkan</button></div></div>
+      <div class="sheet-wrap"><table class="sheet cap-t">
+        <thead><tr><th class="c" style="width:44px">No</th><th>Nama siswa</th><th class="c">Nilai rapor<br>${esc(ujn.label)}</th>${list.map((t,i)=>`<th class="c" title="${esc(t.teks)}">TP ${i+1}</th>`).join('')}<th></th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+      <div class="legend-row"><span><span class="chip ok">✓</span> Tercapai</span><span><span class="chip bb">!</span> Perlu bimbingan</span><span><span class="chip">–</span> Belum dinilai</span><span>Klik kotak untuk berganti status. Hasilnya tampil sebagai tabel di rapor ${esc(ujn.label)}.</span></div>`;
+  }
+  return `${seg}<div class="sheet-title">1. Tujuan pembelajaran — ${esc(ujn.label)}</div><div class="tp-grid">${daftar}${side}</div>${cap}`;
+}
+function tambahTP(kelasId){
+  const el = document.getElementById('tpBaru'); const teks = (el.value||'').trim();
+  if(!teks) return el.focus();
+  tpList(getSheet(kelasId, penilaianSemester, true), penilaianTpUjian).push({id:uid(), teks});
+  renderContent(); scheduleSave();
+  setTimeout(()=>{ const n=document.getElementById('tpBaru'); n && n.focus(); }, 20);
+}
+function ubahTP(kelasId, tpId){
+  const t = tpList(getSheet(kelasId, penilaianSemester, true), penilaianTpUjian).find(x=>x.id===tpId); if(!t) return;
+  openModal(`<h3>Ubah tujuan pembelajaran</h3>
+    <div class="field"><label>Tujuan pembelajaran</label><textarea id="tpEdit" rows="3" style="width:100%">${esc(t.teks)}</textarea></div>
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button><button class="btn-sun btn-small" onclick="simpanUbahTP('${kelasId}','${tpId}')">Simpan</button></div>`);
+  setTimeout(()=>{ const a=document.getElementById('tpEdit'); a && a.focus(); }, 20);
+}
+function simpanUbahTP(kelasId, tpId){
+  const teks = (document.getElementById('tpEdit').value||'').trim(); if(!teks) return toast('Tujuan pembelajaran tidak boleh kosong');
+  tpList(getSheet(kelasId, penilaianSemester, true), penilaianTpUjian).find(x=>x.id===tpId).teks = teks;
+  closeModal(); renderContent(); scheduleSave();
+}
+function hapusTP(kelasId, tpId){
+  const sh = getSheet(kelasId, penilaianSemester, true), uj = penilaianTpUjian, list = tpList(sh, uj);
+  const terisi = Object.values(capMap(sh, uj)).filter(c=>c[tpId]).length;
+  if(!confirm(`Hapus TP ini?${terisi? ` Capaian ${terisi} siswa untuk TP ini ikut terhapus.`:''}`)) return;
+  sh.tp[uj] = list.filter(x=>x.id!==tpId);
+  Object.values(capMap(sh, uj)).forEach(c=>{ delete c[tpId]; });
+  renderContent(); scheduleSave();
+}
+function geserTP(kelasId, i, d){
+  const a = tpList(getSheet(kelasId, penilaianSemester, true), penilaianTpUjian), j = i+d;
+  if(j<0 || j>=a.length) return; [a[i],a[j]] = [a[j],a[i]]; renderContent(); scheduleSave();
+}
+function salinTP(kelasId){
+  const [srcKelas, srcUj] = document.getElementById('tpSumber').value.split('|');
+  const src = getSheet(srcKelas, penilaianSemester, false); if(!src) return;
+  const dst = tpList(getSheet(kelasId, penilaianSemester, true), penilaianTpUjian);
+  const ada = new Set(dst.map(t=>normTeks(t.teks)));
+  let n = 0; (src.tp[srcUj]||[]).forEach(t=>{ if(!ada.has(normTeks(t.teks))){ dst.push({id:uid(), teks:t.teks}); n++; } });
+  renderContent(); scheduleSave(); toast(n? `${n} TP disalin` : 'Semua TP sudah ada di kelas ini');
+}
+function gantiCapaian(kelasId, sid, tpId){
+  const sh = getSheet(kelasId, penilaianSemester, true), m = capMap(sh, penilaianTpUjian);
+  m[sid] = m[sid] || {};
+  const urut = ['', 'ok', 'bb'], next = urut[(urut.indexOf(m[sid][tpId]||'')+1)%3];
+  if(next) m[sid][tpId] = next; else delete m[sid][tpId];
+  const b = document.getElementById(`cp_${sid}_${tpId}`), st = CAPAIAN[next];
+  if(b){ b.className = 'chip '+(st?st.cls:''); b.textContent = st?st.sym:'–'; b.title = b.title.replace(/ — [^—]*$/, ' — '+(st?st.txt:'belum dinilai')); }
+  scheduleSave();
+}
+function capaianBaris(kelasId, sid){
+  const sh = getSheet(kelasId, penilaianSemester, true), uj = penilaianTpUjian, m = capMap(sh, uj);
+  m[sid] = {}; tpList(sh, uj).forEach(t=>{ m[sid][t.id] = 'ok'; });
+  renderContent(); scheduleSave();
+}
+function capaianSemua(kelasId, val){
+  const sh = getSheet(kelasId, penilaianSemester, true), uj = penilaianTpUjian, m = capMap(sh, uj);
+  if(!confirm(val? 'Tandai semua TP tercapai untuk semua siswa?' : 'Kosongkan semua capaian TP untuk ujian ini?')) return;
+  siswaAktifDiKelas(kelasId).forEach(s=>{ m[s.id] = {}; if(val) tpList(sh, uj).forEach(t=>{ m[s.id][t.id] = val; }); });
+  renderContent(); scheduleSave();
 }
 function sheetUjian(sh, k, siswa){
   const rows = siswa.map((s,ri)=>{
@@ -4480,6 +4610,15 @@ function exportPenilaianExcel(){
   });
   addSheet('Nilai Ujian', 'NILAI UJIAN: MID SEMESTER, UTS, MID SEMESTER 2, UAS', ['No','NIS','Nama Siswa', ...UJIAN.map(u=>'Nilai '+u.label)],
     siswa.map((s,i)=>{ const n = sh? (sh.nilai[s.id]||{}) : {}; return [i+1, s.noInduk, s.namaLengkap, ...UJIAN.map(u=>nv(angka(n[u.key])))]; }));
+  UJIAN.forEach(u=>{
+    const list = sh && sh.tp ? (sh.tp[u.key]||[]) : [];
+    if(!list.length) return;
+    addSheet('TP '+u.label, 'CAPAIAN TUJUAN PEMBELAJARAN — '+u.label.toUpperCase(), ['No','NIS','Nama Siswa', ...list.map((t,i)=>'TP '+(i+1))],
+      siswa.map((s,i)=>{ const c=capaianSiswa(sh, u.key, s.id); return [i+1, s.noInduk, s.namaLengkap, ...list.map(t=>CAPAIAN[c[t.id]]? CAPAIAN[c[t.id]].txt : '')]; }));
+    // daftar TP di bawah tabel
+    const ws = wb.Sheets[wb.SheetNames[wb.SheetNames.length-1]];
+    XLSX.utils.sheet_add_aoa(ws, [[], ['Daftar tujuan pembelajaran'], ...list.map((t,i)=>['TP '+(i+1), t.teks])], {origin:-1});
+  });
   addSheet('Data Absensi', 'REKAPITULASI PRESENSI / KEHADIRAN SISWA', ['No','NIS','Nama Siswa','Sakit (S)','Izin (I)','Alpa (A)','Hadir (H)','% Kehadiran'],
     siswa.map((s,i)=>{ const a=absensiSemester(s.id, k.id, penilaianSemester); return [i+1, s.noInduk, s.namaLengkap, a.Sakit, a.Izin, a.Alpa, a.Hadir, a.pct==null?'':r1(a.pct)/100]; }));
   const safe = (kelasLabel(k)+'-'+penilaianSemester+'-'+(ta?ta.nama:'')).replace(/[^\w-]+/g,'-');
@@ -4623,6 +4762,8 @@ function dokumenRapor(sid, semester, jenis, editable){
   const komp = KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>({nama:c.nama, nilai:r[c.key], rinci:['tugas','ulangan','praktek'].includes(c.key)? rincian(c.key):''}));
   const nilaiAkhir = r.nilai[jenis];
   const pred = r.pred[jenis];
+  const tpRapor = sh && sh.tp ? (sh.tp[jenis]||[]) : [];
+  const capRapor = capaianSiswa(sh, jenis, s.id);
   const catKey = 'catatan_'+jenis;
   const nCat = sh && sh.nilai[s.id] ? sh.nilai[s.id] : {};
   const catatan = nCat[catKey]!=null? nCat[catKey] : (jenis==='uts'? nCat.catatanMid : jenis==='uas'? nCat.catatanAkhir : '') || '';
@@ -4648,11 +4789,15 @@ function dokumenRapor(sid, semester, jenis, editable){
     </table>
     <div class="rp-pred"><span>Predikat</span><strong>${pred? esc(pred) : '—'}</strong>${nilaiAkhir==null? `<em>Nilai belum lengkap — ${esc(r.kurang[jenis].join(', '))} perlu diisi di menu Penilaian.</em>`:''}</div>
 
+    ${tpRapor.length? `<div class="rp-h">B. Capaian Tujuan Pembelajaran</div>
+      <table class="rp-t rp-tp"><thead><tr><th style="width:52px">TP</th><th>Tujuan pembelajaran</th><th style="width:130px">Capaian</th></tr></thead>
+      <tbody>${tpRapor.map((t,i)=>`<tr><td class="c">TP ${i+1}</td><td>${esc(t.teks)}</td><td class="c">${CAPAIAN[capRapor[t.id]]? CAPAIAN[capRapor[t.id]].txt : '—'}</td></tr>`).join('')}</tbody></table>`:''}
+
     <div class="rp-cols">
-      <div><div class="rp-h">B. Kehadiran ${semLabel.toLowerCase()}</div>
+      <div><div class="rp-h">${tpRapor.length?'C':'B'}. Kehadiran ${semLabel.toLowerCase()}</div>
         <table class="rp-t"><thead><tr><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Kehadiran</th></tr></thead>
         <tbody><tr><td class="c">${r.abs.Hadir}</td><td class="c">${r.abs.Izin}</td><td class="c">${r.abs.Sakit}</td><td class="c">${r.abs.Alpa}</td><td class="c"><strong>${r.abs.pct==null?'—':Math.round(r.abs.pct)+'%'}</strong></td></tr></tbody></table></div>
-            <div><div class="rp-h">C. Catatan Guru SMB</div>
+            <div><div class="rp-h">${tpRapor.length?'D':'C'}. Catatan Guru SMB</div>
         ${editable? `<textarea class="rp-note no-print" placeholder="Tulis catatan perkembangan siswa…" onchange="simpanCatatanRapor('${s.id}','${semester}','${catKey}', this.value)">${esc(catatan)}</textarea>`:''}
         <div class="rp-note-print ${editable?'print-only':''}">${catatan? esc(catatan).replace(/\n/g,'<br>') : '&nbsp;'}</div></div>
     </div>
