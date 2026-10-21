@@ -875,8 +875,6 @@
 // 1) Ikuti PANDUAN-SETUP.md untuk membuat Google Apps Script Web App.
 // 2) Tempel URL Web App dan kunci rahasia Anda di bawah ini.
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZCZKG_gt8MEcwCx3azMe01Nrtmm_mgHSZ0ZL9AVU_jGCtqMfR-m2oOa61SYeW0GBlbQ/exec";
-const SECRET_KEY = "hQ4yJoC5jxA0yTj2GXD3E6M3YIywtcGg";
-const DATA_FILENAME = "data-sekolah-minggu.json"; // harus sama dengan FILE_NAME di Apps Script
 
 /* ======================= STATE ======================= */
 let backendInitError = null;
@@ -968,6 +966,35 @@ function scheduleSave(){
   window._saveT = setTimeout(()=>{ window._savePending=false; saveToDrive(true); }, 900);
 }
 
+
+/* ======================= GAMBAR: muat ringan ======================= */
+// Membaca foto (termasuk foto HP 10+ MB) tanpa membuat browser macet:
+// decode di luar thread utama bila didukung, langsung diperkecil ke ukuran yang dibutuhkan.
+const GAMBAR_OK = /\.(jpe?g|png|webp)$/i;
+function cekFileGambar(f){
+  if(!f) return false;
+  if(!(/^image\/(jpeg|png|webp)$/.test(f.type) || GAMBAR_OK.test(f.name||''))){ toast('Gunakan foto JPG, PNG, atau WEBP'); return false; }
+  if(f.size > 25*1024*1024){ toast('Ukuran foto terlalu besar (maks. 25 MB)'); return false; }
+  return true;
+}
+async function muatGambarFile(f, maxW, maxH){
+  let src, w, h, tutup = ()=>{};
+  if(window.createImageBitmap){
+    try{ src = await createImageBitmap(f, {imageOrientation:'from-image'}); w = src.width; h = src.height; tutup = ()=>src.close && src.close(); }catch(e){ src = null; }
+  }
+  if(!src){
+    const url = URL.createObjectURL(f);
+    src = await new Promise((ok, gagal)=>{ const im = new Image(); im.onload = ()=>ok(im); im.onerror = ()=>gagal(new Error('Gambar tidak bisa dibaca')); im.src = url; });
+    w = src.naturalWidth; h = src.naturalHeight; tutup = ()=>URL.revokeObjectURL(url);
+  }
+  const sc = Math.min(1, maxW/w, maxH/h);
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w*sc)); c.height = Math.max(1, Math.round(h*sc));
+  const ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high'; ctx.drawImage(src, 0, 0, c.width, c.height);
+  tutup();
+  return c;
+}
+const jeda = ()=> new Promise(r=>setTimeout(r, 30)); // beri kesempatan layar menampilkan pesan "Memproses…"
+
 /* ======================= KOP SURAT (untuk cetakan) ======================= */
 function kopSuratHtml(){
     const logo = db.meta && db.meta.kopLogo, kp = S().kop;
@@ -991,28 +1018,17 @@ function cetakLaporan(orientasi){
   st.textContent = `@page{size:A4 ${orientasi||'portrait'};margin:12mm 10mm;}`;
   window.print();
 }
-function uploadLogoKop(input){
+async function uploadLogoKop(input){
   if(!isAdmin()){ input.value=''; return toast('Hanya Admin yang dapat mengganti logo kop surat'); }
   const f = input.files[0]; input.value='';
-  if(!f) return;
-  if(!/^image\//.test(f.type)) return toast('File harus berupa gambar (PNG/JPG)');
-  const r = new FileReader();
-  r.onload = e=>{
-    const img = new Image();
-    img.onload = ()=>{
-      // perkecil supaya file data di Drive tetap ringan
-      const max = 300, sc = Math.min(1, max/Math.max(img.width, img.height));
-      const c = document.createElement('canvas');
-      c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      db.meta = db.meta || {};
-      db.meta.kopLogo = c.toDataURL('image/png');
-      renderContent(); saveToDrive(true); toast('Logo kop surat disimpan');
-    };
-    img.onerror = ()=> toast('Gambar tidak bisa dibaca');
-    img.src = e.target.result;
-  };
-  r.readAsDataURL(f);
+  if(!cekFileGambar(f)) return;
+  toast('Memproses logo…'); await jeda();
+  try{
+    const c = await muatGambarFile(f, 300, 300);   // perkecil supaya file data di Drive tetap ringan
+    db.meta = db.meta || {};
+    db.meta.kopLogo = c.toDataURL('image/png');
+    renderContent(); saveToDrive(true); toast('Logo kop surat disimpan');
+  }catch(e){ toast('Gambar tidak bisa dibaca — coba foto lain'); }
 }
 function hapusLogoKop(){
   if(!isAdmin()) return toast('Hanya Admin yang dapat menghapus logo kop surat');
@@ -1250,9 +1266,10 @@ function heroLoginCard(){
 function screenPublicHome(){
   const st = S(), w = st.web, k = st.kontak;
   const ta = activeTahunAjaran();
-  const siswaAktif = db.siswa.filter(s=>s.status==='aktif').length;
-  const kelasN = ta? kelasOfTahun(ta.id).length : 0;
-  const guruN = db.users.filter(u=>u.role==='guru').length;
+  const stat = db.stats || null;   // pengunjung: angka dari server (tanpa data pribadi)
+  const siswaAktif = stat? stat.siswaAktif : db.siswa.filter(s=>s.status==='aktif').length;
+  const kelasN = stat? stat.kelas : (ta? kelasOfTahun(ta.id).length : 0);
+  const guruN = stat? stat.guru : db.users.filter(u=>u.role==='guru').length;
   const berita = beritaPublik();
   const tampil = beritaTampilSemua? berita : berita.slice(0,6);
   const kartu = tampil.map((b,i)=>`
@@ -1426,7 +1443,7 @@ function setKop(){
       <div class="kop-thumb">${logo? `<img src="${logo}" alt="Logo">` : '<span style="font-size:11px;color:#999">Logo</span>'}</div>
       <div class="info"><strong>Logo kop surat</strong><div>Dipakai di kop setiap cetakan. Logo website diatur terpisah.</div></div>
       <label class="btn-outline btn-small" style="display:inline-flex;align-items:center;cursor:pointer;margin:0">${logo?'Ganti logo':'Unggah logo'}
-        <input type="file" accept="image/*" style="display:none" onchange="uploadLogoKop(this)"></label>
+        <input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="uploadLogoKop(this)"></label>
       ${logo? `<button class="btn-danger btn-small" onclick="hapusLogoKop()">Hapus</button>`:''}
     </div>
     <h3 class="set-h">Teks kop surat</h3>
@@ -1526,7 +1543,7 @@ function formBerita(id){
     ${fieldRow('Isi berita *', 'nbIsi', b?b.isi:'', {area:true, rows:7})}
     <div class="field"><label>Gambar</label>
       <div class="nb-img-row"><div class="nb-img" id="nbImgPrev">${_beritaGambar? `<img src="${_beritaGambar}" alt="">`:'<span>Tidak ada gambar</span>'}</div>
-      <div><label class="btn-outline btn-small" style="display:inline-flex;cursor:pointer;margin:0 0 6px">Pilih gambar<input type="file" accept="image/*" style="display:none" onchange="pilihGambarBerita(this)"></label><br>
+      <div><label class="btn-outline btn-small" style="display:inline-flex;cursor:pointer;margin:0 0 6px">Pilih gambar<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="pilihGambarBerita(this)"></label><br>
       <button class="btn-danger btn-small" onclick="_beritaGambar=null; document.getElementById('nbImgPrev').innerHTML='<span>Tidak ada gambar</span>'">Hapus gambar</button></div></div>
     </div>
     <label class="chk"><input type="checkbox" id="nbTampil" ${!b||b.tampil!==false?'checked':''}> Tampilkan di halaman awal</label>
@@ -1534,18 +1551,18 @@ function formBerita(id){
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Batal</button>
     <button class="btn-sun btn-small" onclick="simpanBerita('${id||''}')">${b?'Simpan perubahan':'Terbitkan'}</button></div>`, 'wide');
 }
-function pilihGambarBerita(input){
-  const f = input.files[0]; input.value=''; if(!f) return;
-  if(!/^image\//.test(f.type)) return toast('File harus berupa gambar');
-  const r = new FileReader();
-  r.onload = e=>{ const img=new Image(); img.onload=()=>{
-    const max=900, sc=Math.min(1, max/img.width);
-    const c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
-    const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0,c.width,c.height);
+async function pilihGambarBerita(input){
+  const f = input.files[0]; input.value='';
+  if(!cekFileGambar(f)) return;
+  const prev = document.getElementById('nbImgPrev'); if(prev) prev.innerHTML = '<span>Memproses…</span>';
+  await jeda();
+  try{
+    const c0 = await muatGambarFile(f, 900, 2000);
+    const c = document.createElement('canvas'); c.width = c0.width; c.height = c0.height;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(c0, 0, 0);
     _beritaGambar = c.toDataURL('image/jpeg', 0.72);
-    document.getElementById('nbImgPrev').innerHTML = `<img src="${_beritaGambar}" alt="">`;
-  }; img.src=e.target.result; };
-  r.readAsDataURL(f);
+    const p2 = document.getElementById('nbImgPrev'); if(p2) p2.innerHTML = `<img src="${_beritaGambar}" alt="">`;
+  }catch(e){ toast('Gambar tidak bisa dibaca — coba foto lain'); const p2=document.getElementById('nbImgPrev'); if(p2) p2.innerHTML='<span>Tidak ada gambar</span>'; }
 }
 function simpanBerita(id){
   const judul=val('nbJudul'), isi=val('nbIsi');
@@ -1622,7 +1639,7 @@ function hitungSkor(t, p){
 }
 function nilaiUlangPengumpulan(t, p){
   const r = hitungSkor(t, p);
-  p.skor = r.skor;
+  p.skor = r.skor; p.dapat = r.dapat; p.total = r.total; p.perluNilai = r.perluNilai;
   p.status = r.perluNilai? 'dikumpulkan' : 'dinilai';
   return r;
 }
@@ -2146,7 +2163,7 @@ function kirimKePenilaian(id){
 /* ---------- Akun siswa (password login) ---------- */
 function pbAkunSiswa(k){
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
-  const nPw = siswa.filter(s=>s.passwordHash).length;
+  const nPw = siswa.filter(s=>s.punyaPassword).length;
   return `<div class="pb-bar"><span class="sd-sub">Siswa masuk dengan <strong>No Induk</strong> sebagai ID. Bila password belum diatur, password awalnya adalah tanggal lahir (ddmmyyyy, misal 10012016).</span>
       <button class="btn-sun" onclick="buatPasswordMassal()">Buat password untuk ${nPw<siswa.length?'yang belum punya':'semua siswa'}</button></div>
     <div class="sd-table-wrap"><table class="sd-table">
@@ -2155,13 +2172,12 @@ function pbAkunSiswa(k){
         const tIds = new Set(db.tugas.filter(t=>t.kelasId===k.id && t.status!=='draf').map(t=>t.id));
         const n = db.pengumpulan.filter(p=>p.siswaId===s.id && tIds.has(p.tugasId) && p.status!=='mengerjakan').length;
         return `<tr><td class="sd-no">${esc(s.noInduk||'—')}</td><td><strong>${esc(s.namaLengkap)}</strong></td>
-          <td>${s.passwordHash? `<span class="pill pill-ok">Sudah diatur</span>${s.passwordDiubahSiswa?'<small class="sd-sub">diganti siswa</small>':''}` : `<span class="pill pill-muted">Tanggal lahir</span>${s.tglLahir? '':'<small class="perlu">Tgl lahir kosong — atur password</small>'}`}</td>
+          <td>${s.punyaPassword? `<span class="pill pill-ok">Sudah diatur</span>${s.passwordDiubahSiswa?'<small class="sd-sub">diganti siswa</small>':''}` : `<span class="pill pill-muted">Tanggal lahir</span>${s.tglLahir? '':'<small class="perlu">Tgl lahir kosong — atur password</small>'}`}</td>
           <td class="sd-no">${n} / ${tIds.size}</td>
           <td class="sd-act"><button class="btn-outline btn-small" onclick="formPasswordSiswa('${s.id}')">Atur password</button>
-            ${s.passwordHash? `<button class="ib" title="Kembalikan ke tanggal lahir" onclick="resetPasswordSiswa('${s.id}')">↺</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>
+            ${s.punyaPassword? `<button class="ib" title="Kembalikan ke tanggal lahir" onclick="resetPasswordSiswa('${s.id}')">↺</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>
     <p class="sheet-note">Password disimpan dalam bentuk acak (hash), jadi tidak bisa dilihat lagi. Bila siswa lupa, buat password baru.</p>`;
 }
-function hashPwSiswa(s, pw){ return sha256('siswa:'+s.id+':'+pw); }
 function pwAcak(){ const c='abcdefghjkmnpqrstuvwxyz23456789'; let o=''; const a=new Uint32Array(6); crypto.getRandomValues(a); a.forEach(x=>o+=c[x%c.length]); return o; }
 function formPasswordSiswa(id){
   const s = db.siswa.find(x=>x.id===id);
@@ -2175,28 +2191,29 @@ function formPasswordSiswa(id){
 async function simpanPasswordSiswa(id){
   const s = db.siswa.find(x=>x.id===id); const pw = val('ps_pw');
   if(pw.length<4) return toast('Password minimal 4 karakter');
-  s.passwordHash = await hashPwSiswa(s, pw); delete s.passwordDiubahSiswa;
+  try{ await api('passwordSiswa', {daftar:[{id, password:pw}]}); }catch(e){ return toast(e.message); }
   closeModal(); pbCetak = {jenis:'kartu', list:[{s, pw}]};
-  renderContent(); saveToDrive(true);
+  await mergeFromRemote(); renderContent();
   openModal(`<h3>Password disimpan</h3><p>ID: <strong>${esc(s.noInduk)}</strong> · Password: <strong style="font-family:monospace;font-size:16px">${esc(pw)}</strong></p>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button><button class="btn-sun btn-small" onclick="closeModal(); cetakLaporan('portrait')">Cetak kartu login</button></div>`);
 }
-function resetPasswordSiswa(id){
+async function resetPasswordSiswa(id){
   const s = db.siswa.find(x=>x.id===id);
   if(!s.tglLahir) return toast('Tanggal lahir siswa kosong — atur password baru saja');
   if(!confirm(`Kembalikan password ${s.namaLengkap} ke tanggal lahir (${isoToDdmmyyyy(s.tglLahir).replace(/\//g,'')})?`)) return;
-  delete s.passwordHash; delete s.passwordDiubahSiswa; renderContent(); saveToDrive(true); toast('Password dikembalikan ke tanggal lahir');
+  try{ await api('passwordSiswa', {daftar:[{id, password:''}]}); }catch(e){ return toast(e.message); }
+  await mergeFromRemote(); renderContent(); toast('Password dikembalikan ke tanggal lahir');
 }
 async function buatPasswordMassal(){
   const k = db.kelas.find(x=>x.id===pbKelasId);
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
-  let target = siswa.filter(s=>!s.passwordHash);
+  let target = siswa.filter(s=>!s.punyaPassword);
   if(!target.length){ if(!confirm('Semua siswa sudah punya password. Buat ulang password untuk SEMUA siswa di kelas ini?')) return; target = siswa; }
   else if(!confirm(`Buat password acak untuk ${target.length} siswa?`)) return;
-  const list = [];
-  for(const s of target){ const pw = pwAcak(); s.passwordHash = await hashPwSiswa(s, pw); delete s.passwordDiubahSiswa; list.push({s, pw}); }
+  const list = target.map(s=>({s, pw:pwAcak()}));
+  try{ await api('passwordSiswa', {daftar: list.map(x=>({id:x.s.id, password:x.pw}))}); }catch(e){ return toast(e.message); }
   pbCetak = {jenis:'kartu', list};
-  renderContent(); saveToDrive(true);
+  await mergeFromRemote(); renderContent();
   openModal(`<h3>${list.length} password dibuat</h3>
     <p class="subtitle" style="margin-top:0">Cetak kartu login sekarang — password tidak bisa dilihat lagi setelah jendela ini ditutup.</p>
     <div class="sd-table-wrap" style="max-height:46vh"><table class="sd-table"><thead><tr><th>Nama</th><th>ID</th><th>Password</th></tr></thead>
@@ -2295,20 +2312,14 @@ function screenSiswaPortal(){
     ${body}`;
 }
 async function gantiPasswordSiswa(){
-  const s = currentSiswa, lama = document.getElementById('ak_lama').value, baru = document.getElementById('ak_baru').value, ulang = document.getElementById('ak_ulang').value;
-  if(!(await cocokPasswordSiswa(s, lama))) return toast('Password sekarang salah');
+  const lama = document.getElementById('ak_lama').value, baru = document.getElementById('ak_baru').value, ulang = document.getElementById('ak_ulang').value;
   if(baru.length<4) return toast('Password baru minimal 4 karakter');
   if(baru!==ulang) return toast('Ulangan password baru tidak sama');
-  const rec = db.siswa.find(x=>x.id===s.id);
-  rec.passwordHash = await hashPwSiswa(rec, baru); rec.passwordDiubahSiswa = true;
-  currentSiswa = rec; renderContent(); saveToDrive(true); toast('Password berhasil diganti');
+  try{ await api('ubahPassword', {lama, baru}); }catch(e){ return toast(e.message); }
+  ['ak_lama','ak_baru','ak_ulang'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+  toast('Password berhasil diganti');
 }
-async function cocokPasswordSiswa(s, pw){
-  if(!pw) return false;
-  if(s.passwordHash) return (await hashPwSiswa(s, pw)) === s.passwordHash;
-  if(!s.tglLahir) return false;
-  return pw.replace(/\D/g,'') === isoToDdmmyyyy(s.tglLahir).replace(/\D/g,'');
-}
+
 
 /* ---------- Mengerjakan tugas ---------- */
 function bukaKerja(id){ kerjaTugasId = id; renderContent(); window.scrollTo(0,0); }
@@ -2362,16 +2373,23 @@ function konfirmasiKumpulkan(){
     <p>${kosong? `<strong class="warn-txt">${kosong} soal belum dijawab.</strong> ` : 'Semua soal sudah dijawab. '}Setelah dikumpulkan, jawaban tidak bisa diubah lagi.</p>
     <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Periksa lagi</button><button class="btn-sun btn-small" onclick="closeModal(); kumpulkan(false)">Kumpulkan</button></div>`);
 }
-function kumpulkan(otomatis){
+async function kumpulkan(otomatis){
   clearInterval(window._kjTimer); clearTimeout(window._jwbT);
-  const t = db.tugas.find(x=>x.id===kerjaTugasId), p = pengumpulanDari(t.id, currentSiswa.id);
+  const t = db.tugas.find(x=>x.id===kerjaTugasId), p = t && pengumpulanDari(t.id, currentSiswa.id);
   if(!p || p.status!=='mengerjakan') return renderContent();
-  p.selesai = nowIso();
-  p.terlambat = !!(t.tenggat && Date.now() > new Date(t.tenggat).getTime());
-  nilaiUlangPengumpulan(t, p);
-  try{ localStorage.removeItem(lsKey(p.id)); }catch(e){}
-  renderContent(); window.scrollTo(0,0); saveToDrive(true);
-  toast(otomatis? 'Waktu habis — jawaban dikumpulkan otomatis' : 'Jawaban berhasil dikumpulkan');
+  if(window._kumpulBusy) return; window._kumpulBusy = true;
+  const box = document.getElementById('kjSave'); if(box) box.textContent = 'Mengumpulkan…';
+  try{
+    const r = await api('kumpulkan', {pid:p.id, jawaban:p.jawaban||{}});   // dinilai di server (kunci jawaban tidak ada di perangkat siswa)
+    setTersinkron('pengumpulan', r.pengumpulan); setTersinkron('tugas', r.tugas);
+    if(r.version) driveKnownVersion = r.version;
+    try{ localStorage.removeItem(lsKey(p.id)); }catch(e){}
+    renderContent(); window.scrollTo(0,0);
+    toast(otomatis? 'Waktu habis — jawaban dikumpulkan otomatis' : 'Jawaban berhasil dikumpulkan');
+  }catch(e){
+    toast('Gagal mengumpulkan: '+e.message+'. Jawaban tetap tersimpan, coba lagi.');
+    if(box) box.textContent = 'Belum terkumpul — tekan Kumpulkan lagi';
+  }finally{ window._kumpulBusy = false; }
 }
 function startTimerKerja(){
   clearInterval(window._kjTimer);
@@ -2420,7 +2438,7 @@ function screenKerjakan(){
   }
 
   if(p && ['dikumpulkan','dinilai'].includes(p.status)){
-    const r = hitungSkor(t, p);
+    const r = p.total!=null? {skor:p.skor, dapat:p.dapat, total:p.total, perluNilai:p.perluNilai} : hitungSkor(t, p);
     const lihatNilai = t.tampilHasil!=='tidak', lihatKunci = t.tampilHasil==='pembahasan';
     const hasil = !lihatNilai? `<p>Nilai akan disampaikan oleh guru.</p>`
       : p.status==='dikumpulkan'? `<div class="kj-score"><strong>${fmtN(r.skor)}</strong><span>nilai sementara — ${r.perluNilai} soal esai masih diperiksa guru</span></div>`
@@ -2470,10 +2488,7 @@ function roomsSaya(){
   return rtStaf().filter(u=>u.id!==me.id).map(u=>dmRoom(me.id,u.id)).concat(grupSaya().map(g=>'g_'+g.id));
 }
 async function rtPost(body){
-  const res = await fetch(APPS_SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({secret:SECRET_KEY}, body))});
-  if(!res.ok) throw new Error('Server error '+res.status);
-  const j = await res.json(); if(j.error) throw new Error(j.error);
-  return j;
+  return api(body.action, body);
 }
 // Dipanggil setiap status login berubah (lewat updateUserBadge)
 async function rtSync(){
@@ -2486,7 +2501,7 @@ async function rtSync(){
   if(!rt.checked){
     rt.checked = true;
     try{
-      const r = await fetch(`${APPS_SCRIPT_URL}?action=rt_hello&secret=${encodeURIComponent(SECRET_KEY)}`);
+      const r = await fetch(`${APPS_SCRIPT_URL}?action=rt_hello`);
       const j = await r.json(); rt.ok = !!(j && j.rt);
     }catch(e){ rt.ok = false; }
     if(!rtMe() || rtMe().id!==me.id) return;
@@ -2496,16 +2511,12 @@ async function rtSync(){
 }
 function rtStop(){
   clearTimeout(rt.timer); rt.timer = null;
-  if(rt.meId && rt.ok){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', secret:SECRET_KEY, id:rt.meId})); }catch(e){} }
+  if(rt.meId && rt.ok){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', token:authToken})); }catch(e){} }
   Object.assign(rt, {meId:'', online:{}, lastSeen:null, rev:0, msgs:{}, chatOpen:false, room:'', read:{}, sending:{}, known:new Set()});
   renderChatUI(); renderPresence();
 }
 // Sinyal online ikut terkirim lewat pengecekan versi data (tiap 20 detik) — tanpa permintaan tambahan.
-function rtHeartbeatParam(){
-  const me = rtMe();
-  if(!rt.ok || !me || document.hidden) return '';
-  return `&me_id=${encodeURIComponent(me.id)}&me_role=${encodeURIComponent(me.role)}&me_nama=${encodeURIComponent(String(me.nama).slice(0,60))}`;
-}
+function rtHeartbeatParam(){ return ''; } // sinyal online kini dicatat server dari sesi login saat cek versi
 function rtJadwal(){
   clearTimeout(rt.timer);
   const me = rtMe(); if(!me || !rt.ok) return;
@@ -2822,7 +2833,7 @@ function hapusGrup(gid){
   closeModal(); rt.room=''; renderChatUI(); saveToDrive(true);
 }
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && rt.ok && rtMe()){ clearTimeout(rt.timer); rtPing(); } });
-window.addEventListener('pagehide', ()=>{ if(rt.ok && rt.meId){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', secret:SECRET_KEY, id:rt.meId})); }catch(e){} } });
+window.addEventListener('pagehide', ()=>{ if(rt.ok && rt.meId){ try{ navigator.sendBeacon(APPS_SCRIPT_URL, JSON.stringify({action:'rt_bye', token:authToken})); }catch(e){} } });
 
 /* ======================= HELPERS ======================= */
 function activeTahunAjaran(){ return db.tahunAjaran.find(t=>t.aktif) || db.tahunAjaran[0]; }
@@ -2890,13 +2901,9 @@ async function submitSetupAdmin(){
   const username=document.getElementById('suUser').value.trim();
   const pass=document.getElementById('suPass').value;
   if(!nama||!username||!pass) return toast('Semua kolom wajib diisi');
-  const hash = await sha256(pass);
-  const u = {id:uid(), username, passwordHash:hash, nama, role:'admin', kelasAksesIds:[]};
-  db.users.push(u);
-  currentUser = u; appStage='ready';
-  await saveToDrive(false, true);
-  renderTabs(); renderContent();
-  toast('Akun Admin dibuat. Selamat datang, '+nama);
+  if(pass.length<4) return toast('Password minimal 4 karakter');
+  try{ const r = await api('setupAdmin', {nama, username, password:pass}); await masukDenganToken(r.token); toast('Akun Admin dibuat. Selamat datang, '+nama); }
+  catch(e){ toast(e.message); }
 }
 
 function setLoginMode(mode){ loginMode = mode; renderContent(); }
@@ -2988,22 +2995,22 @@ function screenLogin(){
 async function submitLogin(){
   const username=document.getElementById('liUser').value.trim();
   const pass=document.getElementById('liPass').value;
-  const hash = await sha256(pass);
-  const u = db.users.find(x=>x.username===username && x.passwordHash===hash);
-  if(!u) return toast('ID atau password salah');
-  currentUser = u; appStage='ready'; activeTab='dashboard'; loginMode='pilih';
-  if(u.role==='admin') setTimeout(rapikanNamaSiswa, 600);
-  renderTabs(); renderContent(); updateUserBadge();
-  toast('Selamat datang, '+u.nama);
+  if(!username || !pass) return toast('Isi ID dan password');
+  const btn = document.querySelector('#publicRoot .gate-card .btn-sun'); if(btn){ btn.disabled=true; btn.textContent='Memeriksa…'; }
+  try{
+    const r = await api('login', {username, password:pass});
+    await masukDenganToken(r.token);
+    if(isAdmin()) setTimeout(rapikanNamaSiswa, 600);
+    toast('Selamat datang, '+currentUser.nama);
+  }catch(e){ toast(e.message); if(btn){ btn.disabled=false; btn.textContent='Masuk'; } }
 }
 async function submitLoginSiswa(){
   const noInduk = document.getElementById('siNoInduk').value.trim();
   const pw = document.getElementById('siPw').value;
   if(!noInduk || !pw) return toast('Isi ID dan password');
-  const s = db.siswa.find(x=>x.noInduk===noInduk && x.status==='aktif');
-  if(!s || !(await cocokPasswordSiswa(s, pw))) return toast('ID atau password salah');
-  currentSiswa = s; appStage='siswa-portal'; loginMode='pilih'; portalTab='beranda'; kerjaTugasId='';
-  renderTabs(); renderContent(); updateUserBadge();
+  const btn = document.querySelector('#publicRoot .gate-card .btn-sun'); if(btn){ btn.disabled=true; btn.textContent='Memeriksa…'; }
+  try{ const r = await api('loginSiswa', {noInduk, password:pw}); await masukDenganToken(r.token); }
+  catch(e){ toast(e.message); if(btn){ btn.disabled=false; btn.textContent='Masuk'; } }
 }
 function dfShowError(msg, fieldId){
   const box = document.getElementById('dfError');
@@ -3029,21 +3036,6 @@ async function submitPendaftaran(){
   if(!asalSekolah) return dfShowError('Asal Sekolah wajib diisi', 'dfAsalSekolah');
   if(!namaVihara) return dfShowError('Nama Vihara wajib diisi', 'dfVihara');
 
-  // ---- Cek data ganda: ambil data terbaru dari server dulu, lalu bandingkan ----
-  const btn = document.getElementById('dfSubmitBtn');
-  if(btn){ btn.disabled = true; btn.textContent = 'Memeriksa data...'; }
-  try{ await mergeFromRemote(); }catch(e){ /* tetap cek dengan data yang ada */ }
-  const dup = cariDuplikatPendaftar(nama, tempatLahir, tglLahir);
-  if(dup){
-    if(btn){ btn.disabled = false; btn.textContent = 'Submit Pendaftaran'; }
-    const pesan = dup.jenis==='siswa'
-      ? `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar dan sudah terdaftar sebagai siswa SMB. Tidak perlu mendaftar lagi — silakan masuk lewat "Masuk sebagai Siswa SMB", atau hubungi Admin bila lupa Nomor Induk.`
-      : `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar pada ${fmtDate(dup.data.tanggalDaftar)} dan sedang menunggu persetujuan Admin. Mohon tidak mendaftar ulang.`;
-    dfShowError(pesan, 'dfNama');
-    ['dfTempat','dfTgl'].forEach(fid=>{ const f=document.getElementById(fid); if(f) f.style.borderColor='var(--coral)'; });
-    return;
-  }
-
   const entry = {
     id:uid(), status:'pending', tanggalDaftar: new Date().toISOString().slice(0,10),
     namaLengkap: nama, tempatLahir, tglLahir, teleponSiswa,
@@ -3059,12 +3051,32 @@ async function submitPendaftaran(){
     statusKetuhanan: document.getElementById('dfKetuhanan').value,
     namaVihara,
   };
-  db.pendaftaran.push(entry);
-  try{ await saveToDrive(true); }catch(e){}
+  const btn = document.getElementById('dfSubmitBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Mengirim…'; }
+  let r;
+  try{ r = await api('daftar', {entry}); }
+  catch(e){ if(btn){ btn.disabled=false; btn.textContent='Submit Pendaftaran'; } return dfShowError('Gagal mengirim: '+e.message); }
+  if(r.duplikat){
+    if(btn){ btn.disabled = false; btn.textContent = 'Submit Pendaftaran'; }
+    const pesan = r.duplikat==='siswa'
+      ? `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar dan sudah terdaftar sebagai siswa SMB. Tidak perlu mendaftar lagi — silakan masuk lewat "Masuk sebagai Siswa SMB", atau hubungi Admin bila lupa Nomor Induk.`
+      : `Siswa atas nama "${nama}" (${tempatLahir}, ${isoToDdmmyyyy(tglLahir)}) sudah pernah mendaftar pada ${fmtDate(r.tanggal)} dan sedang menunggu persetujuan Admin. Mohon tidak mendaftar ulang.`;
+    dfShowError(pesan, 'dfNama');
+    ['dfTempat','dfTgl'].forEach(fid=>{ const f=document.getElementById(fid); if(f) f.style.borderColor='var(--coral)'; });
+    return;
+  }
   loginMode = 'daftar-selesai';
   renderContent();
 }
-function logout(){ closeModal(); clearInterval(window._kjTimer); clearTimeout(window._jwbT); kerjaTugasId=''; portalTab='beranda'; pbEditTugas=null; pbHasilTugasId=''; pbCetak=null; publicPreview=false; currentUser=null; currentSiswa=null; appStage='need-login'; loginMode='pilih'; renderTabs(); renderContent(); updateUserBadge(); }
+function logout(){
+  closeModal(); clearInterval(window._kjTimer); clearTimeout(window._jwbT); clearInterval(window._pollTimer);
+  const t = authToken; if(t) api('logout').catch(()=>{});
+  kerjaTugasId=''; portalTab='beranda'; pbEditTugas=null; pbHasilTugasId=''; pbCetak=null; publicPreview=false;
+  currentUser=null; currentSiswa=null; loginMode='pilih'; updateUserBadge();
+  setToken(null); db = DB_KOSONG(); lastSyncedSnapshot = snapshotDb();   // hapus data pribadi dari memori
+  appStage='need-drive'; renderTabs(); renderContent();
+  muatPublik();
+}
 function updateUserBadge(){
   const b = document.getElementById('userBadge'), lo=document.getElementById('logoutBtn');
   if(currentUser){ b.innerHTML = `<span class="badge ${currentUser.role}">${esc(currentUser.nama)}</span>`; lo.style.display='inline-block'; }
@@ -3172,20 +3184,14 @@ async function simpanPengguna(id){
   const btn = document.getElementById('fPSubmitBtn');
   if(btn){ btn.disabled = true; btn.textContent = 'Menyimpan...'; }
   try{
-    if(id){
-      const u = db.users.find(x=>x.id===id);
-      Object.assign(u, {nama, username, role, kelasAksesIds:akses, lihatSemuaSiswa}, profil);
-      if(pass) u.passwordHash = await sha256(pass);
-    } else {
-      const u = {id:uid(), username, passwordHash: await sha256(pass), nama, role, kelasAksesIds:akses, lihatSemuaSiswa, ...profil};
-      db.users.push(u);
-    }
-    closeModal(); renderContent();
-    await saveToDrive(true);
+    const lama = id? db.users.find(x=>x.id===id) : null;
+    const user = Object.assign({}, lama||{}, {id: id || uid(), nama, username, role, kelasAksesIds:akses, lihatSemuaSiswa}, profil);
+    delete user.punyaPassword;
+    await api('simpanUser', {user, password: pass||''});
+    closeModal(); await mergeFromRemote(); renderContent(); toast(id? 'Pengguna diperbarui' : 'Pengguna ditambahkan');
   }catch(e){
-    console.error(e);
     if(btn){ btn.disabled=false; btn.textContent='Simpan'; }
-    driveError('Gagal menyimpan pengguna', e);
+    fPShowError(e.message);
   }
 }
 function hapusPengguna(id){ if(!confirm('Hapus pengguna ini?')) return; db.users=db.users.filter(u=>u.id!==id); renderContent(); saveToDrive(true); }
@@ -3217,7 +3223,7 @@ function renderProfil(){
       <div class="sig-prev">${u.ttdGambar? `<img src="${u.ttdGambar}" alt="Tanda tangan Anda">` : 'Belum ada tanda tangan'}</div>
       <div style="flex:1;min-width:220px">
         <label class="btn-sun btn-small" style="display:inline-flex;cursor:pointer;margin:0 6px 6px 0">${u.ttdGambar? 'Ganti tanda tangan':'Unggah tanda tangan'}
-          <input type="file" accept="image/*" style="display:none" onchange="uploadTtdGuru(this)"></label>
+          <input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="uploadTtdGuru(this)"></label>
         ${u.ttdGambar? `<button class="btn-danger btn-small" onclick="hapusTtdGuru()">Hapus</button>`:''}
         <div class="help">Tanda tangani kertas putih polos dengan pulpen hitam/biru, lalu foto atau scan. Latar putih dihapus otomatis.</div>
       </div>
@@ -3235,40 +3241,35 @@ function renderProfil(){
   `;
 }
 // Tanda tangan digital: perkecil, hapus latar terang, potong ke area tinta, simpan sebagai PNG transparan
-function uploadTtdGuru(input){
+async function uploadTtdGuru(input){
   const f = input.files[0]; input.value='';
-  if(!f) return;
-  if(!/^image\//.test(f.type)) return toast('File harus berupa gambar (JPG/PNG)');
-  const r = new FileReader();
-  r.onload = e=>{
-    const img = new Image();
-    img.onload = ()=>{
-      const sc = Math.min(1, 900/img.width, 400/img.height);
-      const w = Math.max(1, Math.round(img.width*sc)), h = Math.max(1, Math.round(img.height*sc));
-      const c = document.createElement('canvas'); c.width=w; c.height=h;
-      const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
-      const d = ctx.getImageData(0,0,w,h), px = d.data;
-      let x0=w, y0=h, x1=-1, y1=-1;
-      for(let i=0;i<px.length;i+=4){
-        const lum = 0.299*px[i]+0.587*px[i+1]+0.114*px[i+2];
-        const a = px[i+3]===0? 0 : Math.max(0, Math.min(255, (205-lum)*3.2)); // makin gelap makin pekat
-        px[i+3] = Math.min(px[i+3], a);
-        if(px[i+3]>40){ const p=i/4, x=p%w, y=(p-x)/w; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
-      }
-      if(x1<0) return toast('Tanda tangan tidak terbaca — gunakan tinta gelap di kertas putih');
-      ctx.putImageData(d,0,0);
-      const pad=6; x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
-      const cw=x1-x0+1, ch=y1-y0+1, sc2=Math.min(1, 420/cw, 160/ch);
-      const o = document.createElement('canvas'); o.width=Math.round(cw*sc2); o.height=Math.round(ch*sc2);
-      o.getContext('2d').drawImage(c, x0,y0,cw,ch, 0,0,o.width,o.height);
-      const u = db.users.find(x=>x.id===currentUser.id);
-      u.ttdGambar = o.toDataURL('image/png'); currentUser = u;
-      renderContent(); saveToDrive(true); toast('Tanda tangan disimpan');
-    };
-    img.onerror = ()=> toast('Gambar tidak bisa dibaca');
-    img.src = e.target.result;
-  };
-  r.readAsDataURL(f);
+  if(!cekFileGambar(f)) return;
+  if(window._ttdProses) return;
+  window._ttdProses = true;
+  const prev = document.querySelector('.sig-prev'); if(prev) prev.innerHTML = 'Memproses…';
+  await jeda();
+  try{
+    const c = await muatGambarFile(f, 900, 400);
+    const w = c.width, h = c.height, ctx = c.getContext('2d');
+    const d = ctx.getImageData(0,0,w,h), px = d.data;
+    let x0=w, y0=h, x1=-1, y1=-1;
+    for(let i=0;i<px.length;i+=4){
+      const lum = 0.299*px[i]+0.587*px[i+1]+0.114*px[i+2];
+      const a = Math.max(0, Math.min(255, (205-lum)*3.2)); // makin gelap makin pekat, latar terang jadi transparan
+      px[i+3] = Math.min(px[i+3], a);
+      if(px[i+3]>40){ const p=i/4, x=p%w, y=(p-x)/w; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    }
+    if(x1<0){ toast('Tanda tangan tidak terbaca — gunakan tinta gelap di kertas putih'); renderContent(); return; }
+    ctx.putImageData(d,0,0);
+    const pad=6; x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad); x1=Math.min(w-1,x1+pad); y1=Math.min(h-1,y1+pad);
+    const cw=x1-x0+1, ch=y1-y0+1, sc2=Math.min(1, 420/cw, 160/ch);
+    const o = document.createElement('canvas'); o.width=Math.max(1,Math.round(cw*sc2)); o.height=Math.max(1,Math.round(ch*sc2));
+    o.getContext('2d').drawImage(c, x0,y0,cw,ch, 0,0,o.width,o.height);
+    const u = db.users.find(x=>x.id===currentUser.id);
+    u.ttdGambar = o.toDataURL('image/png'); currentUser = u;
+    renderContent(); saveToDrive(true); toast('Tanda tangan disimpan');
+  }catch(e){ toast('Foto tidak bisa dibaca — coba foto lain (JPG/PNG)'); renderContent(); }
+  finally{ window._ttdProses = false; }
 }
 function hapusTtdGuru(){
   if(!confirm('Hapus tanda tangan digital Anda?')) return;
@@ -3297,13 +3298,11 @@ async function submitUbahPassword(){
   const baru = document.getElementById('pfPassBaru').value;
   const ulang = document.getElementById('pfPassUlang').value;
   if(!lama||!baru||!ulang) return pfPassError('Semua kolom password wajib diisi');
-  const hashLama = await sha256(lama);
-  if(hashLama !== currentUser.passwordHash) return pfPassError('Password lama salah');
   if(baru !== ulang) return pfPassError('Password baru dan ulangi password tidak sama');
   if(baru.length < 4) return pfPassError('Password baru minimal 4 karakter');
-  currentUser.passwordHash = await sha256(baru);
-  await saveToDrive(true);
+  try{ await api('ubahPassword', {lama, baru}); }catch(e){ return pfPassError(e.message); }
   document.getElementById('pfPassLama').value=''; document.getElementById('pfPassBaru').value=''; document.getElementById('pfPassUlang').value='';
+  const b=document.getElementById('pfPassError'); if(b) b.style.display='none';
   toast('Password berhasil diubah');
 }
 
@@ -4937,98 +4936,116 @@ function renderLaporanAbsensiKelas(){
   `;
 }
 
-/* ======================= BACKEND (Google Apps Script) ======================= */
-let driveKnownVersion = null; // versi data terakhir yang kita ketahui (dari server)
-let lastSyncedSnapshot = null; // salinan db persis setelah load/save sukses terakhir, untuk deteksi apa yang berubah lokal
+/* ======================= BACKEND (Google Apps Script) — versi aman ======================= */
+// Website TIDAK memegang kunci rahasia. Setelah login, server memberi token sesi;
+// server yang menentukan data apa yang dikirim dan perubahan apa yang diterima.
+let driveKnownVersion = null;   // versi data terakhir yang kita ketahui (dari server)
+let lastSyncedSnapshot = null;  // salinan db persis setelah muat/simpan terakhir — dasar menghitung perubahan
 let saveBusy = false;
 let saveQueued = false;
+let authToken = null;
+try{ authToken = sessionStorage.getItem('smb_token'); }catch(e){}
+function setToken(t){ authToken = t; try{ t? sessionStorage.setItem('smb_token', t) : sessionStorage.removeItem('smb_token'); }catch(e){} }
+
+const DB_KOSONG = ()=>({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[],rencana:[],materi:[],tugas:[],pengumpulan:[],chatGrup:[]});
 
 function snapshotDb(){ try{ return JSON.parse(JSON.stringify(db)); }catch(e){ return null; } }
-
 function updateStatusUI(connected){
-  document.getElementById('statusDot').classList.toggle('on', connected);
-  document.getElementById('statusText').innerHTML = `<span class="dot ${connected?'on':''}" id="statusDot"></span> ${connected? 'Tersambung' : 'Terputus dari server'}`;
+  const el = document.getElementById('statusText'); if(!el) return;
+  el.innerHTML = `<span class="dot ${connected?'on':''}" id="statusDot"></span> ${connected? 'Tersambung' : 'Terputus dari server'}`;
 }
-function backendConfigured(){ return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('GANTI_DENGAN') && SECRET_KEY && !SECRET_KEY.includes('GANTI_DENGAN'); }
+function backendConfigured(){ return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('GANTI_DENGAN'); }
 function driveError(title, e){
   console.error(e);
   const msg = (e && e.message) ? e.message : String(e);
   openModal(`<h3>⚠️ ${esc(title)}</h3>
     <p style="font-size:13px;line-height:1.6;white-space:pre-wrap;background:#f7fafd;color:#1F2A3C;border:1px solid var(--line);border-radius:8px;padding:10px">${esc(msg)}</p>
-    <p style="font-size:12.5px;color:var(--ink-soft)">Jika ini terus terjadi, screenshot pesan di atas dan periksa: koneksi internet, atau apakah URL Web App / kunci rahasia di kode sudah benar (lihat PANDUAN-SETUP.md).</p>
-    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal(); connectDrive()">Coba lagi</button>
-    <button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
+    <p style="font-size:12.5px;color:var(--ink-soft)">Jika ini terus terjadi, periksa koneksi internet, lalu muat ulang halaman.</p>
+    <div class="modal-actions"><button class="btn-sun btn-small" onclick="closeModal()">Tutup</button></div>`);
 }
-function decideStageAfterLoad(){
-  if(backendInitError){ appStage='need-drive'; return; }
-  if(currentUser){
-    const match = db.users.find(u=>u.id===currentUser.id);
-    if(match){ currentUser = match; appStage = 'ready'; return; }
-    currentUser = null; // akun terhapus di tempat lain
+
+// Semua permintaan ke server lewat sini
+async function api(action, data){
+  const res = await fetch(APPS_SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari CORS preflight
+    body: JSON.stringify(Object.assign({action, token: authToken}, data||{}))});
+  if(!res.ok) throw new Error(`Server error ${res.status}`);
+  const j = await res.json();
+  if(j && j.error){
+    if(j.code==='AUTH' && authToken){ sesiBerakhir(j.error); }
+    const e = new Error(j.error); e.code = j.code; throw e;
   }
-  if(currentSiswa){
-    const matchS = db.siswa.find(s=>s.id===currentSiswa.id && s.status==='aktif');
-    if(matchS){ currentSiswa = matchS; appStage='siswa-portal'; return; }
-    currentSiswa = null;
-  }
-  appStage = db.users.length? 'need-login' : 'need-admin-setup';
+  return j;
+}
+function sesiBerakhir(pesan){
+  setToken(null);
+  clearInterval(window._pollTimer);
+  currentUser = null; currentSiswa = null;
+  muatPublik().then(()=> toast(pesan || 'Sesi berakhir, silakan masuk kembali'));
+}
+
+// Data halaman awal untuk pengunjung (tanpa login)
+async function muatPublik(){
+  try{
+    const r = await api('public');
+    db = Object.assign(DB_KOSONG(), r.data||{});
+    driveKnownVersion = r.version; lastSyncedSnapshot = snapshotDb();
+    backendInitError = null; updateStatusUI(true);
+    appStage = r.needSetup? 'need-admin-setup' : 'need-login';
+  }catch(e){ backendInitError = e.message || String(e); appStage = 'need-drive'; updateStatusUI(false); }
+  kerjaTugasId=''; publicPreview=false;
+  renderTabs(); renderContent(); updateUserBadge();
+}
+// Data milik pengguna yang sedang login
+async function muatSesi(){
+  const r = await api('load');
+  db = Object.assign(DB_KOSONG(), r.data||{});
+  driveKnownVersion = r.version; lastSyncedSnapshot = snapshotDb();
+  if(r.me.t==='siswa'){ currentSiswa = db.siswa.find(s=>s.id===r.me.id); currentUser = null; appStage = 'siswa-portal'; }
+  else { currentUser = db.users.find(u=>u.id===r.me.id); currentSiswa = null; appStage = 'ready'; }
+  backendInitError = null; updateStatusUI(true);
+  if(currentUser && isAdmin() && (!db.tingkatKelas || !db.tingkatKelas.length)){ seedDefaults(); saveToDrive(false); }
+  startPolling();
 }
 async function loadFromDrive(){
   updateStatusUI(false);
-  try{
-    if(!backendConfigured()) throw new Error('URL Web App / kunci rahasia belum diisi di kode. Lihat PANDUAN-SETUP.md.');
-    const url = `${APPS_SCRIPT_URL}?action=load&secret=${encodeURIComponent(SECRET_KEY)}`;
-    const res = await fetch(url);
-    if(!res.ok) throw new Error(`Server error ${res.status}`);
-    const data = await res.json();
-    if(data.error) throw new Error(data.error);
-    driveKnownVersion = data.version;
-    db = Object.assign({meta:{noIndukCounter:0},users:[],daerah:[],tingkatKelas:[],tahunAjaran:[],kelas:[],siswa:[],jadwalPertemuan:[],absensi:[],aspekPenilaian:[],nilai:[],pendaftaran:[],paramita:[],kas:[],settings:{},berita:[],penilaianKelas:[],rencana:[],materi:[],tugas:[],pengumpulan:[],chatGrup:[]}, data.data||{});
-    if(!db.tingkatKelas || !db.tingkatKelas.length){
-      seedDefaults();
-      await saveToDrive(false, true);
-    }
-    lastSyncedSnapshot = snapshotDb();
-    backendInitError = null;
-    updateStatusUI(true);
-  }catch(e){ console.error(e); backendInitError = e.message || String(e); updateStatusUI(false); }
-  decideStageAfterLoad();
+  if(!backendConfigured()){ backendInitError = 'URL Web App belum diisi di kode.'; appStage='need-drive'; renderContent(); return; }
+  if(authToken){
+    try{ await muatSesi(); renderTabs(); renderContent(); updateUserBadge(); return; }
+    catch(e){ if(e.code!=='AUTH'){ backendInitError = e.message||String(e); appStage='need-drive'; renderContent(); return; } }
+  }
+  await muatPublik();
+}
+// Dipanggil setelah login/daftar admin berhasil
+async function masukDenganToken(token){
+  setToken(token);
+  await muatSesi();
+  activeTab='dashboard'; loginMode='pilih'; portalTab='beranda'; kerjaTugasId='';
   renderTabs(); renderContent(); updateUserBadge();
-  if(!backendInitError) startPolling();
 }
 function connectDrive(){ backendInitError=null; renderContent(); loadFromDrive(); }
 async function manualRefresh(){ await loadFromDrive(); }
 
-// Cek berkala di latar belakang; kalau ada perubahan dari pengguna lain dan
-// tidak sedang ada modal terbuka (supaya tidak mengganggu yang sedang mengetik),
-// diam-diam muat ulang & gabungkan datanya.
+// Cek berkala; bila ada perubahan dari pengguna lain, muat ulang & gabungkan diam-diam
 function startPolling(){
   clearInterval(window._pollTimer);
   window._pollTimer = setInterval(async ()=>{
+    if(!authToken) return;
     try{
-      const res = await fetch(`${APPS_SCRIPT_URL}?action=version&secret=${encodeURIComponent(SECRET_KEY)}${rtHeartbeatParam()}`);
-      if(!res.ok) return;
-      const data = await res.json();
+      const data = await api('version');
       const modalOpen = document.getElementById('modalRoot') && document.getElementById('modalRoot').innerHTML.trim().length>0;
       const ae = document.activeElement;
       const sedangMengetik = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type!=='checkbox';
-      if(driveKnownVersion && data.version && data.version !== driveKnownVersion && !modalOpen && !saveBusy && !window._savePending && !sedangMengetik){
+      if(driveKnownVersion!=null && data.version && data.version !== driveKnownVersion && !modalOpen && !saveBusy && !window._savePending && !sedangMengetik){
         await mergeFromRemote();
-        if(currentSiswa) currentSiswa = db.siswa.find(x=>x.id===currentSiswa.id) || currentSiswa;
-        if(currentUser) currentUser = db.users.find(x=>x.id===currentUser.id) || currentUser;
-        if(kerjaAktif() || (activeTab==='pembelajaran' && pbEditTugas)) return; // jangan ganggu siswa/guru yang sedang mengerjakan
+        if(kerjaAktif() || (activeTab==='pembelajaran' && pbEditTugas)) return; // jangan ganggu yang sedang mengerjakan
+        if(window._ttdProses || Date.now()-(window._pilihFile||0) < 90000) return; // sedang memilih/memproses file
         renderTabs(); renderContent(); updateUserBadge();
       }
     }catch(e){ /* diamkan, cek berikutnya akan coba lagi */ }
   }, 20000);
 }
 
-// Ambil data terbaru dari server dan gabungkan dengan perubahan lokal yang
-// belum tersimpan, per-koleksi (bukan per-record) supaya sederhana & aman:
-// koleksi yang BERUBAH secara lokal sejak sinkron terakhir akan dipertahankan
-// versi lokalnya; koleksi yang tidak disentuh mengambil versi terbaru server.
-// Gabung per-record (berdasar id): perubahan lokal ditimpakan ke data server terbaru,
-// sehingga dua guru yang mengisi kelas berbeda tidak saling menimpa.
+// Gabung per-catatan (berdasar id): perubahan lokal yang belum tersimpan ditimpakan ke data server terbaru
 function mergeArr(local, remote, base){
   const punyaId = a => (a||[]).every(x=>x && typeof x==='object' && x.id);
   if(!punyaId(local) || !punyaId(remote) || !punyaId(base)) return local;
@@ -5039,59 +5056,78 @@ function mergeArr(local, remote, base){
   return [...out.values()];
 }
 async function mergeFromRemote(){
-  const url = `${APPS_SCRIPT_URL}?action=load&secret=${encodeURIComponent(SECRET_KEY)}`;
-  const res = await fetch(url);
-  if(!res.ok) throw new Error(`Server error ${res.status}`);
-  const data = await res.json();
-  if(data.error) throw new Error(data.error);
-  const remote = data.data || {};
+  if(!authToken) return;
+  const r = await api('load');
+  const remote = Object.assign(DB_KOSONG(), r.data||{});
   const base = lastSyncedSnapshot || {};
   const merged = {};
-  const allKeys = new Set([...Object.keys(db), ...Object.keys(remote)]);
-  allKeys.forEach(key=>{
-    if(key==='meta'){
-      const remoteCounter = (remote.meta && remote.meta.noIndukCounter) || 0;
-      const localCounter = (db.meta && db.meta.noIndukCounter) || 0;
-      const rm = remote.meta||{}, lm = db.meta||{}, bm = base.meta||{};
-      merged.meta = Object.assign({}, rm, { noIndukCounter: Math.max(remoteCounter, localCounter) });
-      if((lm.kopLogo||'') !== (bm.kopLogo||'')){ if(lm.kopLogo) merged.meta.kopLogo = lm.kopLogo; else delete merged.meta.kopLogo; }
-      return;
-    }
+  new Set([...Object.keys(db), ...Object.keys(remote)]).forEach(key=>{
     const localChanged = JSON.stringify(db[key]) !== JSON.stringify(base[key]);
     if(!localChanged){ merged[key] = remote[key]; return; }
     merged[key] = (Array.isArray(db[key]) && Array.isArray(remote[key])) ? mergeArr(db[key], remote[key], base[key]) : db[key];
   });
   db = merged;
-  driveKnownVersion = data.version;
-  lastSyncedSnapshot = snapshotDb();
+  driveKnownVersion = r.version;
+  lastSyncedSnapshot = Object.assign(snapshotDb(), JSON.parse(JSON.stringify(remote)));  // dasar = versi server
+  if(currentSiswa) currentSiswa = db.siswa.find(x=>x.id===currentSiswa.id) || currentSiswa;
+  if(currentUser) currentUser = db.users.find(x=>x.id===currentUser.id) || currentUser;
 }
-async function saveToDrive(manual, forceCreate){
+
+// Hitung perubahan sejak sinkron terakhir: per catatan untuk daftar, utuh untuk objek (settings/meta)
+function buatPatch(){
+  const base = lastSyncedSnapshot || {};
+  const patch = {}; let ada = false;
+  Object.keys(db).forEach(k=>{
+    const a = db[k], b = base[k];
+    if(JSON.stringify(a)===JSON.stringify(b)) return;
+    if(Array.isArray(a) && (b==null || Array.isArray(b))){
+      const B = new Map((b||[]).filter(x=>x&&x.id).map(x=>[x.id, JSON.stringify(x)]));
+      const ids = new Set(), up = [];
+      a.forEach(x=>{ if(!x || !x.id) return; ids.add(x.id); if(B.get(x.id)!==JSON.stringify(x)) up.push(x); });
+      const del = [...B.keys()].filter(id=>!ids.has(id));
+      if(up.length || del.length){ patch[k] = {up, del}; ada = true; }
+    } else if(a && typeof a==='object'){ patch[k] = {set:a}; ada = true; }
+  });
+  return ada? patch : null;
+}
+async function saveToDrive(manual){
+  if(!authToken) return;
   if(saveBusy){ saveQueued = true; return; }
+  const patch = buatPatch();
+  if(!patch) return;
   saveBusy = true;
+  const dasarBaru = snapshotDb();             // keadaan yang sedang dikirim
   try{
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'}, // hindari CORS preflight ke Apps Script
-      body: JSON.stringify({action:'save', secret:SECRET_KEY, knownVersion: driveKnownVersion, force: !!forceCreate, data: db})
-    });
-    if(!res.ok) throw new Error(`Server error ${res.status}`);
-    const json = await res.json();
-    if(json.error) throw new Error(json.error);
-    if(json.conflict){
-      // Ada yang menyimpan duluan — gabungkan otomatis lalu simpan ulang, tanpa mengganggu pengguna.
-      await mergeFromRemote();
-      if(currentSiswa) currentSiswa = db.siswa.find(x=>x.id===currentSiswa.id) || currentSiswa;
-      saveBusy = false;
-      return saveToDrive(manual, forceCreate);
-    }
-    driveKnownVersion = json.version;
-    lastSyncedSnapshot = snapshotDb();
+    const r = await api('save', {patch});
+    const lompat = driveKnownVersion!=null && r.version > driveKnownVersion + 1;  // ada simpanan orang lain di antaranya
+    lastSyncedSnapshot = dasarBaru;
+    driveKnownVersion = r.version;
     updateStatusUI(true);
-  }catch(e){ driveError('Gagal menyimpan data', e); }
+    if((r.ditolak && r.ditolak.length) || lompat){
+      if(r.ditolak && r.ditolak.length && currentUser) toast('Sebagian perubahan tidak disimpan karena di luar hak akses Anda');
+      await mergeFromRemote();
+      if(!kerjaAktif()) { renderTabs(); renderContent(); }
+    }
+  }catch(e){
+    if(e.code!=='AUTH') driveError('Gagal menyimpan data', e);
+  }
   saveBusy = false;
   if(saveQueued){ saveQueued = false; saveToDrive(false); }
 }
+// Ganti satu catatan di db sekaligus di dasar sinkron (dipakai setelah aksi khusus server)
+function setTersinkron(coll, rec){
+  [db, lastSyncedSnapshot].forEach(o=>{
+    if(!o) return;
+    o[coll] = o[coll] || [];
+    const i = o[coll].findIndex(x=>x.id===rec.id), c = JSON.parse(JSON.stringify(rec));
+    if(i>=0) o[coll][i] = c; else o[coll].push(c);
+  });
+}
 
+// Tandai saat jendela pilih file terbuka, supaya halaman tidak digambar ulang di tengah proses
+document.addEventListener('click', e=>{ if(e.target.closest && e.target.closest('input[type=file], label')?.querySelector?.('input[type=file]') || (e.target.type==='file')) window._pilihFile = Date.now(); }, true);
+document.addEventListener('change', e=>{ if(e.target && e.target.type==='file') window._pilihFile = 0; }, true);
+document.addEventListener('cancel', e=>{ if(e.target && e.target.type==='file') window._pilihFile = 0; }, true);
 /* ======================= INIT ======================= */
 renderTabs();
 renderContent();
