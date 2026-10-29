@@ -546,6 +546,14 @@
   .legend-row > span{display:inline-flex;align-items:center;gap:6px;}
   .legend-row .chip{width:24px;height:22px;font-size:11px;}
   .rp-tp td{font-size:10pt;}
+  .rp-t tr.rp-sub td{font-size:9.5pt;color:#333;padding-top:3px;padding-bottom:3px;}
+  .rp-t tr.rp-sub td:nth-child(2){padding-left:22px;}
+  .ir-t td{vertical-align:top;padding-top:12px;padding-bottom:12px;}
+  .ir-row.off strong{color:var(--ink-soft);font-weight:500;}
+  .ir-b{white-space:nowrap;} .ir-b input{width:70px;text-align:center;} .ir-b span{margin-left:4px;color:var(--ink-soft);}
+  .ir-kol{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:6px;align-items:center;}
+  .ir-kol .sd-sub{width:100%;}
+  .ir-kol .chk{margin:0;}
   .sheet th.grp-h{border-bottom:1px solid var(--line);color:var(--heading);}
   .sheet.rekap thead tr:nth-child(2) th{top:33px;}
   .bobot-t td.inp input{width:62px;}
@@ -1199,6 +1207,7 @@ function renderContent(){
   if(!allTabs().some(t=>t.key===activeTab)) activeTab='dashboard';
   c.innerHTML = renderers[activeTab]();
   if(activeTab==='pengaturan' && setTab==='penilaian') cekTotalBobot();
+  if(activeTab==='penilaian' && penilaianSheetTab==='isi') irTotal();
 }
 
 /* ======================= HALAMAN PUBLIK (awal, berita, tentang, kontak) ======================= */
@@ -1468,7 +1477,7 @@ function simpanSetKop(){
 function setPenilaian(){
   const p = S().penilaian;
   return `<div class="set-card">
-    <p class="subtitle" style="margin-top:0">Setiap semester ada empat ujian dan empat rapor. Atur bobot (%) komponen untuk tiap rapor — isi 0 bila komponen tidak dipakai. Setiap baris harus berjumlah 100%. Berlaku untuk semua kelas.</p>
+    <p class="subtitle" style="margin-top:0">Setiap semester ada empat ujian dan empat rapor. Ini bobot <strong>bawaan</strong> untuk semua kelas — isi 0 bila komponen tidak dipakai, dan setiap baris harus berjumlah 100%. Guru bisa mengatur isi rapor khusus untuk kelasnya di Penilaian › Isi rapor.</p>
     <div class="sheet-wrap" style="max-height:none"><table class="sheet bobot-t">
       <thead><tr><th>Rapor</th>${KOMP_BOBOT.map(c=>`<th class="c">${c.label}</th>`).join('')}<th class="c">Total</th></tr></thead>
       <tbody>${UJIAN.map(u=>{ const b=p.bobotRapor[u.key]; return `<tr><td class="nm">Nilai ${u.label}</td>
@@ -3095,7 +3104,7 @@ function renderPengguna(){
       <td><strong>${esc(u.nama)}</strong><div style="font-size:12px;color:var(--ink-soft)">@${esc(u.username)}</div></td>
       <td><span class="badge ${u.role}">${u.role}</span></td>
       <td>${esc(u.noHp||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(u.email||'')}</div></td>
-      <td>${esc(u.pendidikanTerakhir||'—')}</td>
+      <td>${esc(u.pendidikanTerakhir||'—')}${u.pekerjaan? `<div style="font-size:12px;color:var(--ink-soft)">${esc(u.pekerjaan)}</div>`:''}${u.mulaiMengajarSmb? `<div style="font-size:12px;color:var(--ink-soft)">Di SMB sejak ${esc(u.mulaiMengajarSmb)}</div>`:''}</td>
       <td>${u.role==='guru' ? (u.lihatSemuaSiswa? '<strong>Semua siswa</strong>' : ((u.kelasAksesIds||[]).map(id=>{const k=db.kelas.find(x=>x.id===id); return k? esc(kelasLabel(k)):'';}).filter(Boolean).join(', ') || '—')) : 'Semua'}</td>
       <td><div class="row">
         <button class="btn-outline btn-small" onclick="formPengguna('${u.id}')">Ubah</button>
@@ -3106,7 +3115,7 @@ function renderPengguna(){
     <div class="toolbar"><div><h2>Pengguna</h2><p class="subtitle" style="margin:0">Kelola akun Admin & Guru, biodata, dan hak akses kelasnya</p></div>
     <button class="btn-sun" onclick="formPengguna()">+ Tambah pengguna</button></div>
     <div class="setup-box">🔒 Password disimpan dalam bentuk terenkripsi satu-arah — Admin <strong>tidak bisa melihat</strong> password asli seorang guru, termasuk yang baru mereka ganti sendiri lewat "Profil Saya". Tapi Admin tetap bisa <strong>mengatur ulang (reset)</strong> password siapa pun lewat tombol "Ubah" di bawah, tanpa perlu tahu password lamanya.</div>
-    ${db.users.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Peran</th><th>Kontak</th><th>Pendidikan</th><th>Akses kelas</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    ${db.users.length? `<div style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Peran</th><th>Kontak</th><th>Pendidikan &amp; pekerjaan</th><th>Akses kelas</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
     : `<div class="empty">Belum ada pengguna lain.</div>`}
   `;
 }
@@ -3126,7 +3135,11 @@ function formPengguna(id){
       <div class="field"><label>Alamat Email</label><input id="fPEmail" type="email" value="${u?esc(u.email||''):''}"></div>
     </div>
     <div class="field"><label>Alamat Tempat Tinggal</label><textarea id="fPAlamat" rows="2" style="width:100%">${u?esc(u.alamatTinggal||''):''}</textarea></div>
-    <div class="field"><label>Pendidikan Terakhir</label><input id="fPPendidikan" placeholder="misal: S1 Pendidikan Agama" value="${u?esc(u.pendidikanTerakhir||''):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Pendidikan Terakhir</label><input id="fPPendidikan" placeholder="misal: S1 Pendidikan Agama" value="${u?esc(u.pendidikanTerakhir||''):''}"></div>
+      <div class="field"><label>Pekerjaan</label><input id="fPPekerjaan" placeholder="misal: Karyawan swasta" value="${u?esc(u.pekerjaan||''):''}"></div>
+    </div>
+    ${fieldTahunMengajar('fP', u)}
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
     <div class="grid2">
       <div class="field"><label>ID / Username (untuk login)</label><input id="fPUser" autocomplete="off" value="${u?esc(u.username):''}"></div>
@@ -3176,7 +3189,10 @@ async function simpanPengguna(id){
     email: document.getElementById('fPEmail').value.trim(),
     alamatTinggal: document.getElementById('fPAlamat').value.trim(),
     pendidikanTerakhir: document.getElementById('fPPendidikan').value.trim(),
+    pekerjaan: document.getElementById('fPPekerjaan').value.trim(),
   };
+  const th = bacaTahunMengajar('fP'); if(th.error) return fPShowError(th.error, 'fPMulaiSmb');
+  profil.mulaiMengajar = th.mulaiMengajar; profil.mulaiMengajarSmb = th.mulaiMengajarSmb;
   if(!nama) return fPShowError('Nama Guru / Nama Lengkap wajib diisi', 'fPNama');
   if(!username) return fPShowError('ID / Username wajib diisi', 'fPUser');
   if(!id && !pass) return fPShowError('Password wajib diisi untuk pengguna baru', 'fPPass');
@@ -3196,6 +3212,24 @@ async function simpanPengguna(id){
 }
 function hapusPengguna(id){ if(!confirm('Hapus pengguna ini?')) return; db.users=db.users.filter(u=>u.id!==id); renderContent(); saveToDrive(true); }
 
+/* ---- Tahun mulai mengajar (dipakai di Profil Saya & form Admin) ---- */
+function lamaTahun(th){ const n = new Date().getFullYear() - Number(th); return th && n>=0 ? (n<1? 'kurang dari 1 tahun' : `± ${n} tahun`) : ''; }
+function fieldTahunMengajar(p, u){
+  const ini = new Date().getFullYear();
+  const f = (id, label, v)=>`<div class="field"><label>${label}</label>
+      <input id="${p}${id}" type="number" inputmode="numeric" min="1950" max="${ini}" placeholder="misal: 2015" value="${esc(v||'')}"
+        oninput="const h=this.nextElementSibling; h.textContent=lamaTahun(this.value.length===4?this.value:'')">
+      <div class="help">${lamaTahun(v)}</div></div>`;
+  return `<div class="grid2">${f('MulaiMengajar','Mulai Mengajar Tahun', u&&u.mulaiMengajar)}${f('MulaiSmb','Mulai Mengajar di SMB', u&&u.mulaiMengajarSmb)}</div>`;
+}
+function bacaTahunMengajar(p){
+  const ini = new Date().getFullYear(), a = document.getElementById(p+'MulaiMengajar').value.trim(), b = document.getElementById(p+'MulaiSmb').value.trim();
+  const sah = v => !v || (/^\d{4}$/.test(v) && v>=1950 && v<=ini);
+  if(!sah(a) || !sah(b)) return {error:`Tahun mengajar harus 4 angka antara 1950 dan ${ini}`};
+  if(a && b && Number(b) < Number(a)) return {error:'Tahun mulai mengajar di SMB tidak boleh lebih awal dari tahun mulai mengajar'};
+  return {mulaiMengajar:a, mulaiMengajarSmb:b};
+}
+
 /* ======================= PROFIL SAYA ======================= */
 function renderProfil(){
   const u = currentUser;
@@ -3213,7 +3247,11 @@ function renderProfil(){
       <div class="field"><label>Alamat Email</label><input id="pfEmail" type="email" value="${esc(u.email||'')}"></div>
     </div>
     <div class="field"><label>Alamat Tempat Tinggal</label><textarea id="pfAlamat" rows="2" style="width:100%">${esc(u.alamatTinggal||'')}</textarea></div>
-    <div class="field"><label>Pendidikan Terakhir</label><input id="pfPendidikan" value="${esc(u.pendidikanTerakhir||'')}"></div>
+    <div class="grid2">
+      <div class="field"><label>Pendidikan Terakhir</label><input id="pfPendidikan" value="${esc(u.pendidikanTerakhir||'')}"></div>
+      <div class="field"><label>Pekerjaan</label><input id="pfPekerjaan" placeholder="misal: Karyawan swasta" value="${esc(u.pekerjaan||'')}"></div>
+    </div>
+    ${fieldTahunMengajar('pf', u)}
     <button class="btn-sun" onclick="simpanProfil()">Simpan Perubahan</button>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:26px 0">
@@ -3288,6 +3326,10 @@ async function simpanProfil(){
   u.email = document.getElementById('pfEmail').value.trim();
   u.alamatTinggal = document.getElementById('pfAlamat').value.trim();
   u.pendidikanTerakhir = document.getElementById('pfPendidikan').value.trim();
+  const th = bacaTahunMengajar('pf'); if(th.error) return pfShowError(th.error);
+  u.pekerjaan = document.getElementById('pfPekerjaan').value.trim();
+  u.mulaiMengajar = th.mulaiMengajar; u.mulaiMengajarSmb = th.mulaiMengajarSmb;
+  document.getElementById('pfError').style.display='none';
   updateUserBadge();
   await saveToDrive(true);
   toast('Profil disimpan');
@@ -4246,6 +4288,15 @@ const KOMP_BOBOT = [
   ...UJIAN.map(u=>({key:u.key, label:u.label, nama:u.nama})),
 ];
 function ujianLabel(k){ const u=UJIAN.find(x=>x.key===k); return u? u.label : k; }
+// Isi rapor per kelas & semester: guru boleh menimpa bobot bawaan Admin dan memilih kolom yang tampil di rapor
+function raporSet(sh, jenis){ return (sh && sh.raporSetting && sh.raporSetting[jenis]) || null; }
+function bobotKelas(sh, jenis){
+  const rs = raporSet(sh, jenis);
+  if(rs && rs.bobot){ const b = {}; KOMP_BOBOT.forEach(c=>{ b[c.key] = Number(rs.bobot[c.key])||0; }); return b; }
+  return S().penilaian.bobotRapor[jenis];
+}
+function bobotKhusus(sh, jenis){ const rs = raporSet(sh, jenis); return !!(rs && rs.bobot); }
+function kolomRapor(sh, jenis, key){ const rs = raporSet(sh, jenis); return (rs && rs.kolom && rs.kolom[key]) || []; }
 let penilaianFilterKelas = '';
 let penilaianSemester = semesterDariTanggal(new Date().toISOString().slice(0,10));
 let penilaianSheetTab = 'rekap';
@@ -4292,7 +4343,7 @@ function hitungRekap(sh, sid, kelasId, semester){
   const abs = absensiSemester(sid, kelasId, semester);
   const nilai = {}, pred = {}, kurang = {};
   UJIAN.forEach(u=>{
-    const b = st.bobotRapor[u.key];
+    const b = bobotKelas(sh, u.key);
     const pakai = KOMP_BOBOT.filter(c=>Number(b[c.key])>0);
     const total = pakai.reduce((a,c)=>a+Number(b[c.key]),0);
     kurang[u.key] = pakai.filter(c=>v[c.key]==null).map(c=>c.label);
@@ -4317,7 +4368,7 @@ function renderPenilaian(){
   const siswa = siswaAktifDiKelas(k.id).sort((a,b)=>a.namaLengkap.localeCompare(b.namaLengkap));
   const st = S().penilaian, ba = st.bobotAkhir;
 
-  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'Nilai ujian'}, {key:'tp',label:'Tujuan pembelajaran'}, {key:'absensi',label:'Data absensi'}];
+  const tabs = [{key:'rekap',label:'Rekap nilai'}, ...KOMPONEN.map(c=>({key:c.key,label:c.label})), {key:'ujian',label:'Nilai ujian'}, {key:'tp',label:'Tujuan pembelajaran'}, {key:'isi',label:'Isi rapor'}, {key:'absensi',label:'Data absensi'}];
   const controls = `<div class="pn-controls">
       <div class="field"><label>Kelas</label><select onchange="penilaianFilterKelas=this.value; renderContent()">
         ${kelasList.map(x=>`<option value="${x.id}" ${x.id===k.id?'selected':''}>${esc(kelasLabel(x))}</option>`).join('')}</select></div>
@@ -4326,17 +4377,19 @@ function renderPenilaian(){
       <div class="pn-meta"><span>Wali kelas <strong>${esc(k.guruId? guruNama(k.guruId):'—')}</strong></span><span><strong>${siswa.length}</strong> siswa aktif</span></div>
     </div>
     <div class="sheet-tabs">${tabs.map(t=>`<button class="${t.key===penilaianSheetTab?'on':''}" onclick="penilaianSheetTab='${t.key}'; renderContent()">${t.label}</button>`).join('')}</div>`;
-  if(!siswa.length && penilaianSheetTab!=='tp') return head + controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
+  if(!siswa.length && !['tp','isi'].includes(penilaianSheetTab)) return head + controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
 
   let body = '';
   if(penilaianSheetTab==='rekap') body = sheetRekap(sh, k, siswa);
   else if(penilaianSheetTab==='ujian') body = sheetUjian(sh, k, siswa);
   else if(penilaianSheetTab==='tp') body = sheetTP(sh, k, siswa);
+  else if(penilaianSheetTab==='isi') body = sheetIsiRapor(sh, k);
   else if(penilaianSheetTab==='absensi') body = sheetAbsensi(k, siswa);
   else body = sheetKomponen(sh, k, siswa, KOMPONEN.find(c=>c.key===penilaianSheetTab));
 
   const rumus = `<div class="pn-formula">
-    ${UJIAN.map((u,i)=>{ const b=st.bobotRapor[u.key]; return `<div><strong>Nilai ${u.label}</strong> = ${KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>`${c.label.replace('Rata ','')} ${b[c.key]}%`).join(' + ')}${i===UJIAN.length-1 && isAdmin()? ` — <a href="javascript:void 0" onclick="activeTab='pengaturan'; setTab='penilaian'; renderTabs(); renderContent()">ubah bobot</a>`:''}</div>`; }).join('')}
+    ${UJIAN.map((u,i)=>{ const b=bobotKelas(sh, u.key); return `<div><strong>Nilai ${u.label}</strong> = ${KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>`${c.label.replace('Rata ','')} ${b[c.key]}%`).join(' + ')}${bobotKhusus(sh,u.key)? ' <span class="pill pill-ok" style="font-size:11px">khusus kelas ini</span>':''}</div>`; }).join('')}
+    <div><a href="javascript:void 0" onclick="penilaianSheetTab='isi'; renderContent(); window.scrollTo(0,0)">Atur isi rapor kelas ini</a></div>
   </div>`;
   return head + controls + body + rumus;
 }
@@ -4363,6 +4416,79 @@ function sheetKomponen(sh, k, siswa, komp){
     <div class="sheet-actions"><button class="btn-outline btn-small" onclick="tambahKolom('${k.id}','${komp.key}')">+ Tambah kolom nilai</button>
       <span class="sd-sub">${nk} kolom. Klik judul kolom untuk mengganti nama (misal "Hafalan Paritta"). Tekan Enter untuk pindah ke siswa berikutnya.</span></div>`;
 }
+/* ---------- Isi rapor (dipilih guru per kelas) ---------- */
+let penilaianRaporJenis = 'mid1';
+function sheetIsiRapor(sh, k){
+  const jenis = penilaianRaporJenis, uj = UJIAN.find(u=>u.key===jenis);
+  const b = bobotKelas(sh, jenis), khusus = bobotKhusus(sh, jenis), bawaan = S().penilaian.bobotRapor[jenis];
+  const seg = `<div class="seg tp-seg">${UJIAN.map(u=>`<button class="${u.key===jenis?'on':''}" onclick="penilaianRaporJenis='${u.key}'; renderContent()">Rapor ${u.label}${bobotKhusus(sh,u.key)?'<span class="n">khusus</span>':''}</button>`).join('')}</div>`;
+  const rows = KOMP_BOBOT.map(c=>{
+    const on = Number(b[c.key])>0;
+    const kol = ['tugas','ulangan','praktek'].includes(c.key) ? (sh && sh.kolom[c.key]) || [] : null;
+    const dipilih = new Set(kolomRapor(sh, jenis, c.key));
+    return `<tr class="ir-row ${on?'':'off'}" id="ir_${c.key}">
+      <td class="c"><input type="checkbox" id="irOn_${c.key}" ${on?'checked':''} onchange="irToggle('${c.key}', this.checked)" aria-label="Pakai ${esc(c.nama)}"></td>
+      <td><strong>${esc(c.nama)}</strong>
+        ${kol? (kol.length? `<div class="ir-kol"><span class="sd-sub">Tampilkan juga sebagai baris di rapor:</span>
+            ${kol.map(x=>`<label class="chk"><input type="checkbox" class="irKol" data-k="${c.key}" value="${x.id}" ${dipilih.has(x.id)?'checked':''} ${on?'':'disabled'}> ${esc(x.judul)}</label>`).join('')}</div>`
+          : `<div class="sd-sub">Belum ada kolom nilai di tab ${esc(KOMPONEN.find(x=>x.key===c.key).label)}.</div>`) : ''}</td>
+      <td class="c ir-b"><input type="number" id="irB_${c.key}" min="0" max="100" value="${on? b[c.key] : ''}" ${on?'':'disabled'} oninput="irTotal()" aria-label="Bobot ${esc(c.nama)}"><span>%</span></td>
+      <td class="c sd-sub">${Number(bawaan[c.key])>0? bawaan[c.key]+'%' : '—'}</td></tr>`;
+  }).join('');
+  return `${seg}
+    <div class="sheet-title">Isi rapor ${esc(uj.label)} — ${esc(kelasLabel(k))}</div>
+    <p class="sheet-note" style="margin-top:0">Centang nilai yang dimunculkan di rapor ${esc(uj.label)} kelas ini dan atur bobotnya. Nilai yang tidak dicentang tidak tampil dan tidak ikut dihitung.
+      Saat ini: <strong>${khusus? 'diatur khusus untuk kelas ini' : 'memakai bobot bawaan Admin'}</strong>.</p>
+    <div class="sheet-wrap" style="max-height:none"><table class="sheet ir-t">
+      <thead><tr><th class="c" style="width:50px">Pakai</th><th>Komponen nilai</th><th class="c" style="width:120px">Bobot</th><th class="c" style="width:90px">Bawaan Admin</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td></td><td>Total bobot</td><td class="c"><span id="irTot" class="tot"></span></td><td class="c sd-sub">100%</td></tr></tfoot>
+    </table></div>
+    <div class="set-actions" style="justify-content:space-between">
+      <div class="row">${khusus? `<button class="btn-outline" onclick="resetIsiRapor('${k.id}')">Kembalikan ke bawaan Admin</button>`:''}
+        <button class="btn-outline" onclick="lihatRaporDari('${k.id}')">Lihat di rapor</button></div>
+      <button class="btn-sun" onclick="simpanIsiRapor('${k.id}')">Simpan isi rapor</button></div>`;
+}
+function irToggle(key, on){
+  const row = document.getElementById('ir_'+key), b = document.getElementById('irB_'+key);
+  row.classList.toggle('off', !on); b.disabled = !on;
+  if(on && !Number(b.value)) b.value = '';
+  if(!on) b.value = '';
+  row.querySelectorAll('.irKol').forEach(x=>{ x.disabled = !on; if(!on) x.checked = false; });
+  irTotal(); if(on) b.focus();
+}
+function irTotal(){
+  const t = KOMP_BOBOT.reduce((a,c)=> a + (document.getElementById('irOn_'+c.key)?.checked ? (Number(document.getElementById('irB_'+c.key).value)||0) : 0), 0);
+  const el = document.getElementById('irTot'); if(el){ el.textContent = t+'%'; el.className = 'tot '+(t===100?'ok':'bad'); }
+  return t;
+}
+function simpanIsiRapor(kelasId){
+  const jenis = penilaianRaporJenis;
+  const pakai = KOMP_BOBOT.filter(c=>document.getElementById('irOn_'+c.key).checked);
+  if(!pakai.length) return toast('Centang minimal satu nilai untuk rapor');
+  const kosong = pakai.find(c=>!(Number(document.getElementById('irB_'+c.key).value)>0));
+  if(kosong) return toast(`Isi bobot untuk ${kosong.nama}`);
+  if(irTotal()!==100) return toast('Total bobot harus tepat 100%');
+  const bobot = {}; KOMP_BOBOT.forEach(c=>{ bobot[c.key] = pakai.includes(c)? Number(document.getElementById('irB_'+c.key).value) : 0; });
+  const kolom = {}; document.querySelectorAll('.irKol:checked').forEach(x=>{ (kolom[x.dataset.k] = kolom[x.dataset.k]||[]).push(x.value); });
+  const sh = getSheet(kelasId, penilaianSemester, true);
+  sh.raporSetting = sh.raporSetting || {};
+  const bawaan = S().penilaian.bobotRapor[jenis];
+  const samaBawaan = KOMP_BOBOT.every(c=>(Number(bawaan[c.key])||0)===bobot[c.key]);
+  sh.raporSetting[jenis] = samaBawaan? {kolom} : {bobot, kolom};     // bila sama dengan bawaan, tetap mengikuti Admin
+  renderContent(); scheduleSave(); toast('Isi rapor '+ujianLabel(jenis)+' disimpan');
+}
+function resetIsiRapor(kelasId){
+  if(!confirm('Kembalikan isi rapor ini ke bobot bawaan Admin? Pilihan kolom juga dihapus.')) return;
+  const sh = getSheet(kelasId, penilaianSemester, true);
+  if(sh.raporSetting) delete sh.raporSetting[penilaianRaporJenis];
+  renderContent(); scheduleSave(); toast('Kembali memakai bawaan Admin');
+}
+function lihatRaporDari(kelasId){
+  laporanMode='siswa'; laporanSiswaKelasId=kelasId; laporanSemester=penilaianSemester; laporanJenis=penilaianRaporJenis; laporanSiswaId='';
+  switchTab('laporan'); window.scrollTo(0,0);
+}
+
 /* ---------- Tujuan Pembelajaran (TP) per ujian ---------- */
 let penilaianTpUjian = 'mid1';
 const CAPAIAN = {ok:{txt:'Tercapai', sym:'✓', cls:'ok'}, bb:{txt:'Perlu bimbingan', sym:'!', cls:'bb'}};
@@ -4740,9 +4866,11 @@ function renderLaporanSiswa(){
         ${SEMESTER.map(s=>`<option value="${s.key}" ${s.key===laporanSemester?'selected':''}>${s.label}</option>`).join('')}</select></div>
       <div class="field"><label>Jenis laporan</label><div class="seg mini">
         ${UJIAN.map(u=>`<button class="${laporanJenis===u.key?'on':''}" onclick="laporanJenis='${u.key}'; renderContent()">${u.label}</button>`).join('')}</div></div>
+      <button class="btn-outline" onclick="_aturRapor()">Atur isi rapor</button>
       <button class="btn-sun" ${laporanSiswaId?'':'disabled'} onclick="cetakLaporan('portrait')">Cetak laporan</button>
     </div>`;
   if(!UJIAN.some(u=>u.key===laporanJenis)) laporanJenis = 'mid1';
+  window._aturRapor = ()=>{ penilaianFilterKelas=laporanSiswaKelasId; penilaianSemester=laporanSemester; penilaianRaporJenis=laporanJenis; penilaianSheetTab='isi'; switchTab('penilaian'); window.scrollTo(0,0); };
   if(!kelasList.length) return controls + `<div class="empty">Belum ada kelas yang bisa diakses.</div>`;
   if(!laporanSiswaId) return controls + `<div class="empty">Belum ada siswa aktif di kelas ini.</div>`;
   return controls + `<div class="paper-stage"><div class="paper">${dokumenRapor(laporanSiswaId, laporanSemester, laporanJenis, true)}</div></div>`;
@@ -4755,10 +4883,12 @@ function dokumenRapor(sid, semester, jenis, editable){
   const r = hitungRekap(sh, s.id, k?k.id:'', semester);
   const st = S().penilaian;
   if(!UJIAN.some(u=>u.key===jenis)) jenis = 'mid1';
-  const uj = UJIAN.find(u=>u.key===jenis), b = st.bobotRapor[jenis];
+  const uj = UJIAN.find(u=>u.key===jenis), b = bobotKelas(sh, jenis);
   const semLabel = SEMESTER.find(x=>x.key===semester).label;
-  const rincian = key=> sh && sh.kolom[key]? sh.kolom[key].map(c=>{ const v=angka(((sh.nilai[s.id]||{})[key]||{})[c.id]); return v==null? null : `${esc(c.judul)}: ${fmtN(v)}`; }).filter(Boolean).join(' · ') : '';
-  const komp = KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>({nama:c.nama, nilai:r[c.key], rinci:['tugas','ulangan','praktek'].includes(c.key)? rincian(c.key):''}));
+  // kolom nilai yang dipilih guru untuk tampil sebagai baris sendiri
+  const subBaris = key=>{ const ids = kolomRapor(sh, jenis, key); if(!sh || !ids.length) return [];
+    return (sh.kolom[key]||[]).filter(c=>ids.includes(c.id)).map(c=>({judul:c.judul, nilai:angka(((sh.nilai[s.id]||{})[key]||{})[c.id])})); };
+  const komp = KOMP_BOBOT.filter(c=>Number(b[c.key])>0).map(c=>({nama:c.nama, nilai:r[c.key], sub:['tugas','ulangan','praktek'].includes(c.key)? subBaris(c.key):[]}));
   const nilaiAkhir = r.nilai[jenis];
   const pred = r.pred[jenis];
   const tpRapor = sh && sh.tp ? (sh.tp[jenis]||[]) : [];
@@ -4782,7 +4912,8 @@ function dokumenRapor(sid, semester, jenis, editable){
     <table class="rp-t">
       <thead><tr><th style="width:34px">No</th><th>Komponen penilaian</th><th style="width:90px">Nilai</th></tr></thead>
       <tbody>
-        ${komp.map((c,i)=>`<tr><td class="c">${i+1}</td><td>${c.nama}${c.rinci? `<div class="rp-rinci">${c.rinci}</div>`:''}</td><td class="c">${fmtN(c.nilai)}</td></tr>`).join('')}
+        ${komp.map((c,i)=>`<tr><td class="c">${i+1}</td><td>${c.nama}</td><td class="c">${fmtN(c.nilai)}</td></tr>
+          ${c.sub.map(x=>`<tr class="rp-sub"><td></td><td>• ${esc(x.judul)}</td><td class="c">${fmtN(x.nilai)}</td></tr>`).join('')}`).join('')}
       </tbody>
       <tfoot><tr><td colspan="2">Nilai ${uj.label}</td><td class="c rp-big">${fmtN(nilaiAkhir)}</td></tr></tfoot>
     </table>
