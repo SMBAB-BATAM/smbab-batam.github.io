@@ -479,6 +479,9 @@
   .pager{display:flex;gap:4px;align-items:center;}
   .pg{background:transparent;color:var(--ink-soft);padding:6px 10px;border-radius:8px;}
   .pg.on{background:var(--sky-deep);color:#fff;} .pg-gap{color:var(--ink-soft);padding:0 2px;}
+  .dg-prog{width:70px;height:6px;border-radius:4px;background:var(--line);overflow:hidden;}
+  .dg-prog span{display:block;height:100%;border-radius:4px;}
+  .dg-prog .ok{background:#3fb36f;} .dg-prog .mid{background:var(--sun-deep);} .dg-prog .low{background:var(--coral);}
   .sd-detail-head{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:6px;}
   .sd-detail{display:grid;grid-template-columns:1fr 1fr;gap:4px 26px;}
   @media(max-width:700px){.sd-detail{grid-template-columns:1fr;}}
@@ -1178,6 +1181,7 @@ function allTabs(){
     t.push({key:"pengaturan", label:"Pengaturan Website"});
   }
   t.push({key:"profil", label:"Profil Saya"});
+  if(isAdmin()) t.splice(t.findIndex(x=>x.key==='siswa'), 0, {key:"dataguru", label:"Data Guru"});
   if(!isAdmin()) return t.filter(x=>!['tahunajaran','kenaikan'].includes(x.key));
   return t;
 }
@@ -1204,7 +1208,7 @@ function renderContent(){
     dashboard: renderDashboard, tahunajaran: renderTahunAjaran, kelas: renderKelas,
     siswa: renderSiswa, absensi: renderAbsensi, penilaian: renderPenilaian,
     kenaikan: renderKenaikan, laporan: renderLaporan, pengguna: renderPengguna,
-    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan, pembelajaran: renderPembelajaran, aktivitas: renderAktivitas
+    pendaftaran: renderPendaftaran, kas: renderKas, profil: renderProfil, pengaturan: renderPengaturan, dataguru: renderDataGuru, pembelajaran: renderPembelajaran, aktivitas: renderAktivitas
   };
   if(!allTabs().some(t=>t.key===activeTab)) activeTab='dashboard';
   c.innerHTML = renderers[activeTab]();
@@ -3096,6 +3100,144 @@ function updateUserBadge(){
   rtSync();
 }
 
+
+/* ======================= DATA GURU (khusus Admin) ======================= */
+// Diambil dari "Profil Saya" yang diisi masing-masing guru. Server hanya mengirim data ini ke Admin.
+let guruSearchQuery = '', guruFilterPeran = 'guru', guruSort = 'nama';
+const PROFIL_GURU_KOLOM = [
+  ['tempatLahir','Tempat lahir'],['tglLahir','Tanggal lahir'],['noHp','No HP'],['email','Email'],['alamatTinggal','Alamat'],
+  ['pendidikanTerakhir','Pendidikan terakhir'],['pekerjaan','Pekerjaan'],['mulaiMengajar','Mulai mengajar'],['tempatMengajarSmb','Mengajar di SMB'],['ttdGambar','Tanda tangan digital']
+];
+function profilKurang(u){ return PROFIL_GURU_KOLOM.filter(([k])=>!String(u[k]||'').trim()).map(([,l])=>l); }
+function profilPersen(u){ return Math.round((PROFIL_GURU_KOLOM.length - profilKurang(u).length) / PROFIL_GURU_KOLOM.length * 100); }
+function tahunMengajarAngka(v){
+  if(!v) return null;
+  const d = new Date(/^\d{4}$/.test(v)? v+'-01-01' : v+'T00:00:00'), now = new Date();
+  if(isNaN(d) || d > now) return null;
+  let n = now.getFullYear()-d.getFullYear();
+  if(now.getMonth()<d.getMonth() || (now.getMonth()===d.getMonth() && now.getDate()<d.getDate())) n--;
+  return Math.max(0,n);
+}
+function fmtMulaiMengajar(v){ return !v? '' : /^\d{4}$/.test(v)? 'Tahun '+v : tglPanjang(new Date(v+'T00:00:00')); }
+function kelasGuru(uId){
+  const ta = activeTahunAjaran(); if(!ta) return [];
+  return kelasOfTahun(ta.id).filter(k=>k.guruId===uId || (k.guruAsistenIds||[]).includes(uId))
+    .map(k=>({k, wali:k.guruId===uId}));
+}
+function guruTerfilter(){
+  const q = normTeks(guruSearchQuery);
+  let list = db.users.filter(u=> guruFilterPeran==='semua' || u.role===guruFilterPeran);
+  if(q) list = list.filter(u=> [u.nama,u.username,u.noHp,u.email,u.pekerjaan,u.pendidikanTerakhir,u.tempatMengajarSmb,u.alamatTinggal].some(v=>normTeks(v||'').includes(q)));
+  const lama = u=>{ const n=tahunMengajarAngka(u.mulaiMengajar); return n==null? -1 : n; };
+  const by = {nama:(a,b)=>a.nama.localeCompare(b.nama), lama:(a,b)=>lama(b)-lama(a)||a.nama.localeCompare(b.nama), lengkap:(a,b)=>profilPersen(a)-profilPersen(b)||a.nama.localeCompare(b.nama)};
+  return list.slice().sort(by[guruSort]||by.nama);
+}
+function onGuruSearchInput(el){
+  guruSearchQuery = el.value; const pos = el.selectionStart;
+  renderContent(); const b = document.getElementById('guruSearchBox'); if(b){ b.focus(); try{ b.setSelectionRange(pos,pos); }catch(e){} }
+}
+function renderDataGuru(){
+  if(!isAdmin()) return '<div class="empty">Menu ini khusus Admin.</div>';
+  const list = guruTerfilter();
+  const semuaGuru = db.users.filter(u=>u.role==='guru');
+  const lengkap = semuaGuru.filter(u=>profilPersen(u)===100).length;
+  const lamaList = semuaGuru.map(u=>tahunMengajarAngka(u.mulaiMengajar)).filter(n=>n!=null);
+  const rata = lamaList.length? (lamaList.reduce((a,b)=>a+b,0)/lamaList.length) : null;
+  const rows = list.map(u=>{
+    const n = tahunMengajarAngka(u.mulaiMengajar), pr = profilPersen(u), kg = kelasGuru(u.id);
+    return `<tr>
+      <td><button class="sd-name" onclick="lihatGuru('${u.id}')">
+          <span class="sd-av">${esc(inisial(u.nama))}</span>
+          <span><strong>${esc(u.nama)}</strong><small>${esc(u.tempatLahir||'')}${u.tempatLahir&&u.tglLahir?', ':''}${u.tglLahir? fmtDate(u.tglLahir):''}${!u.tempatLahir&&!u.tglLahir? '@'+esc(u.username):''}</small></span></button></td>
+      <td>${u.noHp? `<span class="sd-k">${esc(u.noHp)}</span>`:'<span class="sd-sub">—</span>'}<small class="sd-sub">${esc(u.email||'')}</small></td>
+      <td class="sd-wrap">${esc(u.pendidikanTerakhir||'—')}<small class="sd-sub">${esc(u.pekerjaan||'')}</small></td>
+      <td class="sd-wrap">${esc(u.tempatMengajarSmb||'—')}${kg.length? `<small class="sd-sub">${kg.map(x=>esc(kelasLabel(x.k))+(x.wali?'':' (asisten)')).join(', ')}</small>`:''}</td>
+      <td style="white-space:nowrap">${u.mulaiMengajar? `<span class="sd-k">${n==null?'—': n<1? '&lt; 1 tahun' : n+' tahun'}</span><small class="sd-sub">sejak ${esc(/^\d{4}$/.test(u.mulaiMengajar)? u.mulaiMengajar : isoToDdmmyyyy(u.mulaiMengajar))}</small>` : '<span class="sd-sub">—</span>'}</td>
+      <td><div class="dg-prog" title="${pr===100? 'Profil lengkap' : 'Belum diisi: '+esc(profilKurang(u).join(', '))}"><span style="width:${pr}%" class="${pr===100?'ok':pr>=60?'mid':'low'}"></span></div><small class="sd-sub">${pr}%</small></td>
+      <td><span class="badge ${u.role}">${u.role}</span></td>
+      <td class="sd-act"><button class="ib" title="Lihat detail" onclick="lihatGuru('${u.id}')">${ICON.eye}</button>
+        <button class="ib" title="Ubah data" onclick="formPengguna('${u.id}')">${ICON.edit}</button></td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="page-head">
+      <div><h2>Data Guru</h2><p class="subtitle">Diambil dari Profil Saya yang diisi masing-masing guru — hanya bisa dilihat Admin</p></div>
+      <div class="row"><button class="btn-outline" onclick="exportDataGuru()">Export Excel</button></div>
+    </div>
+    <div class="sd-summary">
+      <div><strong>${semuaGuru.length}</strong><span>guru terdaftar</span></div>
+      <div><strong>${semuaGuru.length? Math.round(lengkap/semuaGuru.length*100):0}%</strong><span>profil lengkap (${lengkap} guru)</span></div>
+      <div><strong>${rata==null? '—' : rata.toFixed(1).replace('.',',')+' th'}</strong><span>rata-rata lama mengajar</span></div>
+    </div>
+    <div class="sd-filters">
+      <input type="search" id="guruSearchBox" placeholder="Cari nama, HP, email, pekerjaan…" value="${esc(guruSearchQuery)}" oninput="onGuruSearchInput(this)">
+      <select onchange="guruFilterPeran=this.value; renderContent()" aria-label="Peran">
+        ${[['guru','Guru'],['admin','Admin'],['semua','Semua pengguna']].map(([v,l])=>`<option value="${v}" ${v===guruFilterPeran?'selected':''}>${l}</option>`).join('')}
+      </select>
+      <select onchange="guruSort=this.value; renderContent()" aria-label="Urutkan">
+        ${[['nama','Urut nama'],['lama','Paling lama mengajar'],['lengkap','Profil belum lengkap dulu']].map(([v,l])=>`<option value="${v}" ${v===guruSort?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    ${list.length? `<div class="sd-table-wrap"><table class="sd-table">
+      <thead><tr><th>Nama guru</th><th>Kontak</th><th>Pendidikan &amp; pekerjaan</th><th>Mengajar di SMB</th><th>Lama mengajar</th><th>Profil</th><th>Peran</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+      <div class="sd-foot"><span>Menampilkan ${list.length} dari ${db.users.length} pengguna</span></div>`
+    : `<div class="empty">${guruSearchQuery? 'Tidak ada guru yang cocok dengan pencarian.' : 'Belum ada data guru. Tambahkan akun guru di menu Pengguna.'}</div>`}
+  `;
+}
+function lihatGuru(id){
+  const u = db.users.find(x=>x.id===id); if(!u) return;
+  const row = (l,v)=>`<div class="dl-row"><dt>${l}</dt><dd>${v||'<span class="sd-sub">—</span>'}</dd></div>`;
+  const n = tahunMengajarAngka(u.mulaiMengajar), kg = kelasGuru(u.id), kurang = profilKurang(u);
+  openModal(`
+    <div class="sd-detail-head">
+      <span class="sd-av lg">${esc(inisial(u.nama))}</span>
+      <div><h3 style="margin:0">${esc(u.nama)}</h3><div class="sd-sub">@${esc(u.username)} · Profil ${profilPersen(u)}% lengkap</div></div>
+      <span class="badge ${u.role}" style="margin-left:auto">${u.role}</span>
+    </div>
+    <div class="sd-detail">
+      <section><h4>Data pribadi</h4><dl>
+        ${row('Tempat, tgl lahir', esc((u.tempatLahir||'')+(u.tglLahir? (u.tempatLahir?', ':'')+tglPanjang(new Date(u.tglLahir+'T00:00:00')):'')))}
+        ${row('No HP', u.noHp? `<a href="https://wa.me/${esc(String(u.noHp).replace(/\D/g,'').replace(/^0/,'62'))}" target="_blank" rel="noopener">${esc(u.noHp)}</a>`:'')}
+        ${row('Email', u.email? `<a href="mailto:${esc(u.email)}">${esc(u.email)}</a>`:'')}
+        ${row('Alamat', esc(u.alamatTinggal))}
+        ${row('Pendidikan terakhir', esc(u.pendidikanTerakhir))}
+        ${row('Pekerjaan', esc(u.pekerjaan))}
+      </dl></section>
+      <section><h4>Mengajar</h4><dl>
+        ${row('Mengajar di SMB', esc(u.tempatMengajarSmb))}
+        ${row('Mulai mengajar', esc(fmtMulaiMengajar(u.mulaiMengajar)))}
+        ${row('Lama mengajar', n==null? '' : n<1? 'Kurang dari 1 tahun' : `± ${n} tahun`)}
+        ${row('Kelas saat ini', kg.map(x=>esc(kelasLabel(x.k))+(x.wali?' <small class="sd-sub" style="display:inline">wali</small>':' <small class="sd-sub" style="display:inline">asisten</small>')).join('<br>'))}
+        ${row('Tanda tangan', u.ttdGambar? `<img src="${u.ttdGambar}" alt="Tanda tangan" style="max-height:54px;max-width:180px;background:#fff;border-radius:6px;padding:2px">`:'')}
+      </dl></section>
+    </div>
+    ${kurang.length? `<div class="setup-box" style="margin-top:14px">Belum diisi: <strong>${esc(kurang.join(', '))}</strong>. Guru dapat melengkapinya sendiri di menu Profil Saya.</div>`:''}
+    <div class="modal-actions"><button class="btn-outline btn-small" onclick="closeModal()">Tutup</button>
+      <button class="btn-sun btn-small" onclick="closeModal(); formPengguna('${u.id}')">Ubah data</button></div>`, 'wide');
+}
+function exportDataGuru(){
+  const data = guruTerfilter().map(u=>{
+    const n = tahunMengajarAngka(u.mulaiMengajar);
+    return {
+      "Nama Lengkap": u.nama, "Username": u.username, "Peran": u.role,
+      "Tempat Lahir": u.tempatLahir||'', "Tanggal Lahir": u.tglLahir? isoToDdmmyyyy(u.tglLahir):'',
+      "No HP": u.noHp||'', "Email": u.email||'', "Alamat Tinggal": u.alamatTinggal||'',
+      "Pendidikan Terakhir": u.pendidikanTerakhir||'', "Pekerjaan": u.pekerjaan||'',
+      "Mengajar di SMB": u.tempatMengajarSmb||'',
+      "Mulai Mengajar": !u.mulaiMengajar? '' : /^\d{4}$/.test(u.mulaiMengajar)? u.mulaiMengajar : isoToDdmmyyyy(u.mulaiMengajar),
+      "Lama Mengajar (tahun)": n==null? '' : n,
+      "Kelas": kelasGuru(u.id).map(x=>kelasLabel(x.k)+(x.wali?'':' (asisten)')).join(', '),
+      "Kelengkapan Profil": profilPersen(u)+'%'
+    };
+  });
+  if(!data.length) return toast('Tidak ada data untuk diexport');
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = Object.keys(data[0]).map(k=>({wch: Math.min(40, Math.max(k.length, ...data.map(r=>String(r[k]).length))+2)}));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data Guru");
+  XLSX.writeFile(wb, `data-guru-smb-${new Date().toISOString().slice(0,10)}.xlsx`);
+}
 
 /* ======================= PENGGUNA (admin) ======================= */
 function renderPengguna(){
