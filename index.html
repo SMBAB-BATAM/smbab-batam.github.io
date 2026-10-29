@@ -14,6 +14,8 @@
     --ink:#1F2A3C; --ink-soft:#5B6B82; --sun:#F4B942; --sun-deep:#D99A1F;
     --coral:#EF767A; --leaf:#6FAE8A; --line:#DCE6F2; --radius:14px; --input-bg:#fbfdff; --hover-bg:#f7fafd; --heading:#2C4770;
   }
+  input[type=date]{color-scheme:light;min-width:240px;max-width:100%;}
+  body.theme-dark input[type=date]{color-scheme:dark;}
   body.theme-dark{
     --sky:#101722; --sky-deep:#0B111A; --sky-mid:#8CA3C2; --paper:#1B2432;
     --ink:#E8EDF5; --ink-soft:#9CACC4; --sun:#F4B942; --sun-deep:#D99A1F;
@@ -3104,7 +3106,7 @@ function renderPengguna(){
       <td><strong>${esc(u.nama)}</strong><div style="font-size:12px;color:var(--ink-soft)">@${esc(u.username)}</div></td>
       <td><span class="badge ${u.role}">${u.role}</span></td>
       <td>${esc(u.noHp||'—')}<div style="font-size:12px;color:var(--ink-soft)">${esc(u.email||'')}</div></td>
-      <td>${esc(u.pendidikanTerakhir||'—')}${u.pekerjaan? `<div style="font-size:12px;color:var(--ink-soft)">${esc(u.pekerjaan)}</div>`:''}${u.mulaiMengajarSmb? `<div style="font-size:12px;color:var(--ink-soft)">Di SMB sejak ${esc(u.mulaiMengajarSmb)}</div>`:''}</td>
+      <td>${esc(u.pendidikanTerakhir||'—')}${u.pekerjaan? `<div style="font-size:12px;color:var(--ink-soft)">${esc(u.pekerjaan)}</div>`:''}${u.tempatMengajarSmb? `<div style="font-size:12px;color:var(--ink-soft)">${esc(u.tempatMengajarSmb)}</div>`:''}${u.mulaiMengajar? `<div style="font-size:12px;color:var(--ink-soft)">Mengajar sejak ${esc(/^\d{4}$/.test(u.mulaiMengajar)? u.mulaiMengajar : isoToDdmmyyyy(u.mulaiMengajar))}</div>`:''}</td>
       <td>${u.role==='guru' ? (u.lihatSemuaSiswa? '<strong>Semua siswa</strong>' : ((u.kelasAksesIds||[]).map(id=>{const k=db.kelas.find(x=>x.id===id); return k? esc(kelasLabel(k)):'';}).filter(Boolean).join(', ') || '—')) : 'Semua'}</td>
       <td><div class="row">
         <button class="btn-outline btn-small" onclick="formPengguna('${u.id}')">Ubah</button>
@@ -3191,8 +3193,8 @@ async function simpanPengguna(id){
     pendidikanTerakhir: document.getElementById('fPPendidikan').value.trim(),
     pekerjaan: document.getElementById('fPPekerjaan').value.trim(),
   };
-  const th = bacaTahunMengajar('fP'); if(th.error) return fPShowError(th.error, 'fPMulaiSmb');
-  profil.mulaiMengajar = th.mulaiMengajar; profil.mulaiMengajarSmb = th.mulaiMengajarSmb;
+  const th = bacaTahunMengajar('fP'); if(th.error) return fPShowError(th.error, 'fPMulaiMengajar');
+  profil.mulaiMengajar = th.mulaiMengajar; profil.tempatMengajarSmb = th.tempatMengajarSmb;
   if(!nama) return fPShowError('Nama Guru / Nama Lengkap wajib diisi', 'fPNama');
   if(!username) return fPShowError('ID / Username wajib diisi', 'fPUser');
   if(!id && !pass) return fPShowError('Password wajib diisi untuk pengguna baru', 'fPPass');
@@ -3212,22 +3214,32 @@ async function simpanPengguna(id){
 }
 function hapusPengguna(id){ if(!confirm('Hapus pengguna ini?')) return; db.users=db.users.filter(u=>u.id!==id); renderContent(); saveToDrive(true); }
 
-/* ---- Tahun mulai mengajar (dipakai di Profil Saya & form Admin) ---- */
-function lamaTahun(th){ const n = new Date().getFullYear() - Number(th); return th && n>=0 ? (n<1? 'kurang dari 1 tahun' : `± ${n} tahun`) : ''; }
+/* ---- Mulai mengajar & tempat mengajar SMB (dipakai di Profil Saya & form Admin) ---- */
+// mulaiMengajar disimpan sebagai tanggal ISO (YYYY-MM-DD); data lama yang hanya berisi tahun tetap dihormati
+function lamaMengajar(v){
+  if(!v) return '';
+  const d = new Date(/^\d{4}$/.test(v)? v+'-01-01' : v+'T00:00:00'), now = new Date();
+  if(isNaN(d) || d > now) return '';
+  let n = now.getFullYear() - d.getFullYear();
+  if(now.getMonth() < d.getMonth() || (now.getMonth()===d.getMonth() && now.getDate() < d.getDate())) n--;
+  return n<1? 'Sudah mengajar kurang dari 1 tahun' : `Sudah mengajar ± ${n} tahun`;
+}
 function fieldTahunMengajar(p, u){
-  const ini = new Date().getFullYear();
-  const f = (id, label, v)=>`<div class="field"><label>${label}</label>
-      <input id="${p}${id}" type="number" inputmode="numeric" min="1950" max="${ini}" placeholder="misal: 2015" value="${esc(v||'')}"
-        oninput="const h=this.nextElementSibling; h.textContent=lamaTahun(this.value.length===4?this.value:'')">
-      <div class="help">${lamaTahun(v)}</div></div>`;
-  return `<div class="grid2">${f('MulaiMengajar','Mulai Mengajar Tahun', u&&u.mulaiMengajar)}${f('MulaiSmb','Mulai Mengajar di SMB', u&&u.mulaiMengajarSmb)}</div>`;
+  const v = (u && u.mulaiMengajar) || '', lamaTahunSaja = /^\d{4}$/.test(v);
+  const hariIni = new Date().toISOString().slice(0,10);
+  return `<div class="grid2">
+    <div class="field"><label>Mulai Mengajar Tahun</label>
+      <input id="${p}MulaiMengajar" type="date" min="1950-01-01" max="${hariIni}" value="${lamaTahunSaja? '' : esc(v)}" data-lama="${lamaTahunSaja? esc(v):''}"
+        oninput="this.nextElementSibling.textContent = lamaMengajar(this.value) || (this.dataset.lama? 'Tercatat tahun '+this.dataset.lama : '')">
+      <div class="help">${lamaTahunSaja? `Tercatat tahun ${esc(v)} — silakan pilih tanggalnya di kalender` : lamaMengajar(v)}</div></div>
+    <div class="field"><label>Mengajar di SMB</label>
+      <input id="${p}TempatSmb" maxlength="120" placeholder="misal: SMB Maha Vihara Duta Maitreya" value="${esc((u && u.tempatMengajarSmb) || '')}"></div>
+  </div>`;
 }
 function bacaTahunMengajar(p){
-  const ini = new Date().getFullYear(), a = document.getElementById(p+'MulaiMengajar').value.trim(), b = document.getElementById(p+'MulaiSmb').value.trim();
-  const sah = v => !v || (/^\d{4}$/.test(v) && v>=1950 && v<=ini);
-  if(!sah(a) || !sah(b)) return {error:`Tahun mengajar harus 4 angka antara 1950 dan ${ini}`};
-  if(a && b && Number(b) < Number(a)) return {error:'Tahun mulai mengajar di SMB tidak boleh lebih awal dari tahun mulai mengajar'};
-  return {mulaiMengajar:a, mulaiMengajarSmb:b};
+  const el = document.getElementById(p+'MulaiMengajar'), tgl = el.value.trim();
+  if(tgl && (tgl < '1950-01-01' || tgl > new Date().toISOString().slice(0,10))) return {error:'Tanggal mulai mengajar tidak valid (tidak boleh di masa depan)'};
+  return {mulaiMengajar: tgl || el.dataset.lama || '', tempatMengajarSmb: document.getElementById(p+'TempatSmb').value.trim()};
 }
 
 /* ======================= PROFIL SAYA ======================= */
@@ -3328,7 +3340,7 @@ async function simpanProfil(){
   u.pendidikanTerakhir = document.getElementById('pfPendidikan').value.trim();
   const th = bacaTahunMengajar('pf'); if(th.error) return pfShowError(th.error);
   u.pekerjaan = document.getElementById('pfPekerjaan').value.trim();
-  u.mulaiMengajar = th.mulaiMengajar; u.mulaiMengajarSmb = th.mulaiMengajarSmb;
+  u.mulaiMengajar = th.mulaiMengajar; u.tempatMengajarSmb = th.tempatMengajarSmb;
   document.getElementById('pfError').style.display='none';
   updateUserBadge();
   await saveToDrive(true);
